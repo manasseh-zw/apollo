@@ -1,7 +1,6 @@
-import { ApiResponse } from "../types/api";
-import { User } from "../types/user";
-import { config } from "../../config";
-import { apiRequest } from "../utils/api";
+import type { User } from "../types/user";
+import { apiRequest, type ApiResponse } from "../utils/api";
+
 
 export async function googleSignup(
   accessToken: string
