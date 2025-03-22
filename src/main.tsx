@@ -1,35 +1,34 @@
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import { HeroUIProvider } from "@heroui/react";
 import { routeTree } from "./routeTree.gen";
-import "./app.css"
+import "./app.css";
+import Providers from "./providers";
 
 const router = createRouter({
-	routeTree,
-	context: {},
-	defaultPreload: "intent",
-	defaultViewTransition: true,
-	scrollRestoration: true,
-	defaultStructuralSharing: true,
-	defaultPreloadStaleTime: 0,
+  routeTree,
+  context: {},
+  defaultPreload: "intent",
+  defaultViewTransition: true,
+  scrollRestoration: true,
+  defaultStructuralSharing: true,
+  defaultPreloadStaleTime: 0,
 });
 
 declare module "@tanstack/react-router" {
-	interface Register {
-		router: typeof router;
-	}
+  interface Register {
+    router: typeof router;
+  }
 }
 
 const rootElement = document.getElementById("app");
 if (rootElement && !rootElement.innerHTML) {
-	const root = ReactDOM.createRoot(rootElement);
-	root.render(
-		<StrictMode>
-			<HeroUIProvider>
-				<RouterProvider router={router} />
-			</HeroUIProvider>
-		</StrictMode>,
-	);
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(
+    <StrictMode>
+      <Providers>
+        <RouterProvider router={router} />
+      </Providers>
+    </StrictMode>
+  );
 }
-
