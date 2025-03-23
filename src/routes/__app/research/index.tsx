@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import ChatLanding from "../../../components/research/chat-landing/ChatLanding";
 import { protectedLoader } from "../../../lib/utils/loaders";
 
-export const Route = createFileRoute("/_app/research/")({
+export const Route = createFileRoute("/__app/research/")({
   component: Research,
   loader: protectedLoader,
 });

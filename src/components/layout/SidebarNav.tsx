@@ -24,12 +24,6 @@ export const sidebarItems: SidebarItem[] = [
     iconName: "library",
     title: "Library",
   },
-  {
-    key: "settings",
-    href: "/settings",
-    iconName: "settings",
-    title: "Settings",
-  },
 ];
 
 export type SidebarProps = {

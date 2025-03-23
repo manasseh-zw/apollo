@@ -1,20 +1,23 @@
-//@ts-nocheck
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Avatar as UserAvatar } from "@heroui/react";
 import Avatar from "boring-avatars";
 import Markdown from "markdown-to-jsx";
-import { store } from "../../../store/store";
 import PromptForm from "./prompt-form";
 import { useParams } from "@tanstack/react-router";
 import { useSearch } from "@tanstack/react-router";
 import * as signalR from "@microsoft/signalr";
 import { config } from "../../../../config";
+import { store } from "../../../lib/state/store";
 
 type Message = {
   id: number;
   text: string;
   sender: "assistant" | "user";
 };
+
+interface ChatSearchParams {
+  initialQuery?: string;
+}
 
 const MarkdownOptions = {
   overrides: {
@@ -111,8 +114,11 @@ const MarkdownOptions = {
 };
 
 export default function ResearchChat() {
-  const { id } = useParams({ from: "/_app/research/chat/$id/" });
-  const { initialQuery } = useSearch({ from: "/_app/research/chat/$id/" });
+  const { id } = useParams({ from: "/__app/research/chat/$id/" });
+  const searchParams = useSearch({
+    from: "/__app/research/chat/$id/",
+  }) as ChatSearchParams;
+  const initialQuery = searchParams.initialQuery;
   const user = store.state.authState.user;
   const [messages, setMessages] = useState<Message[]>([]);
   const [connection, setConnection] = useState<signalR.HubConnection | null>(

@@ -15,8 +15,9 @@ import { Route as appImport } from './routes/__app'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthSignUpImport } from './routes/auth/sign-up'
 import { Route as AuthSignInImport } from './routes/auth/sign-in'
-import { Route as AppResearchIndexImport } from './routes/_app/research/index'
-import { Route as AppResearchChatIdIndexImport } from './routes/_app/research/chat/$id/index'
+import { Route as appResearchIndexImport } from './routes/__app/research/index'
+import { Route as appLibraryIndexImport } from './routes/__app/library/index'
+import { Route as appResearchChatIdIndexImport } from './routes/__app/research/chat/$id/index'
 
 // Create/Update Routes
 
@@ -43,16 +44,22 @@ const AuthSignInRoute = AuthSignInImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const AppResearchIndexRoute = AppResearchIndexImport.update({
-  id: '/_app/research/',
+const appResearchIndexRoute = appResearchIndexImport.update({
+  id: '/research/',
   path: '/research/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => appRoute,
 } as any)
 
-const AppResearchChatIdIndexRoute = AppResearchChatIdIndexImport.update({
-  id: '/_app/research/chat/$id/',
+const appLibraryIndexRoute = appLibraryIndexImport.update({
+  id: '/library/',
+  path: '/library/',
+  getParentRoute: () => appRoute,
+} as any)
+
+const appResearchChatIdIndexRoute = appResearchChatIdIndexImport.update({
+  id: '/research/chat/$id/',
   path: '/research/chat/$id/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => appRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -87,51 +94,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignUpImport
       parentRoute: typeof rootRoute
     }
-    '/_app/research/': {
-      id: '/_app/research/'
+    '/__app/library/': {
+      id: '/__app/library/'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof appLibraryIndexImport
+      parentRoute: typeof appImport
+    }
+    '/__app/research/': {
+      id: '/__app/research/'
       path: '/research'
       fullPath: '/research'
-      preLoaderRoute: typeof AppResearchIndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof appResearchIndexImport
+      parentRoute: typeof appImport
     }
-    '/_app/research/chat/$id/': {
-      id: '/_app/research/chat/$id/'
+    '/__app/research/chat/$id/': {
+      id: '/__app/research/chat/$id/'
       path: '/research/chat/$id'
       fullPath: '/research/chat/$id'
-      preLoaderRoute: typeof AppResearchChatIdIndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof appResearchChatIdIndexImport
+      parentRoute: typeof appImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface appRouteChildren {
+  appLibraryIndexRoute: typeof appLibraryIndexRoute
+  appResearchIndexRoute: typeof appResearchIndexRoute
+  appResearchChatIdIndexRoute: typeof appResearchChatIdIndexRoute
+}
+
+const appRouteChildren: appRouteChildren = {
+  appLibraryIndexRoute: appLibraryIndexRoute,
+  appResearchIndexRoute: appResearchIndexRoute,
+  appResearchChatIdIndexRoute: appResearchChatIdIndexRoute,
+}
+
+const appRouteWithChildren = appRoute._addFileChildren(appRouteChildren)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '': typeof appRoute
+  '': typeof appRouteWithChildren
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
-  '/research': typeof AppResearchIndexRoute
-  '/research/chat/$id': typeof AppResearchChatIdIndexRoute
+  '/library': typeof appLibraryIndexRoute
+  '/research': typeof appResearchIndexRoute
+  '/research/chat/$id': typeof appResearchChatIdIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '': typeof appRoute
+  '': typeof appRouteWithChildren
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
-  '/research': typeof AppResearchIndexRoute
-  '/research/chat/$id': typeof AppResearchChatIdIndexRoute
+  '/library': typeof appLibraryIndexRoute
+  '/research': typeof appResearchIndexRoute
+  '/research/chat/$id': typeof appResearchChatIdIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/__app': typeof appRoute
+  '/__app': typeof appRouteWithChildren
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
-  '/_app/research/': typeof AppResearchIndexRoute
-  '/_app/research/chat/$id/': typeof AppResearchChatIdIndexRoute
+  '/__app/library/': typeof appLibraryIndexRoute
+  '/__app/research/': typeof appResearchIndexRoute
+  '/__app/research/chat/$id/': typeof appResearchChatIdIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -141,6 +172,7 @@ export interface FileRouteTypes {
     | ''
     | '/auth/sign-in'
     | '/auth/sign-up'
+    | '/library'
     | '/research'
     | '/research/chat/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -149,6 +181,7 @@ export interface FileRouteTypes {
     | ''
     | '/auth/sign-in'
     | '/auth/sign-up'
+    | '/library'
     | '/research'
     | '/research/chat/$id'
   id:
@@ -157,27 +190,24 @@ export interface FileRouteTypes {
     | '/__app'
     | '/auth/sign-in'
     | '/auth/sign-up'
-    | '/_app/research/'
-    | '/_app/research/chat/$id/'
+    | '/__app/library/'
+    | '/__app/research/'
+    | '/__app/research/chat/$id/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  appRoute: typeof appRoute
+  appRoute: typeof appRouteWithChildren
   AuthSignInRoute: typeof AuthSignInRoute
   AuthSignUpRoute: typeof AuthSignUpRoute
-  AppResearchIndexRoute: typeof AppResearchIndexRoute
-  AppResearchChatIdIndexRoute: typeof AppResearchChatIdIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  appRoute: appRoute,
+  appRoute: appRouteWithChildren,
   AuthSignInRoute: AuthSignInRoute,
   AuthSignUpRoute: AuthSignUpRoute,
-  AppResearchIndexRoute: AppResearchIndexRoute,
-  AppResearchChatIdIndexRoute: AppResearchChatIdIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -193,16 +223,19 @@ export const routeTree = rootRoute
         "/",
         "/__app",
         "/auth/sign-in",
-        "/auth/sign-up",
-        "/_app/research/",
-        "/_app/research/chat/$id/"
+        "/auth/sign-up"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
     "/__app": {
-      "filePath": "__app.tsx"
+      "filePath": "__app.tsx",
+      "children": [
+        "/__app/library/",
+        "/__app/research/",
+        "/__app/research/chat/$id/"
+      ]
     },
     "/auth/sign-in": {
       "filePath": "auth/sign-in.tsx"
@@ -210,11 +243,17 @@ export const routeTree = rootRoute
     "/auth/sign-up": {
       "filePath": "auth/sign-up.tsx"
     },
-    "/_app/research/": {
-      "filePath": "_app/research/index.tsx"
+    "/__app/library/": {
+      "filePath": "__app/library/index.tsx",
+      "parent": "/__app"
     },
-    "/_app/research/chat/$id/": {
-      "filePath": "_app/research/chat/$id/index.tsx"
+    "/__app/research/": {
+      "filePath": "__app/research/index.tsx",
+      "parent": "/__app"
+    },
+    "/__app/research/chat/$id/": {
+      "filePath": "__app/research/chat/$id/index.tsx",
+      "parent": "/__app"
     }
   }
 }
