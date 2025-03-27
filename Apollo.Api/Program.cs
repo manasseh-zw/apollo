@@ -7,9 +7,10 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+AppConfig.Initialize();
+
 builder.Services.AddOpenApi();
 builder.Services.ConfigureDatabase();
-
 builder.Services.ConfigureAuthentication();
 builder.Services.AddAuthorization();
 
@@ -29,6 +30,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<IJwtTokenManager, JwtTokenManager>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddHttpClient(
     "Google",
@@ -45,7 +47,6 @@ app.UseCors("apollo");
 
 if (app.Environment.IsDevelopment())
 {
-    AppConfig.Initialize();
     app.MapOpenApi();
     app.MapScalarApiReference();
 }

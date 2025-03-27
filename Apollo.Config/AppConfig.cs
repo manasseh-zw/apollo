@@ -6,7 +6,12 @@ public static class AppConfig
 {
     public static void Initialize()
     {
-        DotEnv.Load();
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+        if (string.Equals(environment, "Development"))
+        {
+            DotEnv.Load();
+        }
     }
 
     public static DatabaseOptions DatabaseOptions { get; } =
