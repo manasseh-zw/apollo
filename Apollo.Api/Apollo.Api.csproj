@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Apollo.Config\Apollo.Config.csproj" />
     <ProjectReference Include="..\Apollo.Data\Apollo.Data.csproj" />
+    <ProjectReference Include="..\Apollo.Agents\Apollo.Agents.csproj" />
   </ItemGroup>
 
 </Project>

@@ -29,6 +29,7 @@ builder.Services.AddCors(options =>
     );
 });
 
+builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IJwtTokenManager, JwtTokenManager>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -58,5 +59,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapAuthEndpoints();
+
+app.MapHub<ResearchHub>("/hub/research");
 
 app.Run();

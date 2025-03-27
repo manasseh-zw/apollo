@@ -41,28 +41,16 @@ public static class AppConfig
                 ?? throw new Exception("JWT audience is not set"),
         };
 
-    public static OpenAIOptions OpenAIOptions { get; } =
+    public static AzureAI AzureAI { get; } =
         new()
         {
             ApiKey =
-                Environment.GetEnvironmentVariable("OPENAI_API_KEY")
-                ?? throw new Exception("OpenAI API key is not set"),
+                Environment.GetEnvironmentVariable("AZURE_AI_API_KEY")
+                ?? throw new Exception("Azure AI API key is not set"),
 
-            ModelId = Environment.GetEnvironmentVariable("OPENAI_MODEL_ID") ?? "o3-mini",
-
-            Temperature = double.Parse(
-                Environment.GetEnvironmentVariable("OPENAI_TEMPERATURE") ?? "0.7"
-            ),
-        };
-
-    public static DeepSeekOptions DeepSeekOptions { get; } =
-        new()
-        {
-            ApiKey =
-                Environment.GetEnvironmentVariable("DEEPSEEK_API_KEY")
-                ?? throw new Exception("DeepSeek API key is not set"),
-
-            ModelId = Environment.GetEnvironmentVariable("DEEPSEEK_MODEL_ID") ?? "deepseek-chat",
+            Endpoint =
+                Environment.GetEnvironmentVariable("AZURE_AI_ENDPOINT")
+                ?? throw new Exception("Azure AI Endpoint is not set"),
         };
 }
 
@@ -80,18 +68,8 @@ public class JwtOptions
     public string Audience { get; init; } = string.Empty;
 }
 
-public class OpenAIOptions
+public class AzureAI
 {
     public string ApiKey { get; init; } = string.Empty;
-
-    public string ModelId { get; init; } = string.Empty;
-
-    public double Temperature { get; init; } = 0.7;
-}
-
-public class DeepSeekOptions
-{
-    public string ApiKey { get; init; } = string.Empty;
-
-    public string ModelId { get; init; } = string.Empty;
+    public string Endpoint { get; init; } = string.Empty;
 }
