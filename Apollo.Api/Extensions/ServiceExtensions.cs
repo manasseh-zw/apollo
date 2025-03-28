@@ -1,4 +1,5 @@
 using System.Text;
+using Apollo.Agents.Planner;
 using Apollo.Api.Utils;
 using Apollo.Config;
 using Apollo.Data.Repository;
@@ -68,7 +69,13 @@ public static class ServiceExtensions
                 }
             );
 
+        return services;
+    }
 
+    public static IServiceCollection ConfigureResearch(this IServiceCollection services)
+    {
+        services.AddScoped<IChatStreamingCallback, ChatStreamingCallback>();
+        services.AddScoped<IResearchAssistant, ResearchAssistant>();
         return services;
     }
 }

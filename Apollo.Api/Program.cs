@@ -14,6 +14,8 @@ builder.Services.ConfigureDatabase();
 builder.Services.ConfigureAuthentication();
 builder.Services.AddAuthorization();
 
+builder.Services.AddSignalR();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
@@ -33,6 +35,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IJwtTokenManager, JwtTokenManager>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.ConfigureResearch();
 builder.Services.AddHttpClient(
     "Google",
     client =>
@@ -60,6 +63,6 @@ app.UseAuthorization();
 
 app.MapAuthEndpoints();
 
-app.MapHub<ResearchHub>("/hub/research");
+app.MapHub<ResearchHub>("/hubs/research");
 
 app.Run();

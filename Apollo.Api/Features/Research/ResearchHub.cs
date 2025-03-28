@@ -6,6 +6,21 @@ public interface IResearchHubClient
     Task ReceiveResponse(string response);
 }
 
+public class ChatStreamingCallback : IChatStreamingCallback
+{
+    private readonly IHubContext<ResearchHub, IResearchHubClient> _hubContext;
+
+    public ChatStreamingCallback(IHubContext<ResearchHub, IResearchHubClient> hubContext)
+    {
+        _hubContext = hubContext;
+    }
+
+    public void OnStreamResponse(string connectionId, string? message)
+    {
+        _hubContext.Clients.Client(connectionId).ReceiveResponse(message ?? string.Empty);
+    }
+}
+
 public class ResearchHub : Hub<IResearchHubClient>
 {
     private readonly IResearchAssistant _assistant;
