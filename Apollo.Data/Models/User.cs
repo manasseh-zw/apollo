@@ -13,6 +13,7 @@ public class User
     public bool IsEmailConfirmed { get; set; } = false;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public AuthProvider AuthProvider { get; set; }
+    public List<Research> ResearchLibrary { get; set; } = [];
 }
 
 public enum AuthProvider

@@ -1,11 +1,12 @@
 using System.Text;
 using Apollo.Agents.Helpers;
+using Apollo.Agents.Research.Plugins;
 using Apollo.Config;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 
-namespace Apollo.Agents.Planner;
+namespace Apollo.Agents.Research;
 
 public interface IResearchAssistant
 {
@@ -31,6 +32,7 @@ public class ResearchAssistant : IResearchAssistant
     private readonly IMemoryCache _cache;
     private readonly IChatStreamingCallback _streamingCallback;
     private static readonly TimeSpan _cacheTimeout = TimeSpan.FromHours(1);
+    private readonly KernelPlugin _saveResearchPlugin;
 
     public ResearchAssistant(IMemoryCache cache, IChatStreamingCallback streamingCallback)
     {
@@ -44,6 +46,7 @@ public class ResearchAssistant : IResearchAssistant
             .Build();
 
         _chat = _kernel.GetRequiredService<IChatCompletionService>();
+        _saveResearchPlugin = _kernel.ImportPluginFromType<SaveResearchPlugin>();
         _cache = cache;
         _streamingCallback = streamingCallback;
     }
@@ -85,26 +88,38 @@ public class ResearchAssistant : IResearchAssistant
         await StreamResponse(connectionId, chatState.ChatHistory);
     }
 
-    public async Task StreamResponse(string connectionId, ChatHistory history)
+    private async Task StreamResponse(string connectionId, ChatHistory chatHistory)
     {
         var responseBuffer = new StringBuilder();
 
+        if (!_cache.TryGetValue(connectionId, out ChatState? chatState) || chatState == null)
+        {
+            return;
+        }
+
+        var settings = new PromptExecutionSettings
+        {
+            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
+            ExtensionData = new Dictionary<string, object> { { "userId", chatState.UserId } },
+        };
+
         await foreach (
-            var chunk in _chat.GetStreamingChatMessageContentsAsync(history, kernel: _kernel)
+            var chunk in _chat.GetStreamingChatMessageContentsAsync(
+                chatHistory,
+                executionSettings: settings,
+                kernel: _kernel
+            )
         )
         {
             _streamingCallback.OnStreamResponse(connectionId, chunk.Content);
             responseBuffer.Append(chunk.Content);
         }
 
-        if (_cache.TryGetValue(connectionId, out ChatState? chatState) && chatState != null)
-        {
-            chatState.ChatHistory.Add(
-                new ChatMessageContent(AuthorRole.Assistant, content: responseBuffer.ToString())
-            );
+        chatState.ChatHistory.Add(
+            new ChatMessageContent(AuthorRole.Assistant, content: responseBuffer.ToString())
+        );
 
-            _cache.Set(connectionId, chatState, _cacheTimeout);
-        }
+        _cache.Set(connectionId, chatState, _cacheTimeout);
     }
 }
 
@@ -117,4 +132,12 @@ public class ChatState
     public string UserId { get; set; }
 
     public ChatHistory ChatHistory { get; set; } = [];
+}
+
+internal class ResearchPlanResponse
+{
+    public string Title { get; set; }
+    public string Description { get; set; }
+    public string Type { get; set; }
+    public string Depth { get; set; }
 }

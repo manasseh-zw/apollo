@@ -1,4 +1,4 @@
-using Apollo.Agents.Planner;
+using Apollo.Agents.Research;
 using Microsoft.AspNetCore.SignalR;
 
 public interface IResearchHubClient

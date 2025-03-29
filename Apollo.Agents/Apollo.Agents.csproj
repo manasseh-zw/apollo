@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Apollo.Config\Apollo.Config.csproj" />
+    <ProjectReference Include="..\Apollo.Data\Apollo.Data.csproj" />
   </ItemGroup>
 
 </Project>
