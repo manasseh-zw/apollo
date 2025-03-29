@@ -3,6 +3,7 @@ using Apollo.Agents.Helpers;
 using Apollo.Agents.Research.Plugins;
 using Apollo.Config;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 
@@ -31,11 +32,22 @@ public class ResearchAssistant : IResearchAssistant
     private readonly IChatCompletionService _chat;
     private readonly IMemoryCache _cache;
     private readonly IChatStreamingCallback _streamingCallback;
+    private readonly ILogger<ResearchAssistant> _logger;
     private static readonly TimeSpan _cacheTimeout = TimeSpan.FromHours(1);
     private readonly KernelPlugin _saveResearchPlugin;
 
-    public ResearchAssistant(IMemoryCache cache, IChatStreamingCallback streamingCallback)
+    public ResearchAssistant(
+        IMemoryCache cache,
+        IChatStreamingCallback streamingCallback,
+        ILogger<ResearchAssistant> logger
+    )
     {
+        _logger = logger;
+        _cache = cache;
+        _streamingCallback = streamingCallback;
+
+        _logger.LogInformation("Initializing ResearchAssistant");
+
         _kernel = Kernel
             .CreateBuilder()
             .AddAzureOpenAIChatCompletion(
@@ -47,8 +59,8 @@ public class ResearchAssistant : IResearchAssistant
 
         _chat = _kernel.GetRequiredService<IChatCompletionService>();
         _saveResearchPlugin = _kernel.ImportPluginFromType<SaveResearchPlugin>();
-        _cache = cache;
-        _streamingCallback = streamingCallback;
+
+        _logger.LogInformation("ResearchAssistant initialized successfully");
     }
 
     public async Task StartChatSession(
@@ -58,6 +70,13 @@ public class ResearchAssistant : IResearchAssistant
         string userId
     )
     {
+        _logger.LogInformation(
+            "Starting new chat session. SessionId: {SessionId}, UserId: {UserId}, Query: {Query}",
+            sessionId,
+            userId,
+            initialQuery
+        );
+
         var chatState = new ChatState
         {
             SessionId = sessionId,
@@ -71,6 +90,10 @@ public class ResearchAssistant : IResearchAssistant
         };
 
         _cache.Set(connectionId, chatState, _cacheTimeout);
+        _logger.LogDebug(
+            "Chat state initialized and cached for connection {ConnectionId}",
+            connectionId
+        );
 
         await StreamResponse(connectionId, chatState.ChatHistory);
     }
@@ -79,8 +102,18 @@ public class ResearchAssistant : IResearchAssistant
     {
         if (!_cache.TryGetValue(connectionId, out ChatState? chatState) || chatState == null)
         {
+            _logger.LogWarning(
+                "Failed to continue chat session - no state found for connection {ConnectionId}",
+                connectionId
+            );
             return;
         }
+
+        _logger.LogInformation(
+            "Continuing chat session. SessionId: {SessionId}, Message: {Message}",
+            chatState.SessionId,
+            message
+        );
 
         chatState.ChatHistory.Add(new ChatMessageContent(AuthorRole.User, content: message));
 
@@ -94,8 +127,14 @@ public class ResearchAssistant : IResearchAssistant
 
         if (!_cache.TryGetValue(connectionId, out ChatState? chatState) || chatState == null)
         {
+            _logger.LogWarning(
+                "Failed to stream response - no state found for connection {ConnectionId}",
+                connectionId
+            );
             return;
         }
+
+        _logger.LogDebug("Starting stream response for session {SessionId}", chatState.SessionId);
 
         var settings = new PromptExecutionSettings
         {
@@ -103,23 +142,42 @@ public class ResearchAssistant : IResearchAssistant
             ExtensionData = new Dictionary<string, object> { { "userId", chatState.UserId } },
         };
 
-        await foreach (
-            var chunk in _chat.GetStreamingChatMessageContentsAsync(
-                chatHistory,
-                executionSettings: settings,
-                kernel: _kernel
-            )
-        )
+        try
         {
-            _streamingCallback.OnStreamResponse(connectionId, chunk.Content);
-            responseBuffer.Append(chunk.Content);
+            await foreach (
+                var chunk in _chat.GetStreamingChatMessageContentsAsync(
+                    chatHistory,
+                    executionSettings: settings,
+                    kernel: _kernel
+                )
+            )
+            {
+                _streamingCallback.OnStreamResponse(connectionId, chunk.Content);
+                responseBuffer.Append(chunk.Content);
+            }
+
+            chatState.ChatHistory.Add(
+                new ChatMessageContent(AuthorRole.Assistant, content: responseBuffer.ToString())
+            );
+
+            _cache.Set(connectionId, chatState, _cacheTimeout);
+
+            _logger.LogInformation(
+                "Stream response completed for session {SessionId}. Response length: {Length} characters",
+                chatState.SessionId,
+                responseBuffer.Length
+            );
         }
-
-        chatState.ChatHistory.Add(
-            new ChatMessageContent(AuthorRole.Assistant, content: responseBuffer.ToString())
-        );
-
-        _cache.Set(connectionId, chatState, _cacheTimeout);
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Error streaming response for session {SessionId}: {Message}",
+                chatState.SessionId,
+                ex.Message
+            );
+            throw;
+        }
     }
 }
 

@@ -76,6 +76,11 @@ public static class ServiceExtensions
     {
         services.AddScoped<IChatStreamingCallback, ChatStreamingCallback>();
         services.AddScoped<IResearchAssistant, ResearchAssistant>();
+        services.AddLogging(builder =>
+        {
+            builder.AddConsole();
+            builder.AddDebug();
+        });
         return services;
     }
 }
