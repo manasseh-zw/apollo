@@ -14,4 +14,5 @@ public class ApolloDbContext : DbContext
     }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<Research> Research { get; set; }
 }

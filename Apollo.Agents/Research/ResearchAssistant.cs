@@ -2,6 +2,7 @@ using System.Text;
 using Apollo.Agents.Helpers;
 using Apollo.Agents.Research.Plugins;
 using Apollo.Config;
+using Apollo.Data.Repository;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
@@ -39,7 +40,8 @@ public class ResearchAssistant : IResearchAssistant
     public ResearchAssistant(
         IMemoryCache cache,
         IChatStreamingCallback streamingCallback,
-        ILogger<ResearchAssistant> logger
+        ILogger<ResearchAssistant> logger,
+        ApolloDbContext dbContext
     )
     {
         _logger = logger;
@@ -58,7 +60,9 @@ public class ResearchAssistant : IResearchAssistant
             .Build();
 
         _chat = _kernel.GetRequiredService<IChatCompletionService>();
-        _saveResearchPlugin = _kernel.ImportPluginFromType<SaveResearchPlugin>();
+
+        var plugin = new SaveResearchPlugin(dbContext);
+        _saveResearchPlugin = _kernel.ImportPluginFromObject(plugin, "SaveResearch");
 
         _logger.LogInformation("ResearchAssistant initialized successfully");
     }
@@ -84,7 +88,7 @@ public class ResearchAssistant : IResearchAssistant
             UserId = userId,
             ChatHistory =
             [
-                new ChatMessageContent(AuthorRole.System, Prompts.ResearchAssistant),
+                new ChatMessageContent(AuthorRole.System, Prompts.ResearchAssistant(userId)),
                 new ChatMessageContent(AuthorRole.User, initialQuery),
             ],
         };

@@ -18,24 +18,13 @@ public class SaveResearchPlugin
     [Description("Saves the research project.")]
     [return: Description("The id of the research project")]
     public async Task<Guid> SaveResearch(
+        [Description("The userId ")] string userId,
         [Description("The title of the research project.")] string title,
         [Description("A brief description of the research project.")] string description,
         [Description("The type of research : Casual | Academic | Technical).")] string type,
-        [Description("The depth of the research : Brief | Standard | Comprehensive.")] string depth,
-        KernelArguments arguments // Add KernelArguments parameter
+        [Description("The depth of the research : Brief | Standard | Comprehensive.")] string depth
     )
     {
-        if (
-            !arguments.TryGetValue("userId", out object? userIdObj)
-            || userIdObj is not string userIdStr
-            || !Guid.TryParse(userIdStr, out Guid userId)
-        )
-        {
-            throw new ArgumentException(
-                "The 'userId' was not found or is invalid in the arguments."
-            );
-        }
-
         var research = new Data.Models.Research()
         {
             Title = title,
@@ -44,7 +33,7 @@ public class SaveResearchPlugin
             Depth = Enum.Parse<ResearchDepth>(depth),
             Status = ResearchStatus.InProgress,
             StartedAt = DateTime.UtcNow,
-            UserId = userId,
+            UserId = Guid.Parse(userId),
         };
 
         await _repository.AddAsync(research);
