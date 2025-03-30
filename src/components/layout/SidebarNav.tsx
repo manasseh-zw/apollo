@@ -15,7 +15,7 @@ export const sidebarItems: SidebarItem[] = [
   {
     key: "research",
     href: "/research",
-    iconName: "search",
+    iconName: "telescope",
     title: "Research",
   },
   {

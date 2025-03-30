@@ -52,6 +52,7 @@ function SignIn() {
       if ("errors" in error && Array.isArray(error.errors)) {
         setServerErrors(error.errors);
       } else {
+        //@ts-ignore
         setServerErrors([error.message || "An unexpected error occurred"]);
       }
     },
