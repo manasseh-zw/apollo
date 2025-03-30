@@ -2,7 +2,6 @@ using System.Text;
 using Apollo.Agents.Helpers;
 using Apollo.Agents.Research.Plugins;
 using Apollo.Config;
-using Apollo.Data.Repository;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
@@ -34,19 +33,20 @@ public class ResearchAssistant : IResearchAssistant
     private readonly IMemoryCache _cache;
     private readonly IChatStreamingCallback _streamingCallback;
     private readonly ILogger<ResearchAssistant> _logger;
+    private readonly SaveResearchPlugin _saveResearchPlugin;
     private static readonly TimeSpan _cacheTimeout = TimeSpan.FromHours(1);
-    private readonly KernelPlugin _saveResearchPlugin;
 
     public ResearchAssistant(
         IMemoryCache cache,
         IChatStreamingCallback streamingCallback,
         ILogger<ResearchAssistant> logger,
-        ApolloDbContext dbContext
+        SaveResearchPlugin saveResearchPlugin
     )
     {
         _logger = logger;
         _cache = cache;
         _streamingCallback = streamingCallback;
+        _saveResearchPlugin = saveResearchPlugin;
 
         _logger.LogInformation("Initializing ResearchAssistant");
 
@@ -61,8 +61,7 @@ public class ResearchAssistant : IResearchAssistant
 
         _chat = _kernel.GetRequiredService<IChatCompletionService>();
 
-        var plugin = new SaveResearchPlugin(dbContext);
-        _saveResearchPlugin = _kernel.ImportPluginFromObject(plugin, "SaveResearch");
+        _kernel.Plugins.AddFromObject(_saveResearchPlugin, "SaveResearch");
 
         _logger.LogInformation("ResearchAssistant initialized successfully");
     }

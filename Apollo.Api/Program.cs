@@ -2,7 +2,9 @@ using Apollo.Api.Extensions;
 using Apollo.Api.Features.Auth;
 using Apollo.Config;
 using Apollo.Data.Models;
+
 using Microsoft.AspNetCore.Identity;
+
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +37,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IJwtTokenManager, JwtTokenManager>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.ConfigurePlugins();
 builder.Services.ConfigureResearch();
 builder.Services.AddHttpClient(
     "Google",
@@ -46,6 +49,7 @@ builder.Services.AddHttpClient(
 );
 
 var app = builder.Build();
+
 
 app.UseCors("apollo");
 

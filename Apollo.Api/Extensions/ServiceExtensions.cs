@@ -1,5 +1,6 @@
 using System.Text;
 using Apollo.Agents.Research;
+using Apollo.Agents.Research.Plugins;
 using Apollo.Api.Utils;
 using Apollo.Config;
 using Apollo.Data.Repository;
@@ -69,6 +70,12 @@ public static class ServiceExtensions
                 }
             );
 
+        return services;
+    }
+
+    public static IServiceCollection ConfigurePlugins(this IServiceCollection services)
+    {
+        services.AddScoped<SaveResearchPlugin>();
         return services;
     }
 
