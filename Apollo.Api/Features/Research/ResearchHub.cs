@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 public interface IResearchHubClient
 {
     Task ReceiveResponse(string response);
+    Task ResearchSaved(Guid researchId);
 }
 
 public class ChatStreamingCallback : IChatStreamingCallback

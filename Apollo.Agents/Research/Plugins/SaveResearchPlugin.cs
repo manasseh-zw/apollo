@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Apollo.Agents.Events;
 using Apollo.Data.Models;
 using Apollo.Data.Repository;
 using Microsoft.SemanticKernel;
@@ -8,16 +9,18 @@ namespace Apollo.Agents.Research.Plugins;
 public class SaveResearchPlugin
 {
     private readonly ApolloDbContext _repository;
+    private readonly IResearchEventHandler _eventHandler;
 
-    public SaveResearchPlugin(ApolloDbContext repository)
+    public SaveResearchPlugin(ApolloDbContext repository, IResearchEventHandler eventHandler)
     {
         _repository = repository;
+        _eventHandler = eventHandler;
     }
 
     [KernelFunction]
     [Description("Saves the research project.")]
     [return: Description("The id of the research project")]
-    public async Task<Guid> SaveResearch(
+    public async Task SaveResearch(
         [Description("The userId ")] string userId,
         [Description("The title of the research project.")] string title,
         [Description("A brief description of the research project.")] string description,
@@ -37,9 +40,10 @@ public class SaveResearchPlugin
         };
 
         await _repository.AddAsync(research);
-
         await _repository.SaveChangesAsync();
 
-        return research.Id;
+        await _eventHandler.HandleResearchSaved(
+            new() { ResearchId = research.Id, UserId = userId }
+        );
     }
 }
