@@ -63,7 +63,7 @@ const SidebarNav = React.forwardRef<HTMLElement, SidebarProps>(
               />
               {!isCompact && (
                 <span
-                  className={cn("text-small font-medium text-foreground/80", {
+                  className={cn("text-sm text-foreground/80", {
                     "text-white": isActive,
                   })}
                 >

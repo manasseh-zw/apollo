@@ -4,6 +4,7 @@ import {
   cn,
   Spacer,
   Tooltip,
+  Chip,
 } from "@heroui/react";
 import React from "react";
 import { LogoLight } from "../../components/Icons";
@@ -55,7 +56,7 @@ export default function AppSidebar() {
       )}
     >
       <div
-        className={cn("flex items-center gap-3 pl-2", {
+        className={cn("flex items-center justify-between gap-2 pl-2", {
           "justify-center gap-0 pl-0": isCollapsed,
         })}
       >
@@ -63,14 +64,13 @@ export default function AppSidebar() {
           <LogoLight width={40} height={40} />
         </div>
         <span
-          className={cn(
-            "w-full text-xs uppercase opacity-100 font-light text-primary",
-            {
-              "w-0 opacity-0": isCollapsed,
-            }
-          )}
+          className={cn("w-full ", {
+            "w-0 opacity-0": isCollapsed,
+          })}
         >
-          Deep Research
+          <Chip color="primary" className="border-1 border-transparent shadow  " variant="flat" size="sm">
+            Deep Research
+          </Chip>
         </span>
         <div className={cn("flex-end flex", { hidden: isCollapsed })}>
           <ChevronLeft
@@ -101,15 +101,13 @@ export default function AppSidebar() {
           })}
         >
           <p
-            className="text-small font-medium text-foreground truncate"
+            className="text-small  text-foreground truncate"
             title={user.username}
           >
             {user.username.substring(0, 25)}
             {user.username.length > 25 ? "..." : ""}
           </p>
-          <p className="text-tiny font-medium text-foreground-300">
-            Researcher
-          </p>
+          <p className="text-tiny  text-foreground-300">Researcher</p>
         </div>
       </div>
 
@@ -150,9 +148,7 @@ export default function AppSidebar() {
           >
             <MinusCircle className="rotate-180 text-primary" size={24} />
             {!isCollapsed && (
-              <span className="text-small font-medium text-primary">
-                Log Out
-              </span>
+              <span className="text-small  text-primary">Log Out</span>
             )}
           </button>
         </Tooltip>

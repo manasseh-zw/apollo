@@ -2,7 +2,12 @@ import { useEffect, useState, useRef } from "react";
 import { Avatar as UserAvatar } from "@heroui/react";
 import Avatar from "boring-avatars";
 import PromptForm from "./prompt-form";
-import { useParams } from "@tanstack/react-router";
+import {
+  Navigate,
+  redirect,
+  useParams,
+  useRouter,
+} from "@tanstack/react-router";
 import { useSearch } from "@tanstack/react-router";
 import * as signalR from "@microsoft/signalr";
 import { config } from "../../../../config";
@@ -22,6 +27,7 @@ interface ChatSearchParams {
 }
 
 export default function ResearchChat() {
+  const router = useRouter();
   const { id } = useParams({ from: "/__app/research/chat/$id/" });
   const searchParams = useSearch({
     from: "/__app/research/chat/$id/",
@@ -74,6 +80,10 @@ export default function ResearchChat() {
           },
         ];
       });
+    });
+
+    newConnection.on("ResearchSaved", (id: string) => {
+      router.navigate({ to: `/library/${id}` });
     });
 
     newConnection
