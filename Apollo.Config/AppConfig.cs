@@ -62,6 +62,14 @@ public static class AppConfig
                 Environment.GetEnvironmentVariable("EXA_API_KEY")
                 ?? throw new Exception("Exa API key is not set"),
         };
+
+    public static FirecrawlAI FirecrawlAI { get; } =
+        new()
+        {
+            ApiKey =
+                Environment.GetEnvironmentVariable("FIRECRAWL_API_KEY")
+                ?? throw new Exception("Firecrawl API key is not set"),
+        };
 }
 
 public class DatabaseOptions
@@ -84,7 +92,12 @@ public class AzureAI
     public string Endpoint { get; init; } = string.Empty;
 }
 
-public class ExaAI 
+public class ExaAI
+{
+    public string ApiKey { get; init; } = string.Empty;
+}
+
+public class FirecrawlAI
 {
     public string ApiKey { get; init; } = string.Empty;
 }

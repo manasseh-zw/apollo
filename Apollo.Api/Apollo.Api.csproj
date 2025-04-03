@@ -23,6 +23,7 @@
     <ProjectReference Include="..\Apollo.Data\Apollo.Data.csproj" />
     <ProjectReference Include="..\Apollo.Agents\Apollo.Agents.csproj" />
     <ProjectReference Include="..\Apollo.Search\Apollo.Search.csproj" />
+    <ProjectReference Include="..\Apollo.Crawler\Apollo.Crawler.csproj" />
   </ItemGroup>
 
 </Project>

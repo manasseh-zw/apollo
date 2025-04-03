@@ -15,11 +15,15 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Moq" Version="4.20.70" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.0" />
+    <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.3.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Apollo.Search\Apollo.Search.csproj" />
     <ProjectReference Include="..\Apollo.Config\Apollo.Config.csproj" />
+    <ProjectReference Include="..\Apollo.Crawler\Apollo.Crawler.csproj" />
   </ItemGroup>
 
 </Project>

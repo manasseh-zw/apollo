@@ -5,6 +5,7 @@ using Apollo.Agents.Research.Planner.Plugins;
 using Apollo.Api.Features.Research;
 using Apollo.Api.Utils;
 using Apollo.Config;
+using Apollo.Crawler;
 using Apollo.Data.Repository;
 using Apollo.Search;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -89,6 +90,7 @@ public static class ServiceExtensions
         services.AddScoped<IResearchPlanner, ResearchPlanner>();
         services.AddScoped<IResearchNotifier, ResearchNotifier>();
         services.AddScoped<ISearchService, ExaSearchService>();
+        services.AddScoped<ICrawlerService, FirecrawlService>();
         services.AddLogging(builder =>
         {
             builder.AddConsole();
