@@ -12,6 +12,8 @@ public static class AppConfig
         {
             DotEnv.Load();
         }
+        Console.WriteLine(AzureAI.Endpoint);
+        Console.WriteLine(AzureAI.ApiKey);
     }
 
     public static DatabaseOptions DatabaseOptions { get; } =
@@ -52,6 +54,14 @@ public static class AppConfig
                 Environment.GetEnvironmentVariable("AZURE_AI_ENDPOINT")
                 ?? throw new Exception("Azure AI Endpoint is not set"),
         };
+
+    public static ExaAI ExaAI { get; } =
+        new()
+        {
+            ApiKey =
+                Environment.GetEnvironmentVariable("EXA_API_KEY")
+                ?? throw new Exception("Exa API key is not set"),
+        };
 }
 
 public class DatabaseOptions
@@ -72,4 +82,9 @@ public class AzureAI
 {
     public string ApiKey { get; init; } = string.Empty;
     public string Endpoint { get; init; } = string.Empty;
+}
+
+public class ExaAI 
+{
+    public string ApiKey { get; init; } = string.Empty;
 }

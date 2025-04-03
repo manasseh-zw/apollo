@@ -1,7 +1,7 @@
 using System.Text;
 using Apollo.Agents.Events;
 using Apollo.Agents.Research;
-using Apollo.Agents.Research.Plugins;
+using Apollo.Agents.Research.Planner.Plugins;
 using Apollo.Api.Features.Research;
 using Apollo.Api.Utils;
 using Apollo.Config;
@@ -85,8 +85,9 @@ public static class ServiceExtensions
     public static IServiceCollection ConfigureResearch(this IServiceCollection services)
     {
         services.AddScoped<IChatStreamingCallback, ChatStreamingCallback>();
-        services.AddScoped<IResearchAssistant, ResearchAssistant>();
+        services.AddScoped<IResearchPlanner, ResearchPlanner>();
         services.AddScoped<IResearchNotifier, ResearchNotifier>();
+        services.AddScoped<ISearchService, ExaSearchService>();
         services.AddLogging(builder =>
         {
             builder.AddConsole();

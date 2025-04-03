@@ -1,6 +1,6 @@
 using System.Text;
 using Apollo.Agents.Helpers;
-using Apollo.Agents.Research.Plugins;
+using Apollo.Agents.Research.Planner.Plugins;
 using Apollo.Config;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -9,7 +9,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Apollo.Agents.Research;
 
-public interface IResearchAssistant
+public interface IResearchPlanner
 {
     Task StartChatSession(
         string sessionId,
@@ -26,20 +26,20 @@ public interface IChatStreamingCallback
     void OnStreamResponse(string connectionId, string? message);
 }
 
-public class ResearchAssistant : IResearchAssistant
+public class ResearchPlanner : IResearchPlanner
 {
     private readonly Kernel _kernel;
     private readonly IChatCompletionService _chat;
     private readonly IMemoryCache _cache;
     private readonly IChatStreamingCallback _streamingCallback;
-    private readonly ILogger<ResearchAssistant> _logger;
+    private readonly ILogger<ResearchPlanner> _logger;
     private readonly SaveResearchPlugin _saveResearchPlugin;
     private static readonly TimeSpan _cacheTimeout = TimeSpan.FromHours(1);
 
-    public ResearchAssistant(
+    public ResearchPlanner(
         IMemoryCache cache,
         IChatStreamingCallback streamingCallback,
-        ILogger<ResearchAssistant> logger,
+        ILogger<ResearchPlanner> logger,
         SaveResearchPlugin saveResearchPlugin
     )
     {
@@ -53,9 +53,9 @@ public class ResearchAssistant : IResearchAssistant
         _kernel = Kernel
             .CreateBuilder()
             .AddAzureOpenAIChatCompletion(
-                Models.Gpt4o,
-                AppConfig.AzureAI.Endpoint,
-                AppConfig.AzureAI.ApiKey
+                deploymentName: Models.Gpt4o,
+                endpoint: AppConfig.AzureAI.Endpoint,
+                apiKey: AppConfig.AzureAI.ApiKey
             )
             .Build();
 

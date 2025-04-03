@@ -2,9 +2,7 @@ using Apollo.Api.Extensions;
 using Apollo.Api.Features.Auth;
 using Apollo.Config;
 using Apollo.Data.Models;
-
 using Microsoft.AspNetCore.Identity;
-
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,7 +47,6 @@ builder.Services.AddHttpClient(
 );
 
 var app = builder.Build();
-
 
 app.UseCors("apollo");
 

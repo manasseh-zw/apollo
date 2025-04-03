@@ -1,0 +1,524 @@
+openapi: 3.1.0
+info:
+  version: 1.1.4
+  title: Exa Search API
+  description: A comprehensive API for internet-scale search, allowing users to perform queries and retrieve results from a wide variety of sources using embeddings-based and traditional search.
+servers:
+  - url: https://api.exa.ai
+paths:
+  /search:
+    post:
+      operationId: search
+      summary: Search
+      description: Perform a search with a Exa prompt-engineered query and retrieve a list of relevant results. Optionally get contents.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - type: object
+                  properties:
+                    query:
+                      type: string
+                      example: "Latest developments in LLM capabilities"
+                      description: The query string for the search.
+                    useAutoprompt:
+                      type: boolean
+                      description: Autoprompt converts your query to an Exa-style query. Enabled by default for auto search, optional for neural search, and not available for keyword search.
+                      example: true
+                      default: true
+                    type:
+                      type: string
+                      enum:
+                        - keyword
+                        - neural
+                        - auto
+                      description: The type of search. Neural uses an embeddings-based model, keyword is google-like SERP. Default is auto, which automatically decides between keyword and neural.
+                      example: "auto"
+                      default: "auto"
+                    category:
+                      type: string
+                      enum:
+                        - company
+                        - research paper
+                        - news
+                        - pdf
+                        - github
+                        - tweet
+                        - personal site
+                        - linkedin profile
+                        - financial report
+                      description: A data category to focus on.
+                      example: "research paper"
+                  required:
+                    - query
+                - $ref: "#/components/schemas/CommonRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchResponse"
+  /findSimilar:
+    post:
+      operationId: findSimilar
+      summary: Find similar links
+      description: Find similar links to the link provided. Optionally get contents.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - type: object
+                  properties:
+                    url:
+                      type: string
+                      example: "https://arxiv.org/abs/2307.06435"
+                      description: The url for which you would like to find similar links.
+                  required:
+                    - url
+                - $ref: "#/components/schemas/CommonRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/FindSimilarResponse"
+  /contents:
+    post:
+      summary: Get Contents
+      operationId: "getContents"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              allOf:
+                - type: object
+                  properties:
+                    urls:
+                      type: array
+                      description: Array of URLs to crawl (backwards compatible with 'ids' parameter).
+                      items:
+                        type: string
+                      example: ["https://arxiv.org/pdf/2307.06435"]
+                    ids:
+                      type: array
+                      deprecated: true
+                      description: Deprecated - use 'urls' instead. Array of document IDs obtained from searches.
+                      items:
+                        type: string
+                      example: ["https://arxiv.org/pdf/2307.06435"]
+                  required:
+                    - urls
+                - $ref: "#/components/schemas/ContentsRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/ContentsResponse"
+  /answer:
+    post:
+      operationId: answer
+      summary: Generate an answer from search results
+      description: |
+        Performs a search based on the query and generates either a direct answer or a detailed summary with citations, depending on the query type. 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  description: The question or query to answer.
+                  example: "What is the latest valuation of SpaceX?"
+                  minLength: 1
+                stream:
+                  type: boolean
+                  default: false
+                  description: If true, the response is returned as a server-sent events (SSS) stream. 
+                text:
+                  type: boolean
+                  default: false
+                  description: If true, the response includes full text content in the search results
+                model:
+                  type: string
+                  enum:
+                    - exa
+                    - exa-pro          
+                  description: The search model to use for the answer. Exa passes only one query to exa, while exa-pro also passes 2 expanded queries to our search model. 
+                  default: "exa"
+      responses:
+        "200":
+          $ref: "#/components/responses/AnswerResponse"
+components:
+  securitySchemes:
+    apikey:
+      type: apiKey
+      name: x-api-key
+      in: header
+      description: API key can be provided either via x-api-key header or Authorization header with Bearer scheme
+    bearer:
+      type: http
+      scheme: bearer
+      description: API key can be provided either via x-api-key header or Authorization header with Bearer scheme
+  schemas:
+    AnswerCitation:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The temporary ID for the document.
+          example: "https://www.theguardian.com/science/2024/dec/11/spacex-valued-at-350bn-as-company-agrees-to-buy-shares-from-employees"
+        url:
+          type: string
+          format: uri
+          description: The URL of the search result.
+          example: "https://www.theguardian.com/science/2024/dec/11/spacex-valued-at-350bn-as-company-agrees-to-buy-shares-from-employees"
+        title:
+          type: string
+          description: The title of the search result.
+          example: "SpaceX valued at $350bn as company agrees to buy shares from ..."
+        author:
+          type: string
+          nullable: true
+          description: If available, the author of the content.
+          example: "Dan Milmon"
+        publishedDate:
+          type: string
+          nullable: true
+          description: An estimate of the creation date, from parsing HTML content. Format is YYYY-MM-DD.
+          example: "2023-11-16T01:36:32.547Z"
+        text:
+          type: string
+          description: The full text content of each source. Only present when includeText is enabled.
+          example: "SpaceX valued at $350bn as company agrees to buy shares from ..."
+        image:
+          type: string
+          format: uri
+          description: The URL of the image associated with the search result, if available.
+          example: "https://i.guim.co.uk/img/media/7cfee7e84b24b73c97a079c402642a333ad31e77/0_380_6176_3706/master/6176.jpg?width=1200&height=630&quality=85&auto=format&fit=crop&overlay-align=bottom%2Cleft&overlay-width=100p&overlay-base64=L2ltZy9zdGF0aWMvb3ZlcmxheXMvdGctZGVmYXVsdC5wbmc&enable=upscale&s=71ebb2fbf458c185229d02d380c01530"
+        favicon:
+          type: string
+          format: uri
+          description: The URL of the favicon for the search result's domain, if available.
+          example: "https://assets.guim.co.uk/static/frontend/icons/homescreen/apple-touch-icon.svg"
+    AnswerResult:
+      type: object
+      properties:
+        answer:
+          type: string
+          description: The generated answer based on search results.
+          example: "$350 billion."
+        citations:
+          type: array
+          description: Search results used to generate the answer.
+          items:
+            $ref: "#/components/schemas/AnswerCitation"
+    ContentsRequest:
+      type: object
+      properties:
+        text:
+          oneOf:
+            - type: boolean
+              description: If true, returns full page text with default settings. If false, disables text return.
+            - type: object
+              description: Parsed contents of the page with custom settings.
+              properties:
+                maxCharacters:
+                  type: integer
+                  description: Maximum character limit for the full page text.
+                  example: 1000
+                includeHtmlTags:
+                  type: boolean
+                  default: false
+                  description: Include HTML tags, which can help LLMs understand text structure.
+                  example: false
+        highlights:
+          type: object
+          description: Text snippets the LLM identifies as most relevant from each page.
+          properties:
+            numSentences:
+              type: integer
+              default: 5
+              description: The number of sentences to return for each snippet.
+              example: 1
+            highlightsPerUrl:
+              type: integer
+              default: 1
+              description: The number of snippets to return for each result.
+              example: 1
+            query:
+              type: string
+              description: Custom query to direct the LLM's selection of highlights.
+              example: "Key advancements"
+        summary:
+          type: object
+          description: Summary of the webpage
+          properties:
+            query:
+              type: string
+              description: Custom query for the LLM-generated summary.
+              example: "Main developments"
+        livecrawl:
+          type: string
+          enum: [never, fallback, always, auto]
+          description: |
+            Options for livecrawling pages.
+            'never': Disable livecrawling (default for neural search).
+            'fallback': Livecrawl when cache is empty (default for keyword search).
+            'always': Always livecrawl.
+            'auto': Use an LLM to detect if query needs real-time content.
+          example: "always"
+        livecrawlTimeout:
+          type: integer
+          default: 10000
+          description: The timeout for livecrawling in milliseconds.
+          example: 1000
+        subpages:
+          type: integer
+          default: 0
+          description: The number of subpages to crawl. The actual number crawled may be limited by system constraints.
+          example: 1
+        subpageTarget:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+          description: Keyword to find specific subpages of search results. Can be a single string or an array of strings, comma delimited.
+          example: "sources"
+        extras:
+          type: object
+          description: Extra parameters to pass.
+          properties:
+            links:
+              type: integer
+              default: 0
+              description: Number of URLs to return from each webpage.
+              example: 1
+            imageLinks:
+              type: integer
+              default: 0
+              description: Number of images to return for each result.
+              example: 1
+
+    CommonRequest:
+      type: object
+      properties:
+        numResults:
+          type: integer
+          maximum: 100
+          default: 10
+          description: Number of results to return (up to thousands of results available for custom plans)
+          example: 10
+        includeDomains:
+          type: array
+          items:
+            type: string
+          description: List of domains to include in the search. If specified, results will only come from these domains.
+          example:
+            - arxiv.org
+            - paperswithcode.com
+        excludeDomains:
+          type: array
+          items:
+            type: string
+          description: List of domains to exclude from search results. If specified, no results will be returned from these domains.
+        startCrawlDate:
+          type: string
+          format: date-time
+          description: Crawl date refers to the date that Exa discovered a link. Results will include links that were crawled after this date. Must be specified in ISO 8601 format.
+          example: 2023-01-01
+        endCrawlDate:
+          type: string
+          format: date-time
+          description: Crawl date refers to the date that Exa discovered a link. Results will include links that were crawled before this date. Must be specified in ISO 8601 format.
+          example: 2023-12-31
+        startPublishedDate:
+          type: string
+          format: date-time
+          description: Only links with a published date after this will be returned. Must be specified in ISO 8601 format.
+          example: 2023-01-01
+        endPublishedDate:
+          type: string
+          format: date-time
+          description: Only links with a published date before this will be returned. Must be specified in ISO 8601 format.
+          example: 2023-12-31
+        includeText:
+          type: array
+          items:
+            type: string
+          description: List of strings that must be present in webpage text of results. Currently, only 1 string is supported, of up to 5 words.
+          example:
+            - large language model
+        excludeText:
+          type: array
+          items:
+            type: string
+          description: List of strings that must not be present in webpage text of results. Currently, only 1 string is supported, of up to 5 words.
+          example:
+            - course
+        contents:
+          $ref: "#/components/schemas/ContentsRequest"
+
+    Result:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The title of the search result.
+          example: "A Comprehensive Overview of Large Language Models"
+        url:
+          type: string
+          format: uri
+          description: The URL of the search result.
+          example: "https://arxiv.org/pdf/2307.06435.pdf"
+        publishedDate:
+          type: string
+          nullable: true
+          description: An estimate of the creation date, from parsing HTML content. Format is YYYY-MM-DD.
+          example: "2023-11-16T01:36:32.547Z"
+        author:
+          type: string
+          nullable: true
+          description: If available, the author of the content.
+          example: "Humza  Naveed, University of Engineering and Technology (UET), Lahore, Pakistan"
+        score:
+          type: number
+          nullable: true
+          description: A number from 0 to 1 representing similarity between the query/url and the result.
+          example: 0.4600165784358978
+        id:
+          type: string
+          description: The temporary ID for the document. Useful for /contents endpoint.
+          example: "https://arxiv.org/abs/2307.06435"
+        image:
+          type: string
+          format: uri
+          description: The URL of an image associated with the search result, if available.
+          example: "https://arxiv.org/pdf/2307.06435.pdf/page_1.png"
+        favicon:
+          type: string
+          format: uri
+          description: The URL of the favicon for the search result's domain.
+          example: "https://arxiv.org/favicon.ico"
+
+    ResultWithContent:
+      allOf:
+        - $ref: "#/components/schemas/Result"
+        - type: object
+          properties:
+            text:
+              type: string
+              description: The full content text of the search result.
+              example: "Abstract Large Language Models (LLMs) have recently demonstrated remarkable capabilities..."
+            highlights:
+              type: array
+              items:
+                type: string
+              description: Array of highlights extracted from the search result content.
+              example: 
+                - "Such requirements have limited their adoption..."
+            highlightScores:
+              type: array
+              items:
+                type: number
+                format: float
+              description: Array of cosine similarity scores for each highlighted
+              example: [0.4600165784358978]
+            summary:
+              type: string
+              description: Summary of the webpage
+              example: "This overview paper on Large Language Models (LLMs) highlights key developments..."
+            subpages:
+              type: array
+              items:
+                $ref: "#/components/schemas/ResultWithContent"
+              description: Array of subpages for the search result.
+              example: [{
+                "id": "https://arxiv.org/abs/2303.17580",
+                "url": "https://arxiv.org/pdf/2303.17580.pdf",
+                "title": "HuggingGPT: Solving AI Tasks with ChatGPT and its Friends in Hugging Face",
+                "author": "Yongliang  Shen, Microsoft Research Asia, Kaitao  Song, Microsoft Research Asia, Xu  Tan, Microsoft Research Asia, Dongsheng  Li, Microsoft Research Asia, Weiming  Lu, Microsoft Research Asia, Yueting  Zhuang, Microsoft Research Asia, yzhuang@zju.edu.cn, Zhejiang  University, Microsoft Research Asia, Microsoft  Research, Microsoft Research Asia",
+                "publishedDate": "2023-11-16T01:36:20.486Z",
+                "text": "HuggingGPT: Solving AI Tasks with ChatGPT and its Friends in Hugging Face Date Published: 2023-05-25 Authors: Yongliang Shen, Microsoft Research Asia Kaitao Song, Microsoft Research Asia Xu Tan, Microsoft Research Asia Dongsheng Li, Microsoft Research Asia Weiming Lu, Microsoft Research Asia Yueting Zhuang, Microsoft Research Asia, yzhuang@zju.edu.cn Zhejiang University, Microsoft Research Asia Microsoft Research, Microsoft Research Asia Abstract Solving complicated AI tasks with different domains and modalities is a key step toward artificial general intelligence. While there are abundant AI models available for different domains and modalities, they cannot handle complicated AI tasks. Considering large language models (LLMs) have exhibited exceptional ability in language understanding, generation, interaction, and reasoning, we advocate that LLMs could act as a controller to manage existing AI models to solve complicated AI tasks and language could be a generic interface to empower t",
+                "summary": "HuggingGPT is a framework using ChatGPT as a central controller to orchestrate various AI models from Hugging Face to solve complex tasks. ChatGPT plans the task, selects appropriate models based on their descriptions, executes subtasks, and summarizes the results. This approach addresses limitations of LLMs by allowing them to handle multimodal data (vision, speech) and coordinate multiple models for complex tasks, paving the way for more advanced AI systems.",
+                "highlights": [
+                  "2) Recently, some researchers started to investigate the integration of using tools or models in LLMs  ."
+                ],
+                "highlightScores": [
+                  0.32679107785224915
+                ]
+              }]
+            extras:
+              type: object
+              description: Results from extras.
+              properties:
+                links:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of links from the search result.
+                  example: []
+
+  responses:
+    SearchResponse:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                description: A list of search results containing title, URL, published date, author, and score.
+                items:
+                  $ref: "#/components/schemas/ResultWithContent"
+              searchType:
+                type: string
+                enum: [neural, keyword]
+                description: For auto searches, indicates which search type was selected.
+                example: "auto"
+
+    FindSimilarResponse:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                description: A list of search results containing title, URL, published date, author, and score.
+                items:
+                  $ref: "#/components/schemas/ResultWithContent"
+
+    ContentsResponse:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResultWithContent"
+                  
+    AnswerResponse:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AnswerResult"
+        text/event-stream:
+          schema:
+            type: object
+            properties:
+              answer:
+                type: string
+                description: Partial answer chunk when streaming is enabled.
+              citations:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AnswerCitation"

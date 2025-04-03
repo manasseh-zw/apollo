@@ -24,9 +24,9 @@ public class ChatStreamingCallback : IChatStreamingCallback
 
 public class ResearchHub : Hub<IResearchHubClient>
 {
-    private readonly IResearchAssistant _assistant;
+    private readonly IResearchPlanner _assistant;
 
-    public ResearchHub(IResearchAssistant assistant)
+    public ResearchHub(IResearchPlanner assistant)
     {
         _assistant = assistant;
     }
