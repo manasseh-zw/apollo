@@ -6,6 +6,7 @@ using Apollo.Api.Features.Research;
 using Apollo.Api.Utils;
 using Apollo.Config;
 using Apollo.Data.Repository;
+using Apollo.Search;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
