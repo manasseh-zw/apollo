@@ -1,11 +1,11 @@
-using Apollo.Config;
 using Apollo.Search;
+using Apollo.Search.Models;
 using Apollo.Tests.Helpers;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Apollo.Tests.Search;
+namespace Apollo.Tests.Unit;
 
 public class ExaSearchServiceTests
 {
@@ -38,7 +38,7 @@ public class ExaSearchServiceTests
 
         var handler = MockHttpMessageHandler.CreateMockHandler(expectedResponse);
         var httpClient = new HttpClient(handler);
-        
+
         // Create logger factory and logger
         var loggerFactory = LoggerFactory.Create(builder =>
         {
@@ -46,7 +46,7 @@ public class ExaSearchServiceTests
             builder.AddXUnit(_output);
         });
         var logger = loggerFactory.CreateLogger<ExaSearchService>();
-        
+
         var searchService = new ExaSearchService(httpClient, logger, TestApiKey);
 
         var request = new SearchRequest
@@ -60,7 +60,9 @@ public class ExaSearchServiceTests
         var result = await searchService.SearchAsync(request);
 
         // Log the response
-        _output.WriteLine($"Search Response: {System.Text.Json.JsonSerializer.Serialize(result, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}");
+        _output.WriteLine(
+            $"Search Response: {System.Text.Json.JsonSerializer.Serialize(result, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}"
+        );
 
         // Assert
         Assert.NotNull(result);
@@ -88,7 +90,7 @@ public class ExaSearchServiceTests
 
         var handler = MockHttpMessageHandler.CreateMockHandler(expectedResponse);
         var httpClient = new HttpClient(handler);
-        
+
         // Create logger factory and logger
         var loggerFactory = LoggerFactory.Create(builder =>
         {
@@ -96,14 +98,16 @@ public class ExaSearchServiceTests
             builder.AddXUnit(_output);
         });
         var logger = loggerFactory.CreateLogger<ExaSearchService>();
-        
+
         var searchService = new ExaSearchService(httpClient, logger, TestApiKey);
 
         // Act
         var result = await searchService.FindSimilarAsync("https://test.com", 1);
 
         // Log the response
-        _output.WriteLine($"Find Similar Response: {System.Text.Json.JsonSerializer.Serialize(result, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}");
+        _output.WriteLine(
+            $"Find Similar Response: {System.Text.Json.JsonSerializer.Serialize(result, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}"
+        );
 
         // Assert
         Assert.NotNull(result);

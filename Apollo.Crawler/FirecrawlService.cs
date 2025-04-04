@@ -19,7 +19,10 @@ public class FirecrawlService : ICrawlerService
     {
         _httpClient = httpClient;
         _logger = logger;
-        _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey ?? AppConfig.FirecrawlAI.ApiKey}");
+        _httpClient.DefaultRequestHeaders.Add(
+            "Authorization",
+            $"Bearer {apiKey ?? AppConfig.FirecrawlAI.ApiKey}"
+        );
     }
 
     public async Task<ScrapeResponse> ScrapeAsync(ScrapeRequest request)

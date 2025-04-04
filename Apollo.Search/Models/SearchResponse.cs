@@ -1,4 +1,4 @@
-namespace Apollo.Search;
+namespace Apollo.Search.Models;
 
 public class SearchResponse
 {

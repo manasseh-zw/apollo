@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Apollo.Tests.Crawler;
+namespace Apollo.Tests.Unit;
 
 public class FirecrawlServiceTests
 {
@@ -39,14 +39,14 @@ public class FirecrawlServiceTests
 
         var handler = MockHttpMessageHandler.CreateMockHandler(expectedResponse);
         var httpClient = new HttpClient(handler);
-        
+
         var loggerFactory = LoggerFactory.Create(builder =>
         {
             builder.AddConsole();
             builder.AddXUnit(_output);
         });
         var logger = loggerFactory.CreateLogger<FirecrawlService>();
-        
+
         var crawlerService = new FirecrawlService(httpClient, logger, TestApiKey);
 
         var request = new ScrapeRequest
@@ -60,7 +60,9 @@ public class FirecrawlServiceTests
         var result = await crawlerService.ScrapeAsync(request);
 
         // Log the response
-        _output.WriteLine($"Scrape Response: {System.Text.Json.JsonSerializer.Serialize(result, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}");
+        _output.WriteLine(
+            $"Scrape Response: {System.Text.Json.JsonSerializer.Serialize(result, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}"
+        );
 
         // Assert
         Assert.NotNull(result);
@@ -77,23 +79,19 @@ public class FirecrawlServiceTests
         var expectedResponse = new MapResponse
         {
             Success = true,
-            Links = 
-            [
-                "https://test.com/page1",
-                "https://test.com/page2",
-            ],
+            Links = ["https://test.com/page1", "https://test.com/page2"],
         };
 
         var handler = MockHttpMessageHandler.CreateMockHandler(expectedResponse);
         var httpClient = new HttpClient(handler);
-        
+
         var loggerFactory = LoggerFactory.Create(builder =>
         {
             builder.AddConsole();
             builder.AddXUnit(_output);
         });
         var logger = loggerFactory.CreateLogger<FirecrawlService>();
-        
+
         var crawlerService = new FirecrawlService(httpClient, logger, TestApiKey);
 
         var request = new MapRequest
@@ -107,7 +105,9 @@ public class FirecrawlServiceTests
         var result = await crawlerService.MapAsync(request);
 
         // Log the response
-        _output.WriteLine($"Map Response: {System.Text.Json.JsonSerializer.Serialize(result, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}");
+        _output.WriteLine(
+            $"Map Response: {System.Text.Json.JsonSerializer.Serialize(result, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}"
+        );
 
         // Assert
         Assert.NotNull(result);

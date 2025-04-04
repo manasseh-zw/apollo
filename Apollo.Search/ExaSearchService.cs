@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using Apollo.Config;
+using Apollo.Search.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Apollo.Search;

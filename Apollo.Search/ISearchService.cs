@@ -1,3 +1,5 @@
+using Apollo.Search.Models;
+
 namespace Apollo.Search;
 
 public interface ISearchService
