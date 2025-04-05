@@ -7,3 +7,5 @@ challanges: how to have llm passed args and app state arguments in function call
 
 decision choose between rag or use large context window? best approach hybrid where we have rag for content we get from the web and the report is synthesied via the large context widnow were 
 
+decision use semi agentic research process where i have agents that i invoke explicly as part of an overall multi step process, this is some what more deterministic and less room for error due to llm hallucniation, 
+Alternative 2 fully agentic with plugins for external services... this is of cause has more room for error but embraces the fully agentic approach.. idea: use a shared state between agents instead of each agent publishing all results into the group chat.. which wont be that great for the context  
