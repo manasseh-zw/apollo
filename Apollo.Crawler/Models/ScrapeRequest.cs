@@ -14,7 +14,7 @@ public class ScrapeRequest
     public int Timeout { get; set; } = 30000;
     public List<ScrapeAction>? Actions { get; set; }
     public LocationSettings? Location { get; set; }
-    public bool RemoveBase64Images { get; set; }
+    public bool RemoveBase64Images { get; set; } = true;
 }
 
 public class LocationSettings

@@ -1,6 +1,6 @@
 using System.Text;
 using Apollo.Agents.Helpers;
-using Apollo.Agents.Research.Planner.Plugins;
+using Apollo.Agents.Plugins;
 using Apollo.Config;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -87,7 +87,7 @@ public class ResearchPlanner : IResearchPlanner
             UserId = userId,
             ChatHistory =
             [
-                new ChatMessageContent(AuthorRole.System, Prompts.ResearchAssistant(userId)),
+                new ChatMessageContent(AuthorRole.System, Prompts.ResearchPlanner(userId)),
                 new ChatMessageContent(AuthorRole.User, initialQuery),
             ],
         };

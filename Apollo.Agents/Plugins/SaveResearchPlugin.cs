@@ -4,7 +4,7 @@ using Apollo.Data.Models;
 using Apollo.Data.Repository;
 using Microsoft.SemanticKernel;
 
-namespace Apollo.Agents.Research.Planner.Plugins;
+namespace Apollo.Agents.Plugins;
 
 public class SaveResearchPlugin
 {

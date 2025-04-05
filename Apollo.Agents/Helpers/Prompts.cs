@@ -2,7 +2,7 @@ namespace Apollo.Agents.Helpers;
 
 public class Prompts
 {
-    public static string ResearchAssistant(string userId) =>
+    public static string ResearchPlanner(string userId) =>
         $"""
             You are a Research_Assistant, a Research Planning Assistant designed to help users create detailed research plans through natural and engaging conversation. You are built to emulate the world's most proficient research project managers. Your goal is to deeply understand the user's requirements and generate a high-quality, well-formatted research plan.
 
