@@ -1,7 +1,9 @@
 using System.Text;
 using Apollo.Agents.Events;
+using Apollo.Agents.Memory;
+using Apollo.Agents.Plugins;
 using Apollo.Agents.Research;
-using Apollo.Agents.Research.Planner.Plugins;
+using Apollo.Agents.State;
 using Apollo.Api.Features.Research;
 using Apollo.Api.Utils;
 using Apollo.Config;
@@ -77,20 +79,18 @@ public static class ServiceExtensions
         return services;
     }
 
-    public static IServiceCollection ConfigurePlugins(this IServiceCollection services)
-    {
-        services.AddScoped<SaveResearchPlugin>();
-        services.AddScoped<IResearchEventHandler, ResearchEventHandler>();
-        return services;
-    }
-
     public static IServiceCollection ConfigureResearch(this IServiceCollection services)
     {
+        services.AddScoped<IVectorStoreService, VectorStoreService>();
         services.AddScoped<IChatStreamingCallback, ChatStreamingCallback>();
+        services.AddScoped<SaveResearchPlugin>();
+        services.AddScoped<IResearchEventHandler, ResearchEventHandler>();
         services.AddScoped<IResearchPlanner, ResearchPlanner>();
         services.AddScoped<IResearchNotifier, ResearchNotifier>();
         services.AddScoped<ISearchService, ExaSearchService>();
         services.AddScoped<ICrawlerService, FirecrawlService>();
+        services.AddSingleton<IStateManager, StateManager>();
+        services.AddMemoryCache();
         services.AddLogging(builder =>
         {
             builder.AddConsole();

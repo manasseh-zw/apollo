@@ -53,7 +53,7 @@ public class ResearchPlanner : IResearchPlanner
         _kernel = Kernel
             .CreateBuilder()
             .AddAzureOpenAIChatCompletion(
-                deploymentName: Models.Gpt4o,
+                deploymentName: AppConfig.Models.Gpt4o,
                 endpoint: AppConfig.AzureAI.Endpoint,
                 apiKey: AppConfig.AzureAI.ApiKey
             )

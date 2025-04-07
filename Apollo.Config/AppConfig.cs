@@ -12,19 +12,17 @@ public static class AppConfig
         {
             DotEnv.Load();
         }
-        Console.WriteLine(AzureAI.Endpoint);
-        Console.WriteLine(AzureAI.ApiKey);
     }
 
     public static DatabaseOptions DatabaseOptions { get; } =
         new()
         {
             ConnectionString =
-                $"Host={Environment.GetEnvironmentVariable("DB_HOST")};"
-                + $"Port={Environment.GetEnvironmentVariable("DB_PORT")};"
-                + $"Database={Environment.GetEnvironmentVariable("DB_NAME")};"
-                + $"Username={Environment.GetEnvironmentVariable("DB_USER")};"
-                + $"Password={Environment.GetEnvironmentVariable("DB_PASSWORD")}",
+                Environment.GetEnvironmentVariable("DATABASE_URL")
+                ?? throw new Exception("DB URL not set"),
+            VectorConnectionString =
+                Environment.GetEnvironmentVariable("VECTOR_DB_URL")
+                ?? throw new Exception("Vector URL not set"),
         };
 
     public static JwtOptions JwtOptions { get; } =
@@ -70,11 +68,15 @@ public static class AppConfig
                 Environment.GetEnvironmentVariable("FIRECRAWL_API_KEY")
                 ?? throw new Exception("Firecrawl API key is not set"),
         };
+
+    public static Models Models { get; } =
+        new() { Gpt4o = "gpt-4o", TextEmbeddingSmall = "text-embedding-3-small" };
 }
 
 public class DatabaseOptions
 {
     public string ConnectionString { get; init; } = string.Empty;
+    public string VectorConnectionString { get; init; } = string.Empty;
 }
 
 public class JwtOptions
@@ -90,6 +92,12 @@ public class AzureAI
 {
     public string ApiKey { get; init; } = string.Empty;
     public string Endpoint { get; init; } = string.Empty;
+}
+
+public class Models
+{
+    public required string Gpt4o { get; set; }
+    public required string TextEmbeddingSmall { get; set; }
 }
 
 public class ExaAI

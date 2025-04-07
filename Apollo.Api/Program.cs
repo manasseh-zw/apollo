@@ -35,7 +35,6 @@ builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IJwtTokenManager, JwtTokenManager>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.ConfigurePlugins();
 builder.Services.ConfigureResearch();
 builder.Services.AddHttpClient(
     "Google",

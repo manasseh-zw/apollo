@@ -10,8 +10,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.3" />
     <PackageReference Include="Microsoft.SemanticKernel" Version="1.44.0" />
     <PackageReference Include="Microsoft.SemanticKernel.Agents.Core" Version="1.45.0" />
-    <PackageReference Include="Microsoft.SemanticKernel.Connectors.InMemory" Version="1.45.0-preview" />
-    <PackageReference Include="Microsoft.SemanticKernel.Connectors.MistralAI" Version="1.45.0-alpha" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Postgres" Version="1.45.0-preview" />
   </ItemGroup>
 
   <ItemGroup>
