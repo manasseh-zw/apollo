@@ -12,12 +12,12 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
         className="min-h-[40px] "
         classNames={{
           ...classNames,
-          inputWrapper: "border-1 border-secondary-100 shadow-sm bg-content2 ",
+          inputWrapper: "border-1 border-secondary-400 shadow-sm bg-content1 ",
           label: cn("hidden", classNames?.label),
-          input: cn("py-0", classNames?.input),
+          input: cn("py-0 placeholder:text-secondary-600 font-light", classNames?.input),
         }}
         minRows={1}
-        placeholder="Research Anything"
+        placeholder="Research Anything..."
         radius="lg"
         variant="bordered"
         {...props}

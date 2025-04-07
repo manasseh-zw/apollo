@@ -90,7 +90,7 @@ const messages: Message[] = [
 export default function AgentChat() {
   return (
     <div className="flex flex-col h-full bg-content1 rounded-large overflow-hidden">
-      <div className="p-3 border-b border-content4 flex items-center gap-3">
+      <div className="p-3  border-content4 flex items-center gap-3">
         <div className="flex -space-x-2">
           {Object.values(agents).map((agent) => (
             <Avatar

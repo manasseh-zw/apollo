@@ -63,15 +63,7 @@ export default function AppSidebar() {
         <div className="flex items-center justify-center rounded-full">
           <LogoLight width={40} height={40} />
         </div>
-        <span
-          className={cn("w-full ", {
-            "w-0 opacity-0": isCollapsed,
-          })}
-        >
-          <Chip color="primary" className="border-1 border-transparent shadow  " variant="flat" size="sm">
-            Deep Research
-          </Chip>
-        </span>
+
         <div className={cn("flex-end flex", { hidden: isCollapsed })}>
           <ChevronLeft
             className="cursor-pointer text-primary/80"
@@ -88,8 +80,6 @@ export default function AppSidebar() {
             name={user.username.substring(0, 4)}
             src={user.avatarUrl}
             size="sm"
-            isBordered
-            color="success"
           />
         ) : (
           <Avatar size={38} name={user.username} />
