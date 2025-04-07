@@ -28,7 +28,7 @@ public class VectorStoreService : IVectorStoreService
     public VectorStoreService()
     {
         _embeddingGenerator = new AzureOpenAITextEmbeddingGenerationService(
-            deploymentName: "text-embedding-3-small",
+            deploymentName: AppConfig.Models.TextEmbeddingSmall,
             endpoint: AppConfig.AzureAI.Endpoint,
             apiKey: AppConfig.AzureAI.ApiKey
         );

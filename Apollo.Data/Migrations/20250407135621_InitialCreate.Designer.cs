@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Apollo.Data.Migrations
 {
     [DbContext(typeof(ApolloDbContext))]
-    [Migration("20250329180559_ModifyResearch")]
-    partial class ModifyResearch
+    [Migration("20250407135621_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -5,11 +5,15 @@ https://demo.exa.ai/hallucination-detector
 
 challanges: how to have llm passed args and app state arguments in function call, just passed the arg in the system prompt
 
-decision choose between rag or use large context window? best approach hybrid where we have rag for content we get from the web and the report is synthesied via the large context widnow were 
+decision choose between rag or use large context window? best approach hybrid where we have rag for content we get from the web and the report is synthesied via the large context widnow were
 
-decision use semi agentic research process where i have agents that i invoke explicly as part of an overall multi step process, this is some what more deterministic and less room for error due to llm hallucniation, 
-Alternative 2 fully agentic with plugins for external services... this is of cause has more room for error but embraces the fully agentic approach.. idea: use a shared state between agents instead of each agent publishing all results into the group chat.. which wont be that great for the context  
+decision use semi agentic research process where i have agents that i invoke explicly as part of an overall multi step process, this is some what more deterministic and less room for error due to llm hallucniation,
+Alternative 2 fully agentic with plugins for external services... this is of cause has more room for error but embraces the fully agentic approach.. idea: use a shared state between agents instead of each agent publishing all results into the group chat.. which wont be that great for the context
 
-struggled to undersatnd the relationshp between the dotnet semantic kernel memory capabilities and the Kernel Memeory, 
+struggled to undersatnd the relationshp between the dotnet semantic kernel memory capabilities and the Kernel Memeory,
 
-understood that the kernel memory plugin makes chunking, tokenizing and ingesting data into the vector store simpler 
+understood that the kernel memory plugin makes chunking, tokenizing and ingesting data into the vector store simpler
+
+decided against kernel memory for now went with pg vector connector for SK vector store... might add kernel memory in future
+
+so instead of the agents passing data to each other through the chat history we instead have them pass the info around via a shared state and they can mutate this state via a state manager exposed as kernel functions to the plugins
