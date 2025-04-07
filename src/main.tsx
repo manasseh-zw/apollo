@@ -27,7 +27,9 @@ if (rootElement && !rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <Providers>
-        <RouterProvider router={router} />
+        <main className="">
+          <RouterProvider router={router} />
+        </main>
       </Providers>
     </StrictMode>
   );

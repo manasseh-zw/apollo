@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="1000" height="1000"><g clip-path="url(#SvgjsClipPath1210)"><rect width="1000" height="1000" fill="#ffffff"></rect><g transform="matrix(2.3026315789473686,0,0,2.3026315789473686,150,158.05921052631578)"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="304" height="297"><svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 304 297">
+  <!-- Generator: Adobe Illustrator 29.1.0, SVG Export Plug-In . SVG Version: 2.1.0 Build 142)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: none;
+      }
+
+      .st1 {
+        clip-path: url(#clippath-1);
+      }
+
+      .st2 {
+        clip-path: url(#clippath-2);
+      }
+
+      .st3 {
+        fill: #212529;
+      }
+
+      .st4 {
+        clip-path: url(#clippath);
+      }
+    </style>
+    <clipPath id="clippath">
+      <rect class="st0" x=".2" y="39" width="266.5" height="257.7"></rect>
+    </clipPath>
+    <clipPath id="clippath-1">
+      <rect class="st0" x="161.8" width="119.2" height="30.7"></rect>
+    </clipPath>
+    <clipPath id="clippath-2">
+      <rect class="st0" x="273" width="30.7" height="134.6"></rect>
+    </clipPath>
+  <clipPath id="SvgjsClipPath1210"><rect width="1000" height="1000" x="0" y="0" rx="500" ry="500"></rect></clipPath></defs>
+  <g class="st4">
+    <path class="st3" d="M266.2,183.8h-94.9l64.1,64.1-21.2,21.2-65.4-65.4v92.8h-29.9v-91.7l-68.1,68.1-22.6-22.6,66.6-66.6H.7v-32h96.3L32.2,87l21.2-21.2,65.6,65.6V39.1h29.9l-.2,111.6c39.2.4,78.3.8,117.5,1.2v32Z"></path>
+  </g>
+  <g class="st1">
+    <path class="st3" d="M161.8,0h119.2v30.7h-119.2V0Z"></path>
+  </g>
+  <g class="st2">
+    <path class="st3" d="M273,134.6V0h30.7v134.7h-30.7Z"></path>
+  </g>
+  <path class="st0" d="M226.4,107.3v-949.8H78.6V145.3"></path>
+  <path class="st0" d="M226.4,115.8v-7.4"></path>
+</svg></svg></g></g></svg>

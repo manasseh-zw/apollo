@@ -8,20 +8,19 @@ export const Route = createFileRoute("/")({
 });
 
 function HomeComponent() {
-	
   const router = useRouter();
   const { isAuthenticated, isLoading } = store.state.authState;
 
   useEffect(() => {
     if (!isLoading) {
-      router.navigate({ 
-        to: isAuthenticated ? "/research" : "/auth/sign-in" 
+      router.navigate({
+        to: isAuthenticated ? "/research" : "/auth/sign-in",
       });
     }
   }, [isLoading, isAuthenticated]);
 
   return (
-    <div className="h-screen w-full flex items-center justify-center bg-primary">
+    <div className="s h-screen w-full flex items-center justify-center bg-primary ">
       <div className="relative mb-8">
         <div
           className="absolute inset-0 rounded-full animate-spin border-1 border-solid border-secondary border-t-transparent"

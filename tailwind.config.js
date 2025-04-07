@@ -15,53 +15,92 @@ export default {
       },
     },
   },
+  darkMode: "class",
   plugins: [
     heroui({
         themes: {
-          light: {
+ 
+          light: { // Updated Light Theme with new Grayscale
             colors: {
+              // --- Grayscale Palette Applied ---
               default: {
-                50: "#f8f8f8",
-                100: "#efefef",
-                200: "#e5e5e5",
-                300: "#dcdcdc",
-                400: "#d2d2d2",
-                500: "#c9c9c9",
-                600: "#a6a6a6",
-                700: "#838383",
-                800: "#5f5f5f",
-                900: "#3c3c3c",
-                foreground: "#000",
-                DEFAULT: "#c9c9c9",
+                50: "#f8f9fa",    // --seasalt
+                100: "#e9ecef",   // --antiflash-white
+                200: "#dee2e6",   // --platinum
+                300: "#ced4da",   // --french-gray
+                400: "#adb5bd",   // --french-gray-2
+                500: "#6c757d",   // --slate-gray
+                600: "#495057",   // --outer-space
+                700: "#343a40",   // --onyx
+                800: "#212529",   // --eerie-black
+                900: "#212529",   // Re-using darkest for 900
+                foreground: "#212529", // Darkest gray for text
+                DEFAULT: "#6c757d", // Slate Gray as default
               },
               primary: {
-                50: "#e0e6e7",
-                100: "#b5c3c5",
-                200: "#89a0a2",
-                300: "#5e7c80",
-                400: "#32595e",
-                500: "#07363c",
-                600: "#062d32",
-                700: "#052327",
-                800: "#031a1d",
-                900: "#021012",
-                foreground: "#fff",
-                DEFAULT: "#07363c",
+                50: "#f8f9fa",
+                100: "#e9ecef",
+                200: "#dee2e6",
+                300: "#ced4da",
+                400: "#adb5bd",
+                500: "#6c757d",
+                600: "#495057",
+                700: "#343a40",    // Onyx as primary default base
+                800: "#212529",
+                900: "#212529",
+                foreground: "#f8f9fa", // Lightest gray for text on primary
+                DEFAULT: "#343a40",    // Onyx as primary default
               },
               secondary: {
-                50: "#faf4ed",
-                100: "#f3e3d4",
-                200: "#ecd3bb",
-                300: "#e6c3a1",
-                400: "#dfb388",
-                500: "#d8a36f",
-                600: "#b2865c",
-                700: "#8c6a48",
-                800: "#674d35",
-                900: "#413121",
-                foreground: "#000",
-                DEFAULT: "#d8a36f",
+                50: "#f8f9fa",
+                100: "#e9ecef",
+                200: "#dee2e6",
+                300: "#ced4da",
+                400: "#adb5bd",   // French Gray 2 as secondary default base
+                500: "#6c757d",
+                600: "#495057",
+                700: "#343a40",
+                800: "#212529",
+                900: "#212529",
+                foreground: "#f8f9fa", // Lightest gray for text on secondary
+                DEFAULT: "#adb5bd",   // French Gray 2 as secondary default
               },
+              background: "#f8f9fa", // Lightest gray for background
+              foreground: { // Shades for text/icons if needed
+                50: "#f8f9fa",
+                100: "#e9ecef",
+                200: "#dee2e6",
+                300: "#ced4da",
+                400: "#adb5bd",
+                500: "#6c757d",
+                600: "#495057",
+                700: "#343a40",
+                800: "#212529", // Darkest gray as default foreground text
+                900: "#212529",
+                foreground: "#f8f9fa", // Contrast for the foreground color itself (if used as bg)
+                DEFAULT: "#212529",    // Darkest gray as default foreground text
+              },
+              content1: {
+                DEFAULT: "#f8f9fa",    // Seasalt
+                foreground: "#212529", // Dark text
+              },
+              content2: {
+                DEFAULT: "#e9ecef",   // Antiflash White
+                foreground: "#212529", // Dark text
+              },
+              content3: {
+                DEFAULT: "#dee2e6",   // Platinum
+                foreground: "#212529", // Dark text
+              },
+              content4: {
+                DEFAULT: "#ced4da",   // French Gray
+                foreground: "#212529", // Dark text
+              },
+              focus: "#6c757d",       // Slate Gray for focus rings
+              overlay: "#212529",       // Dark overlay
+              divider: "#dee2e6",     // Platinum for dividers
+        
+              // --- Kept Original Colors ---
               success: {
                 50: "#f3f6f0",
                 100: "#e2e9db",
@@ -104,87 +143,90 @@ export default {
                 foreground: "#000",
                 DEFAULT: "#fc9581",
               },
-              background: "#fffbf6",
-              foreground: {
-                50: "#e0e3e3",
-                100: "#b4bbbc",
-                200: "#889395",
-                300: "#5c6b6d",
-                400: "#304446",
-                500: "#041c1f",
-                600: "#03171a",
-                700: "#031214",
-                800: "#020d0f",
-                900: "#010809",
-                foreground: "#fff",
-                DEFAULT: "#041c1f",
-              },
-              content1: {
-                DEFAULT: "#fff7eb",
-                foreground: "#000",
-              },
-              content2: {
-                DEFAULT: "#ffe9cc",
-                foreground: "#000",
-              },
-              content3: {
-                DEFAULT: "#ffe0b8",
-                foreground: "#000",
-              },
-              content4: {
-                DEFAULT: "#E3C09C",
-                foreground: "#000",
-              },
-              focus: "#db924b",
-              overlay: "#000000",
-              divider: "#111111",
             },
           },
-          dark: {
+          dark: { // New Dark Theme based on Grayscale
             colors: {
+              // --- Grayscale Palette Applied (inverted/darker bias) ---
               default: {
-                50: "#161916",
-                100: "#222722",
-                200: "#2f352f",
-                300: "#3b443b",
-                400: "#485248",
-                500: "#687068",
-                600: "#888f88",
-                700: "#a8ada8",
-                800: "#c8cbc8",
-                900: "#e8e9e8",
-                foreground: "#fff",
-                DEFAULT: "#485248",
+                50: "#212529",    // --eerie-black
+                100: "#343a40",   // --onyx
+                200: "#495057",   // --outer-space
+                300: "#6c757d",   // --slate-gray
+                400: "#adb5bd",   // --french-gray-2
+                500: "#ced4da",   // --french-gray
+                600: "#dee2e6",   // --platinum
+                700: "#e9ecef",   // --antiflash-white
+                800: "#f8f9fa",   // --seasalt
+                900: "#f8f9fa",   // Re-using lightest for 900
+                foreground: "#f8f9fa", // Lightest gray for text
+                DEFAULT: "#6c757d", // Slate Gray as default
               },
               primary: {
-                50: "#1f3d29",
-                100: "#306142",
-                200: "#42855a",
-                300: "#54a872",
-                400: "#66cc8a",
-                500: "#81d59e",
-                600: "#9cdeb3",
-                700: "#b6e7c7",
-                800: "#d1f0dc",
-                900: "#ecf9f0",
-                foreground: "#000",
-                DEFAULT: "#66cc8a",
+                50: "#212529",
+                100: "#343a40",
+                200: "#495057",
+                300: "#6c757d",
+                400: "#adb5bd",
+                500: "#ced4da",   // French Gray as primary default base
+                600: "#dee2e6",
+                700: "#e9ecef",
+                800: "#f8f9fa",
+                900: "#f8f9fa",
+                foreground: "#212529", // Darkest gray for text on primary
+                DEFAULT: "#ced4da",    // French Gray as primary default
               },
               secondary: {
-                50: "#11254b",
-                100: "#1a3b77",
-                200: "#2451a3",
-                300: "#2d66cf",
-                400: "#377cfb",
-                500: "#5a93fc",
-                600: "#7daafc",
-                700: "#a0c1fd",
-                800: "#c3d8fe",
-                900: "#e6efff",
-                foreground: "#000",
-                DEFAULT: "#377cfb",
+                50: "#212529",
+                100: "#343a40",
+                200: "#495057",   // Outer Space as secondary default base
+                300: "#6c757d",
+                400: "#adb5bd",
+                500: "#ced4da",
+                600: "#dee2e6",
+                700: "#e9ecef",
+                800: "#f8f9fa",
+                900: "#f8f9fa",
+                foreground: "#f8f9fa", // Lightest gray for text on secondary
+                DEFAULT: "#495057",   // Outer Space as secondary default
               },
-              success: {
+              background: "#212529", // Darkest gray for background
+              foreground: { // Shades for text/icons if needed
+                50: "#212529",
+                100: "#343a40",
+                200: "#495057",
+                300: "#6c757d",
+                400: "#adb5bd",
+                500: "#ced4da",
+                600: "#dee2e6",
+                700: "#e9ecef",
+                800: "#f8f9fa",    // Lightest gray as default foreground text
+                900: "#f8f9fa",
+                foreground: "#212529", // Contrast for the foreground color itself (if used as bg)
+                DEFAULT: "#f8f9fa",    // Lightest gray as default foreground text
+              },
+              content1: {
+                DEFAULT: "#212529",    // Eerie Black
+                foreground: "#f8f9fa", // Light text
+              },
+              content2: {
+                DEFAULT: "#343a40",   // Onyx
+                foreground: "#f8f9fa", // Light text
+              },
+              content3: {
+                DEFAULT: "#495057",   // Outer Space
+                foreground: "#f8f9fa", // Light text
+              },
+              content4: {
+                DEFAULT: "#6c757d",   // Slate Gray
+                foreground: "#f8f9fa", // Light text
+              },
+              focus: "#adb5bd",       // French Gray 2 for focus rings
+              overlay: "#f8f9fa",       // Light overlay
+              divider: "#495057",     // Outer space for dividers
+        
+              // --- Kept Original Dark Theme Colors ---
+              success: { // Copied from original dark theme
                 50: "#003321",
                 100: "#005034",
                 200: "#006e48",
@@ -195,10 +237,10 @@ export default {
                 700: "#86d6ba",
                 800: "#b3e5d4",
                 900: "#dff4ed",
-                foreground: "#000",
+                foreground: "#000", // Should contrast with DEFAULT; might need adjustment based on usage
                 DEFAULT: "#00a96e",
               },
-              warning: {
+              warning: { // Copied from original dark theme
                 50: "#4d3900",
                 100: "#795a00",
                 200: "#a67c00",
@@ -209,10 +251,10 @@ export default {
                 700: "#ffe086",
                 800: "#ffecb3",
                 900: "#fff7df",
-                foreground: "#000",
+                foreground: "#000", // Should contrast with DEFAULT
                 DEFAULT: "#ffbe00",
               },
-              danger: {
+              danger: { // Copied from original dark theme
                 50: "#4d1a1d",
                 100: "#792a2e",
                 200: "#a6393f",
@@ -223,43 +265,9 @@ export default {
                 700: "#ffb0b4",
                 800: "#ffcdd0",
                 900: "#ffeaeb",
-                foreground: "#000",
+                foreground: "#000", // Should contrast with DEFAULT
                 DEFAULT: "#ff5861",
               },
-              background: "#010b06",
-              foreground: {
-                50: "#2e3f34",
-                100: "#496452",
-                200: "#638970",
-                300: "#7ead8f",
-                400: "#99d2ad",
-                500: "#abdabb",
-                600: "#bde2ca",
-                700: "#cfead8",
-                800: "#e0f2e6",
-                900: "#f2f9f5",
-                foreground: "#000",
-                DEFAULT: "#99d2ad",
-              },
-              content1: {
-                DEFAULT: "#14291c",
-                foreground: "#fff",
-              },
-              content2: {
-                DEFAULT: "#295237",
-                foreground: "#fff",
-              },
-              content3: {
-                DEFAULT: "#3d7a53",
-                foreground: "#fff",
-              },
-              content4: {
-                DEFAULT: "#52a36e",
-                foreground: "#000",
-              },
-              focus: "#66cc8a",
-              overlay: "#ffffff",
-              divider: "#ffffff",
             },
           },
         },

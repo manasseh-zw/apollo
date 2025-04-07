@@ -49,7 +49,7 @@ export default function AppSidebar() {
   const SidebarContent = () => (
     <div
       className={cn(
-        "will-change relative flex h-full w-[17rem] flex-col bg-content2 py-6 px-4 transition-width",
+        "will-change relative flex h-full w-[17rem] flex-col bg-primary-900 py-6 px-4 transition-width",
         {
           "w-[83px] items-center px-[6px] py-6": isCollapsed,
         }
