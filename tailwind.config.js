@@ -24,18 +24,18 @@ export default {
             colors: {
               // --- Grayscale Palette Applied ---
               default: {
-                50: "#f8f9fa",    // --seasalt
-                100: "#e9ecef",   // --antiflash-white
-                200: "#dee2e6",   // --platinum
-                300: "#ced4da",   // --french-gray
-                400: "#adb5bd",   // --french-gray-2
-                500: "#6c757d",   // --slate-gray
-                600: "#495057",   // --outer-space
-                700: "#343a40",   // --onyx
-                800: "#212529",   // --eerie-black
-                900: "#212529",   // Re-using darkest for 900
-                foreground: "#212529", // Darkest gray for text
-                DEFAULT: "#6c757d", // Slate Gray as default
+                50: "#f8f9fa",    
+                100: "#e9ecef",   
+                200: "#dee2e6",   
+                300: "#ced4da",   
+                400: "#adb5bd",   
+                500: "#6c757d",  
+                600: "#495057", 
+                700: "#343a40", 
+                800: "#212529", 
+                900: "#212529", 
+                foreground: "#212529",
+                DEFAULT: "#6c757d", 
               },
               primary: {
                 50: "#f8f9fa",
@@ -45,12 +45,12 @@ export default {
                 400: "#adb5bd",
                 500: "#6c757d",
                 600: "#495057",
-                700: "#343a40",    // Onyx as primary default base
-                800: "#212529",
-                900: "#212529",
-                foreground: "#f8f9fa", // Lightest gray for text on primary
-                DEFAULT: "#343a40",    // Onyx as primary default
-              },
+                700: "#343a40",       
+                800: "#252525",       
+                900: "#1a1a1a",       
+                foreground: "#f8f9fa", 
+                DEFAULT: "#252525",   
+              },              
               secondary: {
                 50: "#f8f9fa",
                 100: "#e9ecef",

@@ -49,9 +49,9 @@ export default function AppSidebar() {
   const SidebarContent = () => (
     <div
       className={cn(
-        "will-change relative flex h-full w-[17rem] flex-col bg-primary-900 py-6 px-4 transition-width",
+        "will-change relative flex h-full w-[17rem] flex-col bg-primary py-6 px-4 transition-width",
         {
-          "w-[83px] items-center px-[6px] py-6": isCollapsed,
+          "w-[64px] items-center px-[4px] py-6": isCollapsed,
         }
       )}
     >
@@ -61,12 +61,16 @@ export default function AppSidebar() {
         })}
       >
         <div className="flex items-center justify-center rounded-full">
-          <LogoLight width={40} height={40} />
+          <LogoLight
+            width={28}
+            height={28}
+            className="text-primary-foreground"
+          />
         </div>
 
         <div className={cn("flex-end flex", { hidden: isCollapsed })}>
           <ChevronLeft
-            className="cursor-pointer text-primary/80"
+            className="cursor-pointer text-primary-foreground/80 hover:text-primary-foreground"
             size={24}
             onClick={isMobile ? () => setIsOpen(false) : onToggle}
           />
@@ -91,13 +95,13 @@ export default function AppSidebar() {
           })}
         >
           <p
-            className="text-small  text-foreground truncate"
+            className="text-small text-primary-foreground truncate"
             title={user.username}
           >
             {user.username.substring(0, 25)}
             {user.username.length > 25 ? "..." : ""}
           </p>
-          <p className="text-tiny  text-foreground-300">Researcher</p>
+          <p className="text-tiny text-primary-foreground/80">Researcher</p>
         </div>
       </div>
 
@@ -115,15 +119,12 @@ export default function AppSidebar() {
         {isCollapsed && (
           <Button
             isIconOnly
-            className="flex h-10 w-10 text-default-600"
+            className="flex h-9 w-9 text-primary-foreground/80 hover:text-primary-foreground"
             size="sm"
             variant="light"
             onClick={onToggle}
           >
-            <ChevronRight
-              className="cursor-pointer text-primary/80"
-              size={24}
-            />
+            <ChevronRight size={24} />
           </Button>
         )}
 
@@ -132,13 +133,18 @@ export default function AppSidebar() {
             className={cn(
               "flex items-center gap-2 px-3 min-h-11 rounded-large h-[44px] transition-colors hover:bg-default-100/50",
               {
-                "justify-center w-11 h-11 p-0": isCollapsed,
+                "justify-center w-10 h-10 p-0": isCollapsed,
               }
             )}
           >
-            <MinusCircle className="rotate-180 text-primary" size={24} />
+            <MinusCircle
+              className="rotate-180 text-primary-foreground/80 hover:text-primary-foreground"
+              size={24}
+            />
             {!isCollapsed && (
-              <span className="text-small  text-primary">Log Out</span>
+              <span className="text-small text-primary-foreground/80 hover:text-primary-foreground">
+                Log Out
+              </span>
             )}
           </button>
         </Tooltip>
@@ -163,7 +169,7 @@ export default function AppSidebar() {
       {isMobile ? (
         <SidebarDrawer
           className={cn("min-w-[17rem] rounded-lg overflow-hidden w-min", {
-            "min-w-[76px]": isCollapsed,
+            "min-w-[64px]": isCollapsed,
           })}
           hideCloseButton={true}
           isOpen={isOpen}
@@ -174,7 +180,7 @@ export default function AppSidebar() {
       ) : (
         <div
           className={cn("min-w-[17rem] h-full overflow-hidden md:block", {
-            "min-w-[76px]": isCollapsed,
+            "min-w-[64px]": isCollapsed,
           })}
         >
           <SidebarContent />

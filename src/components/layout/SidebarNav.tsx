@@ -48,23 +48,28 @@ const SidebarNav = React.forwardRef<HTMLElement, SidebarProps>(
               className={cn(
                 "flex items-center gap-2 px-3 min-h-11 rounded-large h-[44px] transition-colors",
                 {
-                  "w-11 h-11 justify-center p-0": isCompact,
-                  "bg-primary text-white": isActive,
-                  "hover:bg-primary/10": !isActive,
+                  "w-11 h-10 justify-center p-0": isCompact,
+                  "bg-[#333333] text-primary-foreground": isActive,
+                  "hover:bg-primary-800/30 text-primary-foreground/80 hover:text-primary-foreground":
+                    !isActive,
                 }
               )}
             >
               <DynamicIcon
-                size={24}
+                size={22}
                 name={item.iconName}
-                className={cn("text-foreground/80", {
-                  "text-white": isActive,
+                className={cn({
+                  "text-primary-foreground": isActive,
+                  "text-primary-foreground/80 group-hover:text-primary-foreground":
+                    !isActive,
                 })}
               />
               {!isCompact && (
                 <span
-                  className={cn("text-sm text-foreground/80", {
-                    "text-white": isActive,
+                  className={cn("text-sm", {
+                    "text-primary-foreground": isActive,
+                    "text-primary-foreground/80 group-hover:text-primary-foreground":
+                      !isActive,
                   })}
                 >
                   {item.title}

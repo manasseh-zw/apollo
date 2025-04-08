@@ -9,7 +9,7 @@ export const Route = createFileRoute("/__app/research/")({
 
 function Research() {
   return (
-    <div className="w-full h-full flex items-center justify-center p-6 md:px-12 lg:px-16">
+    <div className="bg-content1 w-full h-full flex items-center justify-center p-6 md:px-12 lg:px-16">
       <ChatLanding />
     </div>
   );
