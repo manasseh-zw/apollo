@@ -19,10 +19,10 @@ export const sidebarItems: SidebarItem[] = [
     title: "Research",
   },
   {
-    key: "library",
+    key: "history",
     href: "/library",
-    iconName: "library",
-    title: "Library",
+    iconName: "history",
+    title: "History",
   },
 ];
 

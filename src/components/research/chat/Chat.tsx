@@ -9,7 +9,7 @@ import { config } from "../../../../config";
 import { store } from "../../../lib/state/store";
 import ReactMarkdown from "react-markdown";
 import Thinking from "./Thinking";
-import { LogoLight } from "../../Icons";
+import { Logo, LogoLight } from "../../Icons";
 
 type Message = {
   id: number;
@@ -147,7 +147,9 @@ export default function ResearchChat() {
               >
                 <div className="flex-shrink-0">
                   {message.sender === "assistant" ? (
-                    <LogoLight className="w-10 h-10 min-w-[40px] rounded-full" />
+                    <div className="bg-primary p-[.55rem] rounded-full">
+                      <LogoLight width={22} height={22} />
+                    </div>
                   ) : user.avatarUrl ? (
                     <UserAvatar
                       src={user.avatarUrl}
@@ -156,6 +158,7 @@ export default function ResearchChat() {
                     />
                   ) : (
                     <Avatar
+                      size="sm"
                       name={user.username}
                       className="w-10 h-10 min-w-[40px]"
                     />
@@ -170,7 +173,7 @@ export default function ResearchChat() {
                     className={
                       message.sender === "user"
                         ? "rounded-2xl bg-content2 p-3 max-w-[85%] break-words"
-                        : "text-base max-w-[90%] break-words prose prose-sm dark:prose-invert text-foreground-500 prose-li:text-foreground-500 prose-p:text-foreground-500 prose-headings:text-foreground-500 prose-strong:text-foreground prose-code:text-foreground prose-pre:bg-content2 prose-pre:text-foreground prose-pre:border prose-pre:border-content4 prose-pre:rounded-lg prose-a:text-primary prose-p:leading-relaxed prose-li:leading-relaxed [&>*]:leading-relaxed [&>ul]:list-none [&>ul>li]:relative [&>ul>li]:before:absolute [&>ul>li]:before:left-0 [&>ul>li]:before:content-['•'] [&>ul>li]:before:text-primary-400 prose-hr:border-content4 prose-hr:my-5"
+                        : "text-base max-w-[90%] break-words prose prose-sm dark:prose-invert text-primary prose-li:text-primary prose-p:text-primary prose-headings:text-primary prose-strong:text-foreground prose-code:text-foreground prose-pre:bg-content2 prose-pre:text-foreground prose-pre:border prose-pre:border-content4 prose-pre:rounded-lg prose-a:text-primary prose-p:leading-relaxed prose-li:leading-relaxed [&>*]:leading-relaxed [&>ul]:list-none [&>ul>li]:relative [&>ul>li]:before:absolute [&>ul>li]:before:left-0 [&>ul>li]:before:content-['•'] [&>ul>li]:before:text-primary-400 prose-hr:border-content4 prose-hr:my-5"
                     }
                   >
                     {message.sender === "assistant" ? (
@@ -185,7 +188,9 @@ export default function ResearchChat() {
             {isThinking && (
               <div className="flex flex-row items-center gap-3">
                 <div className="flex-shrink-0">
-                  <LogoLight className="w-10 h-10 min-w-[40px] rounded-full" />
+                  <div className="bg-primary p-[.55rem] rounded-full">
+                    <LogoLight width={22} height={22} />
+                  </div>
                 </div>
                 <Thinking />
               </div>

@@ -9,7 +9,14 @@ import {
 import React from "react";
 import { LogoLight } from "../../components/Icons";
 import { useMediaQuery } from "usehooks-ts";
-import { ChevronLeft, ChevronRight, Menu, MinusCircle } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Menu,
+  MinusCircle,
+  Sidebar,
+  SidebarIcon,
+} from "lucide-react";
 import Avatar from "boring-avatars";
 import { store } from "../../lib/state/store";
 import SidebarDrawer from "./SidebarDrawer";
@@ -60,12 +67,19 @@ export default function AppSidebar() {
           "justify-center gap-0 pl-0": isCollapsed,
         })}
       >
-        <div className="flex items-center justify-center rounded-full">
+        <div className="flex items-center justify-center rounded-full gap-3">
           <LogoLight
             width={28}
             height={28}
             className="text-primary-foreground"
           />
+          <span
+            className={cn("w-full text-sm font-light uppercase  text-white", {
+              "w-0 opacity-0": isCollapsed,
+            })}
+          >
+            Apollo
+          </span>
         </div>
 
         <div className={cn("flex-end flex", { hidden: isCollapsed })}>
@@ -157,12 +171,12 @@ export default function AppSidebar() {
       {isMobile && !isOpen && (
         <Button
           isIconOnly
-          className="fixed top-4 left-4 z-50 bg-content2 text-gray-700 md:hidden"
+          className="fixed top-4 left-4 z-50 text-primary bg-transparent md:hidden"
           size="sm"
           variant="flat"
           onPress={() => setIsOpen(true)}
         >
-          <Menu size={24} />
+          <SidebarIcon size={24} />
         </Button>
       )}
 

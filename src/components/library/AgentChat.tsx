@@ -17,27 +17,27 @@ const agents = {
   apollo: {
     name: "Apollo",
     role: "Research Orchestrator",
-    avatar: "/doodle/deepthink.webp",
+    avatar: "/agents/agent1.jpg",
   },
   hermes: {
     name: "Hermes",
     role: "Query Explorer",
-    avatar: "/doodle/quill.webp",
+    avatar: "/agents/agent2.jpg",
   },
   athena: {
     name: "Athena",
     role: "Web Navigator",
-    avatar: "/doodle/puzzle.webp",
+    avatar: "/agents/agent3.jpg",
   },
   theia: {
     name: "Theia",
     role: "Truth Seeker",
-    avatar: "/doodle/brainworm.webp",
+    avatar: "/agents/agent4.jpg",
   },
   chronos: {
     name: "Chronos",
     role: "Knowledge Curator",
-    avatar: "/doodle/think.webp",
+    avatar: "/agents/agent5.jpg",
   },
 };
 

@@ -1,3 +1,5 @@
+import { Alert, Input, Button, Divider } from "@heroui/react";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useForm } from "@tanstack/react-form";
 import {
   createFileRoute,
@@ -5,17 +7,16 @@ import {
   Link,
   useSearch,
 } from "@tanstack/react-router";
-import { useMutation } from "@tanstack/react-query";
-import { useGoogleLogin } from "@react-oauth/google";
+import { EyeClosed, Eye, Mail } from "lucide-react";
 import { useState } from "react";
-import { Button, Input, Divider, Alert } from "@heroui/react";
-import { LogoLight, Google } from "../../components/Icons";
-import { EyeClosed, Eye } from "lucide-react";
+import { m, LazyMotion, domAnimation, AnimatePresence } from "framer-motion";
+import { Google, Logo } from "../../components/Icons";
 import { signIn, googleSignup } from "../../lib/services/auth.service";
 import { authActions } from "../../lib/state/store";
 import type { User } from "../../lib/types/user";
 import type { ApiResponse } from "../../lib/utils/api";
 import { publicOnlyLoader } from "../../lib/utils/loaders";
+import { useMutation } from "@tanstack/react-query";
 
 interface AuthSearchParams {
   redirect?: string;
@@ -36,6 +37,12 @@ function SignIn() {
 
   const [serverErrors, setServerErrors] = useState<string[]>([]);
   const [isVisible, setIsVisible] = useState(false);
+  const [isFormVisible, setIsFormVisible] = useState(false);
+
+  const variants = {
+    visible: { opacity: 1, y: 0 },
+    hidden: { opacity: 0, y: 10 },
+  };
 
   const signInMutation = useMutation({
     mutationFn: (data: { userIdentifier: string; password: string }) =>
@@ -83,6 +90,10 @@ function SignIn() {
     flow: "implicit",
   });
 
+  const handleGuestSignIn = () => {
+    router.navigate({ to: redirectUrl, replace: true });
+  };
+
   const form = useForm({
     defaultValues: {
       userIdentifier: "",
@@ -94,12 +105,22 @@ function SignIn() {
     },
   });
 
+  const orDivider = (
+    <div className="flex items-center gap-2">
+      <Divider className="flex-1" />
+      <p className="shrink-0 text-tiny text-default-500">OR</p>
+      <Divider className="flex-1" />
+    </div>
+  );
+
   return (
     <div className="flex h-screen w-full items-center justify-center bg-content1">
-      <div className="flex w-full max-w-sm flex-col gap-4 rounded-large mb-5 px-4 md:px-2">
+      <div className="flex w-full max-w-xs flex-col gap-4 rounded-large mb-5 px-4 md:px-2">
         <div className="flex flex-col items-center pb-3 gap-3">
-          <LogoLight width={80} height={80} />
-          <p className="text text-secondary-700">Sign in to your account</p>
+          <Logo width={40} height={40} />
+          <p className="text-small text-secondary-700">
+            Sign in to your account
+          </p>
         </div>
 
         {serverErrors.length > 0 && (
@@ -117,85 +138,131 @@ function SignIn() {
           />
         )}
 
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            form.handleSubmit();
-          }}
-        >
-          <form.Field name="userIdentifier">
-            {(field) => (
-              <Input
-                isRequired
-                label="Username or Email"
-                type="text"
-                variant="bordered"
-                value={field.state.value}
-                onChange={(e) => field.handleChange(e.target.value)}
-                isDisabled={signInMutation.isPending}
-              />
-            )}
-          </form.Field>
+        <LazyMotion features={domAnimation}>
+          <AnimatePresence mode="wait">
+            {isFormVisible ? (
+              <m.form
+                animate="visible"
+                exit="hidden"
+                initial="hidden"
+                variants={variants}
+                className="flex flex-col gap-4"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  form.handleSubmit();
+                }}
+              >
+                <form.Field name="userIdentifier">
+                  {(field) => (
+                    <Input
+                      isRequired
+                      label="Username or Email"
+                      type="text"
+                      variant="flat"
+                      size="sm"
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      isDisabled={signInMutation.isPending}
+                    />
+                  )}
+                </form.Field>
 
-          <form.Field name="password">
-            {(field) => (
-              <Input
-                isRequired
-                endContent={
-                  <button
-                    type="button"
-                    onClick={() => setIsVisible(!isVisible)}
-                    disabled={signInMutation.isPending}
+                <form.Field name="password">
+                  {(field) => (
+                    <Input
+                      isRequired
+                      endContent={
+                        <button
+                          type="button"
+                          onClick={() => setIsVisible(!isVisible)}
+                          disabled={signInMutation.isPending}
+                        >
+                          {isVisible ? <EyeClosed /> : <Eye />}
+                        </button>
+                      }
+                      label="Password"
+                      type={isVisible ? "text" : "password"}
+                      variant="flat"
+                      size="sm"
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      isDisabled={signInMutation.isPending}
+                    />
+                  )}
+                </form.Field>
+
+                <Button
+                  className="w-full"
+                  color="primary"
+                  type="submit"
+                  isDisabled={signInMutation.isPending}
+                  isLoading={signInMutation.isPending}
+                >
+                  Sign In
+                </Button>
+
+                {orDivider}
+
+                <Button
+                  variant="bordered"
+                  onPress={() => setIsFormVisible(false)}
+                >
+                  Other Sign In options
+                </Button>
+              </m.form>
+            ) : (
+              <m.div
+                animate="visible"
+                exit="hidden"
+                initial="hidden"
+                variants={variants}
+                className="flex flex-col gap-3"
+              >
+                <Button
+                  className="w-full"
+                  color="primary"
+                  startContent={<Mail size={18} />}
+                  onPress={() => setIsFormVisible(true)}
+                >
+                  Continue with Email
+                </Button>
+
+                {orDivider}
+
+                <Button
+                  className="w-full bg-primary-900/90 text-white"
+                  variant="flat"
+                  startContent={<Google width={18} height={18} />}
+                  onPress={() => handleGoogleSignIn()}
+                  isDisabled={googleMutation.isPending}
+                  isLoading={googleMutation.isPending}
+                >
+                  Continue with Google
+                </Button>
+
+                <Button
+                  className="w-full"
+                  variant="flat"
+                  color="secondary"
+                  onPress={handleGuestSignIn}
+                >
+                  Continue as Guest
+                </Button>
+
+                <p className="text-center text-small mt-3">
+                  Don't have an account?{" "}
+                  <Link
+                    to="/auth/sign-up"
+                    className="underline text-primary-500"
                   >
-                    {isVisible ? <EyeClosed /> : <Eye />}
-                  </button>
-                }
-                label="Password"
-                type={isVisible ? "text" : "password"}
-                variant="bordered"
-                value={field.state.value}
-                onChange={(e) => field.handleChange(e.target.value)}
-                isDisabled={signInMutation.isPending}
-              />
+                    Sign Up
+                  </Link>
+                </p>
+              </m.div>
             )}
-          </form.Field>
-
-          <Button
-            className="w-full"
-            color="primary"
-            type="submit"
-            isDisabled={signInMutation.isPending}
-            isLoading={signInMutation.isPending}
-          >
-            Sign In
-          </Button>
-        </form>
-
-        <div className="flex items-center gap-2">
-          <Divider className="flex-1" />
-          <p className="shrink-0 text-tiny text-default-500">OR</p>
-          <Divider className="flex-1" />
-        </div>
-
-        <Button
-          startContent={<Google width={24} height={24} />}
-          variant="flat"
-          className="bg-primary-900/90 text-white"
-          onPress={() => handleGoogleSignIn()}
-          isDisabled={googleMutation.isPending || signInMutation.isPending}
-          isLoading={googleMutation.isPending}
-        >
-          Continue with Google
-        </Button>
-
-        <p className="text-center text-small">
-          Don't have an account?{" "}
-          <Link to="/auth/sign-up" className="underline text-primary-400">
-            Sign Up
-          </Link>
-        </p>
+          </AnimatePresence>
+        </LazyMotion>
       </div>
     </div>
   );

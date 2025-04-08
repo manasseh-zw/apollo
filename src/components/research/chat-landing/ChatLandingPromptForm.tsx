@@ -27,7 +27,7 @@ export default function ChatLandingPromptForm() {
   return (
     <div className="flex flex-col w-full gap-4">
       <form
-        className="flex w-full flex-col items-start bg-white rounded-3xl shadow-[0_2px_4px_0_rgba(0,0,0,0.08)] border border-content2 overflow-hidden"
+        className="flex w-full flex-col items-start bg-white rounded-3xl shadow-[0_2px_4px_0_rgba(0,0,0,0.08)] border border-secondary-100 hover:border-secondary-200 overflow-hidden"
         onSubmit={handleSubmit}
       >
         <div className="w-full">
@@ -50,7 +50,7 @@ export default function ChatLandingPromptForm() {
               variant="light"
               size="sm"
             >
-              Gpt 4
+              Gpt 4o
             </Chip>
           </div>
           <Tooltip showArrow content="Start Research">
