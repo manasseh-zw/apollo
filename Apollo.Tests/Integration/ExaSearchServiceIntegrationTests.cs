@@ -1,6 +1,6 @@
+using Apollo.Config;
 using Apollo.Search;
 using Apollo.Search.Models;
-using Apollo.Config;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
@@ -40,7 +40,7 @@ public class ExaSearchServiceIntegrationTests : IDisposable
     public async Task SearchAsync_RealApi_ReturnsResults()
     {
         // Arrange
-        var request = new SearchRequest
+        var request = new WebSearchRequest
         {
             Query = "artificial intelligence latest developments",
             Type = "neural",
@@ -58,12 +58,15 @@ public class ExaSearchServiceIntegrationTests : IDisposable
         // Assert
         Assert.NotNull(result);
         Assert.NotEmpty(result.Results);
-        Assert.All(result.Results, item =>
-        {
-            Assert.NotNull(item.Title);
-            Assert.NotNull(item.Url);
-            Assert.True(Uri.IsWellFormedUriString(item.Url, UriKind.Absolute));
-        });
+        Assert.All(
+            result.Results,
+            item =>
+            {
+                Assert.NotNull(item.Title);
+                Assert.NotNull(item.Url);
+                Assert.True(Uri.IsWellFormedUriString(item.Url, UriKind.Absolute));
+            }
+        );
     }
 
     [SkipIfNoApiKeyFact]
@@ -83,13 +86,16 @@ public class ExaSearchServiceIntegrationTests : IDisposable
         // Assert
         Assert.NotNull(result);
         Assert.NotEmpty(result.Results);
-        Assert.All(result.Results, item =>
-        {
-            Assert.NotNull(item.Title);
-            Assert.NotNull(item.Url);
-            Assert.True(Uri.IsWellFormedUriString(item.Url, UriKind.Absolute));
-            Assert.NotNull(item.Score);
-            Assert.True(item.Score > 0);
-        });
+        Assert.All(
+            result.Results,
+            item =>
+            {
+                Assert.NotNull(item.Title);
+                Assert.NotNull(item.Url);
+                Assert.True(Uri.IsWellFormedUriString(item.Url, UriKind.Absolute));
+                Assert.NotNull(item.Score);
+                Assert.True(item.Score > 0);
+            }
+        );
     }
 }

@@ -1,6 +1,6 @@
 namespace Apollo.Search.Models;
 
-public class SearchRequest
+public class WebSearchRequest
 {
     public string Query { get; set; } = string.Empty;
     public bool UseAutoprompt { get; set; } = true;

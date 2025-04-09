@@ -1,6 +1,5 @@
 using System.Text;
 using Apollo.Agents.Events;
-using Apollo.Agents.Memory;
 using Apollo.Agents.Plugins;
 using Apollo.Agents.Research;
 using Apollo.Agents.State;
@@ -81,7 +80,6 @@ public static class ServiceExtensions
 
     public static IServiceCollection ConfigureResearch(this IServiceCollection services)
     {
-        services.AddScoped<IVectorStoreService, VectorStoreService>();
         services.AddScoped<IChatStreamingCallback, ChatStreamingCallback>();
         services.AddScoped<SaveResearchPlugin>();
         services.AddScoped<IResearchEventHandler, ResearchEventHandler>();

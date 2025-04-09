@@ -21,9 +21,9 @@ public class ExaSearchServiceTests
     public async Task SearchAsync_ValidRequest_ReturnsSearchResponse()
     {
         // Arrange
-        var expectedResponse = new SearchResponse
+        var expectedResponse = new WebSearchResponse
         {
-            Results = new List<SearchResult>
+            Results = new List<WebSearchResult>
             {
                 new()
                 {
@@ -49,7 +49,7 @@ public class ExaSearchServiceTests
 
         var searchService = new ExaSearchService(httpClient, logger, TestApiKey);
 
-        var request = new SearchRequest
+        var request = new WebSearchRequest
         {
             Query = "test query",
             Type = "neural",
@@ -75,9 +75,9 @@ public class ExaSearchServiceTests
     public async Task FindSimilarAsync_ValidUrl_ReturnsSearchResponse()
     {
         // Arrange
-        var expectedResponse = new SearchResponse
+        var expectedResponse = new WebSearchResponse
         {
-            Results = new List<SearchResult>
+            Results = new List<WebSearchResult>
             {
                 new()
                 {

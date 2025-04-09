@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.3" />
+    <PackageReference Include="Microsoft.KernelMemory.AI.AzureOpenAI" Version="0.98.250324.1" />
+    <PackageReference Include="Microsoft.KernelMemory.Core" Version="0.98.250324.1" />
     <PackageReference Include="Microsoft.SemanticKernel" Version="1.44.0" />
     <PackageReference Include="Microsoft.SemanticKernel.Agents.Core" Version="1.45.0" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.Postgres" Version="1.45.0-preview" />
@@ -16,6 +18,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Apollo.Config\Apollo.Config.csproj" />
     <ProjectReference Include="..\Apollo.Data\Apollo.Data.csproj" />
+    <ProjectReference Include="..\Apollo.Crawler\Apollo.Crawler.csproj" />
+    <ProjectReference Include="..\Apollo.Search\Apollo.Search.csproj" />
   </ItemGroup>
 
 </Project>

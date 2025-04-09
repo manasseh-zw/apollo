@@ -22,7 +22,7 @@ public class ExaSearchService : ISearchService
         _httpClient.DefaultRequestHeaders.Add("x-api-key", apiKey ?? AppConfig.ExaAI.ApiKey);
     }
 
-    public async Task<SearchResponse> SearchAsync(SearchRequest request)
+    public async Task<WebSearchResponse> SearchAsync(WebSearchRequest request)
     {
         _logger?.LogInformation(
             "Sending search request: {Request}",
@@ -44,7 +44,7 @@ public class ExaSearchService : ISearchService
 
         response.EnsureSuccessStatusCode();
         var searchResponse =
-            await response.Content.ReadFromJsonAsync<SearchResponse>()
+            await response.Content.ReadFromJsonAsync<WebSearchResponse>()
             ?? throw new Exception("Failed to deserialize search response");
 
         _logger?.LogInformation(
@@ -58,7 +58,7 @@ public class ExaSearchService : ISearchService
         return searchResponse;
     }
 
-    public async Task<SearchResponse> FindSimilarAsync(string url, int numResults = 10)
+    public async Task<WebSearchResponse> FindSimilarAsync(string url, int numResults = 10)
     {
         _logger?.LogInformation("Sending find similar request for URL: {Url}", url);
 
@@ -74,7 +74,7 @@ public class ExaSearchService : ISearchService
 
         response.EnsureSuccessStatusCode();
         var searchResponse =
-            await response.Content.ReadFromJsonAsync<SearchResponse>()
+            await response.Content.ReadFromJsonAsync<WebSearchResponse>()
             ?? throw new Exception("Failed to deserialize find similar response");
 
         _logger?.LogInformation(

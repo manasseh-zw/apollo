@@ -1,12 +1,12 @@
 namespace Apollo.Search.Models;
 
-public class SearchResponse
+public class WebSearchResponse
 {
-    public List<SearchResult> Results { get; set; } = [];
+    public List<WebSearchResult> Results { get; set; } = [];
     public string SearchType { get; set; } = string.Empty;
 }
 
-public class SearchResult
+public class WebSearchResult
 {
     public string Title { get; set; } = string.Empty;
     public string Url { get; set; } = string.Empty;

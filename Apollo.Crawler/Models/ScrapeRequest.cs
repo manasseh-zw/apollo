@@ -8,9 +8,9 @@ public class ScrapeRequest
     public List<string>? IncludeTags { get; set; }
     public List<string>? ExcludeTags { get; set; }
     public Dictionary<string, string>? Headers { get; set; }
-    public int WaitFor { get; set; }
-    public bool Mobile { get; set; }
-    public bool SkipTlsVerification { get; set; }
+    public int WaitFor { get; set; } = 0;
+    public bool Mobile { get; set; } = false;
+    public bool SkipTlsVerification { get; set; } = false;
     public int Timeout { get; set; } = 30000;
     public List<ScrapeAction>? Actions { get; set; }
     public LocationSettings? Location { get; set; }
