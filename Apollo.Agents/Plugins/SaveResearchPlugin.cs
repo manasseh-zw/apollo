@@ -24,22 +24,27 @@ public class SaveResearchPlugin
         [Description("The userId ")] string userId,
         [Description("The title of the research project.")] string title,
         [Description("A brief description of the research project.")] string description,
-        [Description("The type of research : Casual | Academic | Technical).")] string type,
+        [Description("A list of 5 research questions.")] List<string> questions,
+        [Description("The type of research : Casual | Analytical | Academic).")] string type,
         [Description("The depth of the research : Brief | Standard | Comprehensive.")] string depth
     )
     {
-        var research = new Data.Models.Research()
+        var researchPlan = new ResearchPlan()
         {
-            Title = title,
-            Description = description,
+            Questions = questions,
             Type = Enum.Parse<ResearchType>(type),
             Depth = Enum.Parse<ResearchDepth>(depth),
-            Status = ResearchStatus.InProgress,
-            StartedAt = DateTime.UtcNow,
-            UserId = Guid.Parse(userId),
         };
 
-        await _repository.AddAsync(research);
+        var research = new Data.Models.Research()
+        {
+            UserId = Guid.Parse(userId),
+            Title = title,
+            Description = description,
+            Plan = researchPlan,
+        };
+
+        await _repository.Research.AddAsync(research);
         await _repository.SaveChangesAsync();
 
         await _eventHandler.HandleResearchSaved(

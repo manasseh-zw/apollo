@@ -1,1 +1,0 @@
-namespace Apollo.Agents.Plugins;

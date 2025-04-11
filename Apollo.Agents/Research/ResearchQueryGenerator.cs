@@ -3,7 +3,7 @@ using Microsoft.SemanticKernel.Agents;
 
 namespace Apollo.Agents.Research;
 
-public class QueryStrategist
+public class ResearchQueryGenerator
 {
     public static ChatCompletionAgent Create(Kernel kernel)
     {
@@ -15,7 +15,6 @@ public class QueryStrategist
                 You are an AI assistant that generates effective search engine queries for a specific research question.
                 Analyze the input research question.
                 Generate a list of 3 distinct, concise search queries likely to yield relevant results. Use different keywords and phrasings.
-                Output *only* the list of queries, each on a new line.
                 """,
         };
     }

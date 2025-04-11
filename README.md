@@ -18,3 +18,5 @@ understood that the kernel memory plugin makes chunking, tokenizing and ingestin
 decided against kernel memory for now went with pg vector connector for SK vector store... might add kernel memory in future
 
 so instead of the agents passing data to each other through the chat history we instead have them pass the info around via a shared state and they can mutate this state via a state manager exposed as kernel functions to the plugins
+
+instead of a shared state we could use events to pass around data

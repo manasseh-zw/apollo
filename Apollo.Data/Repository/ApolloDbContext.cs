@@ -3,11 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Apollo.Data.Repository;
 
-public class ApolloDbContext : DbContext
+public class ApolloDbContext(DbContextOptions<ApolloDbContext> options) : DbContext(options)
 {
-    public ApolloDbContext(DbContextOptions<ApolloDbContext> options)
-        : base(options) { }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -15,4 +12,6 @@ public class ApolloDbContext : DbContext
 
     public DbSet<User> Users { get; set; }
     public DbSet<Research> Research { get; set; }
+    public DbSet<ResearchPlan> ResearchPlans { get; set; }
+    public DbSet<ResearchReport> ResearchReports { get; set; }
 }

@@ -4,10 +4,10 @@ namespace Apollo.Agents.State;
 
 public interface IStateManager
 {
-    Task<ResearchState> GetStateAsync(string researchId);
-    Task AddResearchQuestionAsync(string researchId, string question);
-    Task AddProcessedQuestionAsync(string researchId, string question);
-    Task UpdateTableOfContentsAsync(string researchId, List<TocItem> toc);
+    Task<ResearchState> GetState(string researchId);
+    Task AddResearchQuestions(string researchId, List<string> questions);
+    Task AddToProcessedQuestions(string researchId, string questionId);
+    Task UpdateTableOfContents(string researchId, List<TocItem> toc);
 }
 
 public class StateManager : IStateManager
@@ -25,10 +25,10 @@ public class StateManager : IStateManager
         _cache = cache;
     }
 
-    public async Task<ResearchState> GetStateAsync(string researchId)
+    public async Task<ResearchState> GetState(string researchId)
     {
         var key = CacheKeys.ResearchState(researchId);
-        return await _cache.GetOrCreateAsync(
+        return await _cache.GetOrCreate(
             key,
             entry =>
             {
@@ -38,23 +38,29 @@ public class StateManager : IStateManager
         );
     }
 
-    public async Task AddResearchQuestionAsync(string researchId, string question)
+    public async Task AddResearchQuestions(string researchId, List<string> questions)
     {
-        var state = await GetStateAsync(researchId);
-        state.ResearchQuestions.Enqueue(question);
+        var state = await GetState(researchId);
+        questions.ForEach(q =>
+        {
+            state.ResearchQuestions.Enqueue(new(Guid.NewGuid().ToString(), q));
+        });
         _cache.Set(CacheKeys.ResearchState(researchId), state, _cacheTimeout);
     }
 
-    public async Task AddProcessedQuestionAsync(string researchId, string question)
+    public async Task AddToProcessedQuestions(string researchId, string questionId)
     {
-        var state = await GetStateAsync(researchId);
+        var state = await GetState(researchId);
+        var question = state.ResearchQuestions.First(q =>
+            q.Id.Equals(questionId, StringComparison.OrdinalIgnoreCase)
+        );
         state.ProcessedQuestions.Add(question);
         _cache.Set(CacheKeys.ResearchState(researchId), state, _cacheTimeout);
     }
 
-    public async Task UpdateTableOfContentsAsync(string researchId, List<TocItem> toc)
+    public async Task UpdateTableOfContents(string researchId, List<TocItem> toc)
     {
-        var state = await GetStateAsync(researchId);
+        var state = await GetState(researchId);
         state.TableOfContents = toc;
         _cache.Set(CacheKeys.ResearchState(researchId), state, _cacheTimeout);
     }
@@ -62,9 +68,11 @@ public class StateManager : IStateManager
 
 public class ResearchState
 {
-    public Queue<string> ResearchQuestions { get; set; } = [];
-    public List<string> ProcessedQuestions { get; set; } = [];
+    public Queue<ResearchQuestion> ResearchQuestions { get; set; } = [];
+    public List<ResearchQuestion> ProcessedQuestions { get; set; } = [];
     public List<TocItem>? TableOfContents { get; set; }
 }
 
 public record TocItem(string Title, string Description);
+
+public record ResearchQuestion(string Id, string Question);

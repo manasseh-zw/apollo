@@ -16,4 +16,6 @@ public class WebSearchResult
     public string? Text { get; set; }
     public List<string>? Highlights { get; set; }
     public string? Summary { get; set; }
+    public string? Image { get; set; }
+    public string? Favicon { get; set; }
 }
