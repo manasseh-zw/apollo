@@ -7,21 +7,6 @@ public interface IResearchHubClient
     Task ResearchSaved(Guid researchId);
 }
 
-public class ChatStreamingCallback : IChatStreamingCallback
-{
-    private readonly IHubContext<ResearchHub, IResearchHubClient> _hubContext;
-
-    public ChatStreamingCallback(IHubContext<ResearchHub, IResearchHubClient> hubContext)
-    {
-        _hubContext = hubContext;
-    }
-
-    public void OnStreamResponse(string connectionId, string? message)
-    {
-        _hubContext.Clients.Client(connectionId).ReceiveResponse(message ?? string.Empty);
-    }
-}
-
 public class ResearchHub : Hub<IResearchHubClient>
 {
     private readonly IResearchPlanner _assistant;
