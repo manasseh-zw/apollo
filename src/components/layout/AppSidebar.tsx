@@ -12,6 +12,7 @@ import { useMediaQuery } from "usehooks-ts";
 import {
   ChevronLeft,
   ChevronRight,
+  LogOut,
   Menu,
   MinusCircle,
   Sidebar,
@@ -67,15 +68,15 @@ export default function AppSidebar() {
           "justify-center gap-0 pl-0": isCollapsed,
         })}
       >
-        <div className="flex items-center justify-center rounded-full gap-3">
+        <div className="flex items-center justify-center rounded-full gap-2">
           <LogoLight
             width={28}
             height={28}
             className="text-primary-foreground"
           />
           <span
-            className={cn("w-full text-sm font-light uppercase  text-white", {
-              "w-0 opacity-0": isCollapsed,
+            className={cn("w-full uppercase font-geist  text-white", {
+              hidden: isCollapsed,
             })}
           >
             Apollo
@@ -151,7 +152,7 @@ export default function AppSidebar() {
               }
             )}
           >
-            <MinusCircle
+            <LogOut
               className="rotate-180 text-primary-foreground/80 hover:text-primary-foreground"
               size={24}
             />

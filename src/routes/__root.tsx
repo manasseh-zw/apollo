@@ -30,7 +30,7 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   return (
-    <main className="font-rubik ">
+    <main className="font-rubik">
       <Outlet />
       {!import.meta.env.PROD && (
         <TanStackRouterDevtools position="bottom-right" />

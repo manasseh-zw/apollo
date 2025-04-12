@@ -12,6 +12,7 @@ export default {
     extend: {
       fontFamily: {
         rubik: ["Rubik", "serif"],
+        geist: ["Geist", "sans-serif"],
       },
     },
   },

@@ -128,7 +128,7 @@ export default function ResearchChat() {
 
   return (
     <div className="flex flex-col h-full max-w-3xl mx-auto">
-      <div className="flex-1 p-4 space-y-9">
+      <div className="flex-1 p-4 space-y-9 font-geist">
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center text-gray-500">

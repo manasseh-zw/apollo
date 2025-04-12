@@ -245,7 +245,7 @@ function SignUp() {
                 </Button>
 
                 <Button
-                  className="w-full"
+                  className="w-full text-primary"
                   variant="flat"
                   color="secondary"
                   onPress={handleGuestSignIn}
