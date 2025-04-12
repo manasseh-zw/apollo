@@ -1,0 +1,115 @@
+using System.ComponentModel;
+using Apollo.Agents.State;
+using Microsoft.Extensions.Logging;
+using Microsoft.SemanticKernel;
+
+namespace Apollo.Agents.Plugins;
+
+public class StatePlugin
+{
+    private readonly IStateManager _state;
+    private readonly ILogger<StatePlugin> _logger;
+    private readonly string _researchId;
+
+    public StatePlugin(IStateManager state, ILogger<StatePlugin> logger, string researchId)
+    {
+        _state = state;
+        _logger = logger;
+        _researchId = researchId;
+    }
+
+    [KernelFunction]
+    [Description("Gets the details of the currently active research question.")]
+    public (string, string) GetActiveResearchQuestion()
+    {
+        var state = _state.GetState(_researchId);
+        var activeQuestion = state?.GetActiveQuestion();
+        if (activeQuestion != null)
+        {
+            _logger.LogInformation(
+                "[{ResearchId}] Getting active question: {QuestionId}",
+                _researchId,
+                activeQuestion.Id
+            );
+            return (activeQuestion.Id, activeQuestion.Text);
+        }
+        _logger.LogWarning("[{ResearchId}] No active question found.", _researchId);
+        return ("No active research question.", "");
+    }
+
+    [KernelFunction]
+    [Description(
+        "Marks the currently active research question as fully processed by the Research Engine (searched, ranked, crawled, ingested)."
+    )]
+    public void MarkActiveQuestionComplete()
+    {
+        _logger.LogInformation(
+            "[{ResearchId}] Attempting to mark active question complete via StatePlugin.",
+            _researchId
+        );
+        _state.CompleteActiveQuestion(_researchId);
+    }
+
+    [KernelFunction]
+    [Description(
+        "Adds newly identified research questions to the list of pending questions to address any identified knowledge gaps. Called by ResearchAnalyzer."
+    )]
+    public void AddGapAnalysisQuestions(
+        [Description("The text of the new research question.")] List<string> newQuestions
+    )
+    {
+        if (!newQuestions.Any())
+            return;
+
+        _logger.LogInformation($"for {_researchId} Adding gap {newQuestions.Count} questions  ");
+        newQuestions.ForEach(q =>
+        {
+            _state.AddPendingQuestions(_researchId, newQuestions);
+        });
+    }
+
+    [KernelFunction]
+    [Description(
+        "Checks if there are any pending research questions left to process. Called by ResearchCoordinator."
+    )]
+    public bool AnyPendingQuestionsRemaining()
+    {
+        var state = _state.GetState(_researchId);
+        bool remaining = state?.PendingResearchQuestions?.Any(q => !q.IsProcessed) ?? false;
+        _logger.LogDebug(
+            "[{ResearchId}] Checking pending questions remaining: {Remaining}",
+            _researchId,
+            remaining
+        );
+        return remaining;
+    }
+
+    [KernelFunction]
+    [Description(
+        "Checks if the research process requires analysis for knowledge gaps. Called by ResearchCoordinator after all initial questions are processed."
+    )]
+    public bool DoesResearchNeedAnalysis()
+    {
+        var state = _state.GetState(_researchId);
+        bool needsAnalysis = state?.NeedsAnalysis ?? false;
+        _logger.LogDebug(
+            "[{ResearchId}] Checking if research needs analysis: {NeedsAnalysis}",
+            _researchId,
+            needsAnalysis
+        );
+        return needsAnalysis;
+    }
+
+    [KernelFunction]
+    [Description(
+        "Marks the final report synthesis as complete, effectively ending the research process. Called by ReportSynthesizer."
+    )]
+    public void MarkSynthesisCompleteAsync(CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation(
+            "[{ResearchId}] Marking synthesis complete via StatePlugin.",
+            _researchId
+        );
+        _state.MarkResearchComplete(_researchId);
+    }
+}

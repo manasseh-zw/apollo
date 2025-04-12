@@ -1,5 +1,6 @@
 using System.Text;
 using Apollo.Agents.Events;
+using Apollo.Agents.Helpers;
 using Apollo.Agents.Plugins;
 using Apollo.Agents.Research;
 using Apollo.Agents.State;

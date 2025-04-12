@@ -5,7 +5,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Apollo.Agents.State;
 
-public interface IStateManager { }
+public interface IStateManager
+{
+    Task<ResearchState> GetOrCreateState(string researchId, Func<Task<ResearchState>> factory);
+    ResearchState GetState(string researchId);
+    void UpdateState(string researchId, Action<ResearchState> updateAction);
+    string SetNextPendingQuestionAsActive(string researchId);
+    void CompleteActiveQuestion(string researchId);
+    void MarkResearchComplete(string researchId);
+    void AddPendingQuestions(string researchId, List<string> newQuestions);
+}
 
 public class StateManager : IStateManager
 {
@@ -108,7 +117,7 @@ public class StateManager : IStateManager
         return nextQuestionId;
     }
 
-    public void CompleteActiveQuestionAsync(string researchId)
+    public void CompleteActiveQuestion(string researchId)
     {
         if (
             _cache.TryGetValue(researchId, out ResearchState? state)
@@ -140,6 +149,42 @@ public class StateManager : IStateManager
                     researchId
                 );
             }
+        }
+    }
+
+    public void AddPendingQuestions(string researchId, List<string> newQuestions)
+    {
+        if (newQuestions == null || !newQuestions.Any())
+            return;
+
+        if (_cache.TryGetValue(researchId, out ResearchState? state))
+        {
+            _ = state ?? throw new Exception($"Research state not found for ID: {researchId}");
+            foreach (var q in newQuestions)
+            {
+                state.PendingResearchQuestions.Add(
+                    new()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Text = q,
+                        IsProcessed = false,
+                    }
+                );
+                _logger.LogInformation(
+                    "Added new pending question to {ResearchId}: '{QuestionText}'",
+                    researchId,
+                    q
+                );
+            }
+            state.NeedsAnalysis = false;
+            _cache.Set(researchId, state, _cacheTimeout);
+        }
+        else
+        {
+            _logger.LogWarning(
+                "AddPendingQuestionsAsync: State not found for {ResearchId}",
+                researchId
+            );
         }
     }
 
@@ -180,10 +225,7 @@ public class ResearchState
 
 public class ResearchQuestion
 {
-    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public required string Id { get; set; }
     public required string Text { get; set; }
-    public List<string> SearchQueries { get; set; } = [];
-    public List<WebSearchResult> SearchResults { get; set; } = [];
-    public List<WebSearchResult> RankedSearchResults { get; set; } = [];
-    public bool IsProcessed { get; set; } = false;
-}
+    public bool IsProcessed { get; set; }
+};
