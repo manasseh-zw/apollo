@@ -150,7 +150,7 @@ public class ResearchPlanner : IResearchPlanner
                 )
             )
             {
-                _streamingCallback.StreamPlannerResponse(connectionId, chunk.Content);
+                _streamingCallback.StreamPlannerResponse(connectionId, chunk.Content ?? "");
                 responseBuffer.Append(chunk.Content);
             }
 
@@ -181,19 +181,11 @@ public class ResearchPlanner : IResearchPlanner
 
 public class ChatState
 {
-    public string SessionId { get; set; }
+    public required string SessionId { get; set; }
 
-    public string ConnectionId { get; set; }
+    public required string ConnectionId { get; set; }
 
-    public string UserId { get; set; }
+    public required string UserId { get; set; }
 
     public ChatHistory ChatHistory { get; set; } = [];
-}
-
-internal class ResearchPlanResponse
-{
-    public string Title { get; set; }
-    public string Description { get; set; }
-    public string Type { get; set; }
-    public string Depth { get; set; }
 }

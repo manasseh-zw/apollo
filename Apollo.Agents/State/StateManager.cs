@@ -1,78 +1,189 @@
+using System.Collections.Concurrent;
+using Apollo.Search.Models;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 
 namespace Apollo.Agents.State;
 
-public interface IStateManager
-{
-    Task<ResearchState> GetState(string researchId);
-    Task AddResearchQuestions(string researchId, List<string> questions);
-    Task AddToProcessedQuestions(string researchId, string questionId);
-    Task UpdateTableOfContents(string researchId, List<TocItem> toc);
-}
+public interface IStateManager { }
 
 public class StateManager : IStateManager
 {
     private readonly IMemoryCache _cache;
+    private readonly ILogger<StateManager> _logger;
     private static readonly TimeSpan _cacheTimeout = TimeSpan.FromHours(1);
 
-    private static class CacheKeys
-    {
-        public static string ResearchState(string researchId) => $"research_state_{researchId}";
-    }
-
-    public StateManager(IMemoryCache cache)
+    public StateManager(IMemoryCache cache, ILogger<StateManager> logger)
     {
         _cache = cache;
+        _logger = logger;
     }
 
-    public async Task<ResearchState> GetState(string researchId)
+    public async Task<ResearchState> GetOrCreateState(
+        string researchId,
+        Func<Task<ResearchState>> factory
+    )
     {
-        var key = CacheKeys.ResearchState(researchId);
-        return await _cache.GetOrCreate(
-            key,
-            entry =>
+        return await _cache.GetOrCreateAsync(
+                researchId,
+                async entry =>
+                {
+                    entry.SlidingExpiration = _cacheTimeout; // Keep state for a while
+                    _logger.LogInformation(
+                        "Creating new research state for ID: {ResearchId}",
+                        researchId
+                    );
+                    return await factory();
+                }
+            ) ?? throw new Exception("research state is null");
+    }
+
+    public ResearchState GetState(string researchId)
+    {
+        if (_cache.TryGetValue(researchId, out ResearchState? state))
+        {
+            return state ?? throw new Exception($"Research state not found for ID: {researchId}");
+        }
+        _logger.LogError("Research state not found for ID: {ResearchId}", researchId);
+        throw new Exception($"Research state not found for ID: {researchId}");
+    }
+
+    public void UpdateState(string researchId, Action<ResearchState> updateAction)
+    {
+        if (_cache.TryGetValue(researchId, out ResearchState? state))
+        {
+            _ = state ?? throw new Exception($"Research state not found for ID: {researchId}");
+            updateAction(state);
+
+            _cache.Set(researchId, state, _cacheTimeout);
+            _logger.LogDebug("Research state updated for ID: {ResearchId}", researchId);
+        }
+        else
+        {
+            _logger.LogError(
+                "Attempted to update non-existent state for ID: {ResearchId}",
+                researchId
+            );
+        }
+    }
+
+    //plugin functions
+    public string SetNextPendingQuestionAsActive(string researchId)
+    {
+        string nextQuestionId = string.Empty;
+
+        if (_cache.TryGetValue(researchId, out ResearchState? state))
+        {
+            _ = state ?? throw new Exception($"Research state not found for ID: {researchId}");
+            var nextQuestion = state.PendingResearchQuestions.FirstOrDefault(q => !q.IsProcessed);
+            if (nextQuestion != null)
             {
-                entry.SlidingExpiration = _cacheTimeout;
-                return Task.FromResult(new ResearchState());
+                state.ActiveQuestionId = nextQuestion.Id;
+                nextQuestionId = nextQuestion.Id;
+                _logger.LogInformation(
+                    "Set active question for {ResearchId} to {QuestionId}",
+                    researchId,
+                    nextQuestionId
+                );
+            }
+            else
+            {
+                state.ActiveQuestionId = null; // No more pending questions
+                state.NeedsAnalysis = true; // Signal to move to analysis phase
+                _logger.LogInformation(
+                    "No more pending questions for {ResearchId}. Setting NeedsAnalysis flag.",
+                    researchId
+                );
+            }
+            _cache.Set(researchId, state, TimeSpan.FromHours(2)); // Update cache
+        }
+        else
+        {
+            _logger.LogWarning(
+                "SetNextPendingQuestionAsActiveAsync: State not found for {ResearchId}",
+                researchId
+            );
+        }
+
+        return nextQuestionId;
+    }
+
+    public void CompleteActiveQuestionAsync(string researchId)
+    {
+        if (
+            _cache.TryGetValue(researchId, out ResearchState? state)
+            && !string.IsNullOrEmpty(state?.ActiveQuestionId)
+        )
+        {
+            _ = state ?? throw new Exception($"Research state not found for ID: {researchId}");
+            var activeQuestion = state.PendingResearchQuestions.FirstOrDefault(q =>
+                q.Id == state.ActiveQuestionId
+            );
+            if (activeQuestion != null)
+            {
+                activeQuestion.IsProcessed = true;
+                state.CompletedResearchQuestions.Add(activeQuestion);
+                state.PendingResearchQuestions.Remove(activeQuestion);
+                state.ActiveQuestionId = null; // Ready for the next one
+                _logger.LogInformation(
+                    "Completed question {QuestionId} for {ResearchId}",
+                    activeQuestion.Id,
+                    researchId
+                );
+                _cache.Set(researchId, state, _cacheTimeout); // Update cache
+            }
+            else
+            {
+                _logger.LogWarning(
+                    "CompleteActiveQuestionAsync: Active question {ActiveQuestionId} not found in pending list for {ResearchId}",
+                    state.ActiveQuestionId,
+                    researchId
+                );
+            }
+        }
+    }
+
+    public void MarkResearchComplete(string researchId)
+    {
+        UpdateState(
+            researchId,
+            state =>
+            {
+                state.IsComplete = true;
+                state.SynthesisComplete = true;
+                _logger.LogInformation("Marking research {ResearchId} as complete.", researchId);
             }
         );
-    }
-
-    public async Task AddResearchQuestions(string researchId, List<string> questions)
-    {
-        var state = await GetState(researchId);
-        questions.ForEach(q =>
-        {
-            state.ResearchQuestions.Enqueue(new(Guid.NewGuid().ToString(), q));
-        });
-        _cache.Set(CacheKeys.ResearchState(researchId), state, _cacheTimeout);
-    }
-
-    public async Task AddToProcessedQuestions(string researchId, string questionId)
-    {
-        var state = await GetState(researchId);
-        var question = state.ResearchQuestions.First(q =>
-            q.Id.Equals(questionId, StringComparison.OrdinalIgnoreCase)
-        );
-        state.ProcessedQuestions.Add(question);
-        _cache.Set(CacheKeys.ResearchState(researchId), state, _cacheTimeout);
-    }
-
-    public async Task UpdateTableOfContents(string researchId, List<TocItem> toc)
-    {
-        var state = await GetState(researchId);
-        state.TableOfContents = toc;
-        _cache.Set(CacheKeys.ResearchState(researchId), state, _cacheTimeout);
     }
 }
 
 public class ResearchState
 {
-    public Queue<ResearchQuestion> ResearchQuestions { get; set; } = [];
-    public List<ResearchQuestion> ProcessedQuestions { get; set; } = [];
-    public List<TocItem>? TableOfContents { get; set; }
+    public required string ResearchId { get; set; }
+    public required string Title { get; set; }
+    public required string Description { get; set; }
+    public List<ResearchQuestion> PendingResearchQuestions { get; set; } = [];
+    public List<ResearchQuestion> CompletedResearchQuestions { get; set; } = [];
+    public string? ActiveQuestionId { get; set; }
+    public ConcurrentBag<string> CrawledUrls { get; set; } = [];
+    public List<string> TableOfContents { get; set; } = [];
+    public bool IsComplete { get; set; } = false;
+    public bool NeedsAnalysis { get; set; } = false;
+    public bool SynthesisComplete { get; set; } = false;
+
+    public ResearchQuestion GetActiveQuestion()
+    {
+        return PendingResearchQuestions.FirstOrDefault(q => q.Id == ActiveQuestionId)
+            ?? CompletedResearchQuestions.First(q => q.Id == ActiveQuestionId);
+    }
 }
 
-public record TocItem(string Title, string Description);
-
-public record ResearchQuestion(string Id, string Question);
+public class ResearchQuestion
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public required string Text { get; set; }
+    public List<string> SearchQueries { get; set; } = [];
+    public List<WebSearchResult> SearchResults { get; set; } = [];
+    public List<WebSearchResult> RankedSearchResults { get; set; } = [];
+    public bool IsProcessed { get; set; } = false;
+}
