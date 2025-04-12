@@ -5,6 +5,8 @@ public interface IResearchHubClient
 {
     Task ReceiveResponse(string response);
     Task ResearchSaved(Guid researchId);
+    Task RecieveAgentChatUpdate(string response);
+    Task RecieveCrawlProgressUpdate(string update);
 }
 
 public class ResearchHub : Hub<IResearchHubClient>
@@ -28,5 +30,15 @@ public class ResearchHub : Hub<IResearchHubClient>
             return;
 
         await _assistant.StartChatSession(sessionId, initialQuery, Context.ConnectionId, userId);
+    }
+
+    public async Task JoinResearchStream(string researchId)
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, researchId);
+    }
+
+    public async Task LeaveResearchStream(string researchId)
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, researchId);
     }
 }

@@ -21,11 +21,6 @@ public interface IResearchPlanner
     Task ContinueChatSession(string message, string connectionId);
 }
 
-public interface IChatStreamingCallback
-{
-    void OnStreamResponse(string connectionId, string? message);
-}
-
 public class ResearchPlanner : IResearchPlanner
 {
     private readonly Kernel _kernel;
@@ -155,7 +150,7 @@ public class ResearchPlanner : IResearchPlanner
                 )
             )
             {
-                _streamingCallback.OnStreamResponse(connectionId, chunk.Content);
+                _streamingCallback.StreamPlannerResponse(connectionId, chunk.Content);
                 responseBuffer.Append(chunk.Content);
             }
 

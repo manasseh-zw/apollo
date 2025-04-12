@@ -1,4 +1,4 @@
-using Apollo.Agents.Research;
+using Apollo.Agents.Helpers;
 using Microsoft.AspNetCore.SignalR;
 
 public class ChatStreamingCallback : IChatStreamingCallback
@@ -10,8 +10,18 @@ public class ChatStreamingCallback : IChatStreamingCallback
         _hubContext = hubContext;
     }
 
-    public void OnStreamResponse(string connectionId, string? message)
+    public void StreamPlannerResponse(string connectionId, string? message)
     {
         _hubContext.Clients.Client(connectionId).ReceiveResponse(message ?? string.Empty);
+    }
+
+    public void StreamAgentResponse(string researchId, string message)
+    {
+        _hubContext.Clients.Group(researchId).RecieveAgentChatUpdate(message);
+    }
+
+    public void SendCrawlProgressUpdate(string researchId, string update)
+    {
+        _hubContext.Clients.Group(researchId).RecieveCrawlProgressUpdate(update);
     }
 }
