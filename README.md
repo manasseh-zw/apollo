@@ -17,6 +17,11 @@ understood that the kernel memory plugin makes chunking, tokenizing and ingestin
 
 decided against kernel memory for now went with pg vector connector for SK vector store... might add kernel memory in future
 
+decided to return back to kernel memory its fits my use case much more, even has native web page ingestion which is epic.
+
 so instead of the agents passing data to each other through the chat history we instead have them pass the info around via a shared state and they can mutate this state via a state manager exposed as kernel functions to the plugins
 
 instead of a shared state we could use events to pass around data
+
+decided to go fully agentic, consolidated the the query gen to ingestion agents into one research engine agent
+

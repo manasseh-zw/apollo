@@ -1,9 +1,10 @@
+using Apollo.Agents.State;
 using Apollo.Crawler;
 using Microsoft.KernelMemory.DataFormats.WebPages;
 
 namespace Apollo.Agents.Memory;
 
-public class KernelMemoryScraperService(ICrawlerService _crawler) : IWebScraper
+public class WebScraperService(ICrawlerService _crawler) : IWebScraper
 {
     public async Task<WebScraperResult> GetContentAsync(
         string url,

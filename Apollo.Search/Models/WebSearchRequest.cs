@@ -6,6 +6,6 @@ public class WebSearchRequest
     public bool UseAutoprompt { get; set; } = true;
     public string Type { get; set; } = "auto";
     public string? Category { get; set; }
-    public int NumResults { get; set; } = 10;
+    public int NumResults { get; set; } = 5;
     public bool IncludeText { get; set; } = false;
 }

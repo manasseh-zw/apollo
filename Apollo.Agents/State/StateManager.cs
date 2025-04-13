@@ -210,7 +210,7 @@ public class ResearchState
     public List<ResearchQuestion> PendingResearchQuestions { get; set; } = [];
     public List<ResearchQuestion> CompletedResearchQuestions { get; set; } = [];
     public string? ActiveQuestionId { get; set; }
-    public ConcurrentBag<string> CrawledUrls { get; set; } = [];
+    public List<string> CrawledUrls { get; set; } = [];
     public List<string> TableOfContents { get; set; } = [];
     public bool IsComplete { get; set; } = false;
     public bool NeedsAnalysis { get; set; } = false;

@@ -38,7 +38,12 @@ public class ExaSearchService : ISearchService
                 type = request.Type,
                 category = request.Category,
                 numResults = request.NumResults,
-                contents = new { text = request.IncludeText },
+                contents = new
+                {
+                    text = request.IncludeText,
+                    summary = true,
+                    livecrawl = "always",
+                },
             }
         );
 

@@ -38,7 +38,7 @@ public class MemoryContext : IMemoryContext
                 }
             )
             .WithSimpleQueuesPipeline()
-            .WithCustomWebScraper<KernelMemoryScraperService>()
+            .WithCustomWebScraper<WebScraperService>()
             .Build<MemoryServerless>();
     }
 
@@ -46,7 +46,9 @@ public class MemoryContext : IMemoryContext
     {
         var tags = new TagCollection
         {
-            { "ResearchId", request.ResearchId },
+            { "ResearchId", request.searchContext.ResearchId },
+            { "ResearchQuestion", request.searchContext.ResearchQuestion },
+            { "SearchQuery", request.searchContext.Query },
             { "Title", request.SearchResult.Title },
             { "PublicationDate", request.SearchResult.PublishedDate },
             { "Author", request.SearchResult.Author },
@@ -61,4 +63,6 @@ public class MemoryContext : IMemoryContext
     }
 }
 
-public record WebCrawlRequest(string ResearchId, WebSearchResult SearchResult);
+public record WebCrawlRequest(WebSearchContext searchContext, WebSearchResult SearchResult);
+
+public record WebSearchContext(string ResearchId, string ResearchQuestion, string Query);
