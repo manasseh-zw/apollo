@@ -5,7 +5,7 @@ using Microsoft.SemanticKernel;
 
 namespace Apollo.Agents.Plugins;
 
-
+/// <summary>
 /// Plugin providing functions to interact with Kernel Memory.
 /// </summary>
 public class KernelMemoryPlugin
