@@ -1,5 +1,3 @@
-using System.Collections.Concurrent;
-using Apollo.Search.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
