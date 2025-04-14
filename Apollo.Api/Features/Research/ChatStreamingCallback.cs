@@ -20,7 +20,7 @@ public class ChatStreamingCallback : IChatStreamingCallback
         _hubContext.Clients.Group(researchId).RecieveAgentChatUpdate(message);
     }
 
-    public void SendCrawlProgressUpdate(string researchId, string update)
+    public void SendResearchProgressUpdate(string researchId, string update)
     {
         _hubContext.Clients.Group(researchId).RecieveCrawlProgressUpdate(update);
     }

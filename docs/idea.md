@@ -41,6 +41,7 @@ AgentGroupChat
         - Within the crawler plugin we are using kernel memory with a custom webcrawler implementation and ingesting the cralwed sites via firecrawl service into our memory store (here we update the state crawled urls)... for each crawl we publish the search result being crawled via our in memory event message bus (using .net channels) this allows us to show updates on teh client of the website we are currely crawling and some highlihts and summary we got from there.
     -Now the crawler makes the group chat know that its done and has crawled and ingested all the search results that i got hence this question is done
     - the Coordinator slection agent then picks this up and lets the group chat know that we are moving on to the next question... and we repeat the same cyle for all questions untill we finish.
+    - edit(i decided to merge the query generator, web searcher, reranker and crawler into 1 research engine agent to avoid complex state management)
 
     - Once we are done with all the questions the coordinator checks the state to see if ther eare any mroe research questions if not then all questions are processed..
     - Now this is where the researchAnalyser agent comes into play the coodinator asks the rsearch analyser to see if there are any knowledge gaps within all the information we have gathered and whether or not it addressed the users research topic query.
@@ -48,3 +49,7 @@ AgentGroupChat
         - if it is satisfied the research analyzer then tells the coodinator that we're good,
             - in which case the coodinator calls the Report synthesizer agent which has direct access to the kernel memory and compiles the final comprehensive reprot with all the information within memory and adds citations to the sources of the data etc! and resaerch is complete!
         - if the resaerch analyzer is not satisfied it updates the state and adds new research questions to address this knowledge gap it identified, the coordinator then picks up these questions as it did all the onthers ones and we process them until we have filled in all the gaps and the resaerch is complete
+
+UX/UI ideas
+
+now instaed of showing the left panel show a screenshot of the website being currently crawled and shoing highlights and summary, we show a thread of the current web search and crawl activity this make it much cleaner since for some websites we arent guarnteed to get the screenshots

@@ -43,23 +43,27 @@ public class ResearchProcessorPlugin
         var crawledUrls = state.CrawledUrls;
         var crawledUrlSet = new HashSet<string>(crawledUrls, StringComparer.OrdinalIgnoreCase);
 
+        //using nested foreach here for easier debugging, will optimize to task.whenall later
         foreach (var query in queries)
         {
-            _streamingCallback.SendCrawlProgressUpdate(researchId, $"Searching web for: {query}");
+            _streamingCallback.SendResearchProgressUpdate(
+                researchId,
+                $"Searching web for: {query}"
+            );
             var searchResponse = await PerformWebSearch(query);
 
             foreach (var result in searchResponse.Results)
             {
                 if (crawledUrlSet.Contains(result.Url))
                 {
-                    _streamingCallback.SendCrawlProgressUpdate(
+                    _streamingCallback.SendResearchProgressUpdate(
                         researchId,
                         $"Skipping already processed URL: {result.Url}"
                     );
                     continue;
                 }
 
-                _streamingCallback.SendCrawlProgressUpdate(
+                _streamingCallback.SendResearchProgressUpdate(
                     researchId,
                     $"Processing: {result.Title} from {result.Url}"
                 );
@@ -76,7 +80,7 @@ public class ResearchProcessorPlugin
                 );
 
                 crawledUrlSet.Add(result.Url);
-                _streamingCallback.SendCrawlProgressUpdate(
+                _streamingCallback.SendResearchProgressUpdate(
                     researchId,
                     $"Successfully processed: {result.Title}"
                 );
