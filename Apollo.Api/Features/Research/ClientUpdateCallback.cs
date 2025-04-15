@@ -15,13 +15,13 @@ public class ClientUpdateCallback : IClientUpdateCallback
         _hubContext.Clients.Client(connectionId).ReceiveResponse(message ?? string.Empty);
     }
 
-    public void StreamAgentResponse(string researchId, string message)
+    public void StreamAgentMessage(string researchId, string author, string message)
     {
-        _hubContext.Clients.Group(researchId).RecieveAgentChatUpdate(message);
+        _hubContext.Clients.Group(researchId).RecieveAgentMessage(author, message);
     }
 
     public void SendResearchProgressUpdate(string researchId, string update)
     {
-        _hubContext.Clients.Group(researchId).RecieveCrawlProgressUpdate(update);
+        _hubContext.Clients.Group(researchId).RecieveResearchProgressUpdate(update);
     }
 }

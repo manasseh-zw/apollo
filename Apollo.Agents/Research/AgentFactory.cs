@@ -47,18 +47,18 @@ public static class AgentFactory
         }
         kernel.Plugins.AddFromType<TimePlugin>();
 
-        var executionSettings = new OpenAIPromptExecutionSettings
+        var executionSettings = new PromptExecutionSettings
         {
-            ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions,
+            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
         };
 
-        //add research id as agent instruction param
         return new ChatCompletionAgent()
         {
             Kernel = kernel,
             Id = agentName,
             Name = agentName,
             Instructions = instructions,
+            Arguments = new KernelArguments(executionSettings),
         };
     }
 
@@ -82,7 +82,7 @@ public static class AgentFactory
         IStateManager sm,
         IClientUpdateCallback cb,
         string researchId,
-        KernelPlugin researchProcessorPlugin
+        KernelPlugin researchEnginePlugin
     ) =>
         CreateAgent(
             kb,
@@ -91,7 +91,7 @@ public static class AgentFactory
             researchId,
             ResearchEngineAgentName,
             Prompts.ResearchEngine,
-            [researchProcessorPlugin]
+            [researchEnginePlugin]
         );
 
     public static ChatCompletionAgent CreateResearchAnalyzer(

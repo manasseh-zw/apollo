@@ -5,8 +5,8 @@ public interface IResearchHubClient
 {
     Task ReceiveResponse(string response);
     Task ResearchSaved(Guid researchId);
-    Task RecieveAgentChatUpdate(string response);
-    Task RecieveCrawlProgressUpdate(string update);
+    Task RecieveAgentMessage(string author, string message);
+    Task RecieveResearchProgressUpdate(string update);
 }
 
 public class ResearchHub : Hub<IResearchHubClient>
