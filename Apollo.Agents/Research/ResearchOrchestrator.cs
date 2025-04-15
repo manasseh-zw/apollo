@@ -19,7 +19,7 @@ public class ResearchOrchestrator
     private readonly IClientUpdateCallback _clientUpdate;
     private readonly IStateManager _state;
     private readonly IResearchManager _manager;
-    private readonly ResearchProcessorPlugin _processor;
+    private readonly ResearchEnginePlugin _processor;
     private readonly KernelMemoryPlugin _memory;
 
     public ResearchOrchestrator(
@@ -28,7 +28,7 @@ public class ResearchOrchestrator
         IClientUpdateCallback clientUpdate,
         IStateManager state,
         IResearchManager manager,
-        ResearchProcessorPlugin processor,
+        ResearchEnginePlugin processor,
         KernelMemoryPlugin memory
     )
     {
@@ -41,7 +41,7 @@ public class ResearchOrchestrator
         _memory = memory;
     }
 
-    public async Task StartReserchProcessAsync(string researchId)
+    public async Task StartResearchProcessAsync(string researchId)
     {
         _logger.LogInformation("Starting research for ID:{researchId}", researchId);
 

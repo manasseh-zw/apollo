@@ -1,6 +1,7 @@
 using System.Text;
 using Apollo.Agents.Events;
 using Apollo.Agents.Helpers;
+using Apollo.Agents.Memory;
 using Apollo.Agents.Plugins;
 using Apollo.Agents.Research;
 using Apollo.Agents.State;
@@ -41,19 +42,12 @@ public static class ServiceExtensions
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         SaveSigninToken = true,
-
                         ValidateIssuer = true,
-
                         ValidateAudience = true,
-
                         ValidateLifetime = true,
-
                         ValidateIssuerSigningKey = true,
-
                         ValidIssuer = AppConfig.JwtOptions.Issuer,
-
                         ValidAudience = AppConfig.JwtOptions.Audience,
-
                         IssuerSigningKey = new SymmetricSecurityKey(
                             Encoding.UTF8.GetBytes(AppConfig.JwtOptions.Secret)
                         ),
@@ -90,12 +84,17 @@ public static class ServiceExtensions
         services.AddScoped<ISearchService, ExaSearchService>();
         services.AddScoped<ICrawlerService, FirecrawlService>();
         services.AddSingleton<IStateManager, StateManager>();
-        
+
         services.AddScoped<IMemoryContext, MemoryContext>();
         services.AddScoped<KernelMemoryPlugin>();
-        services.AddScoped<ResearchProcessorPlugin>();
+        services.AddScoped<ResearchEnginePlugin>();
         services.AddScoped<IResearchManager, ResearchManager>();
         services.AddScoped<ResearchOrchestrator>();
+
+        services.AddSingleton<IResearchProcessor, ResearchProcessor>();
+        services.AddHostedService(sp =>
+            (ResearchProcessor)sp.GetRequiredService<IResearchProcessor>()
+        );
 
         services.AddMemoryCache();
         services.AddLogging(builder =>

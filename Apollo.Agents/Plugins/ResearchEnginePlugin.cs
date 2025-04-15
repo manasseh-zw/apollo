@@ -9,14 +9,14 @@ using Microsoft.SemanticKernel;
 namespace Apollo.Agents.Plugins;
 
 #pragma warning disable KMEXP01
-public class ResearchProcessorPlugin
+public class ResearchEnginePlugin
 {
     private readonly IMemoryContext _memory;
     private readonly IStateManager _state;
     private readonly ISearchService _search;
     private readonly IClientUpdateCallback _clientUpdate;
 
-    public ResearchProcessorPlugin(
+    public ResearchEnginePlugin(
         ISearchService search,
         IMemoryContext memory,
         IStateManager state,
