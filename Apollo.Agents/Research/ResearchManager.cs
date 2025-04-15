@@ -9,16 +9,22 @@ namespace Apollo.Agents.Research;
 #pragma warning disable SKEXP0110
 #pragma warning disable SKEXP0001
 
-public class ResearchCoordination
+public interface IResearchManager
+{
+    Agent? SelectNextAgent(AgentGroupChat chat, IReadOnlyList<ChatMessageContent> history);
+    bool CheckTermination(AgentGroupChat chat, IReadOnlyList<ChatMessageContent> history);
+}
+
+public class ResearchManager : IResearchManager
 {
     private readonly IStateManager _state;
-    private readonly ILogger<ResearchCoordination> _logger;
+    private readonly ILogger<ResearchManager> _logger;
     private readonly string _researchId;
     private readonly Dictionary<string, Agent> _agents;
 
-    public ResearchCoordination(
+    public ResearchManager(
         IStateManager state,
-        ILogger<ResearchCoordination> logger,
+        ILogger<ResearchManager> logger,
         string researchId,
         Dictionary<string, Agent> agents
     )

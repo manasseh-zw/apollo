@@ -20,7 +20,7 @@ public static class AgentFactory
     public static ChatCompletionAgent CreateAgent(
         IKernelBuilder kernelBuilder,
         IStateManager state,
-        IChatStreamingCallback streamingCallback,
+        IClientUpdateCallback streamingCallback,
         string researchId,
         string agentName,
         string instructions,
@@ -65,7 +65,7 @@ public static class AgentFactory
     public static ChatCompletionAgent CreateResearchCoordinator(
         IKernelBuilder kb,
         IStateManager sm,
-        IChatStreamingCallback cb,
+        IClientUpdateCallback cb,
         string researchId
     ) =>
         CreateAgent(
@@ -80,7 +80,7 @@ public static class AgentFactory
     public static ChatCompletionAgent CreateResearchEngine(
         IKernelBuilder kb,
         IStateManager sm,
-        IChatStreamingCallback cb,
+        IClientUpdateCallback cb,
         string researchId,
         KernelPlugin researchProcessorPlugin
     ) =>
@@ -97,7 +97,7 @@ public static class AgentFactory
     public static ChatCompletionAgent CreateResearchAnalyzer(
         IKernelBuilder kb,
         IStateManager sm,
-        IChatStreamingCallback cb,
+        IClientUpdateCallback cb,
         string researchId,
         KernelPlugin kernelMemoryPlugin
     ) =>
@@ -114,7 +114,7 @@ public static class AgentFactory
     public static ChatCompletionAgent CreateReportSynthesizer(
         IKernelBuilder kb,
         IStateManager sm,
-        IChatStreamingCallback cb,
+        IClientUpdateCallback cb,
         string researchId,
         KernelPlugin kernelMemoryPlugin
     ) =>

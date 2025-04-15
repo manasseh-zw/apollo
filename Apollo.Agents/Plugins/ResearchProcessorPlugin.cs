@@ -14,19 +14,19 @@ public class ResearchProcessorPlugin
     private readonly IMemoryContext _memory;
     private readonly IStateManager _state;
     private readonly ISearchService _search;
-    private readonly IChatStreamingCallback _streamingCallback;
+    private readonly IClientUpdateCallback _clientUpdate;
 
     public ResearchProcessorPlugin(
         ISearchService search,
         IMemoryContext memory,
         IStateManager state,
-        IChatStreamingCallback streamingCallback
+        IClientUpdateCallback streamingCallback
     )
     {
         _memory = memory;
         _state = state;
         _search = search;
-        _streamingCallback = streamingCallback;
+        _clientUpdate = streamingCallback;
     }
 
     [KernelFunction]
@@ -46,24 +46,21 @@ public class ResearchProcessorPlugin
         //using nested foreach here for easier debugging, will optimize to task.whenall later
         foreach (var query in queries)
         {
-            _streamingCallback.SendResearchProgressUpdate(
-                researchId,
-                $"Searching web for: {query}"
-            );
+            _clientUpdate.SendResearchProgressUpdate(researchId, $"Searching web for: {query}");
             var searchResponse = await PerformWebSearch(query);
 
             foreach (var result in searchResponse.Results)
             {
                 if (crawledUrlSet.Contains(result.Url))
                 {
-                    _streamingCallback.SendResearchProgressUpdate(
+                    _clientUpdate.SendResearchProgressUpdate(
                         researchId,
                         $"Skipping already processed URL: {result.Url}"
                     );
                     continue;
                 }
 
-                _streamingCallback.SendResearchProgressUpdate(
+                _clientUpdate.SendResearchProgressUpdate(
                     researchId,
                     $"Processing: {result.Title} from {result.Url}"
                 );
@@ -80,7 +77,7 @@ public class ResearchProcessorPlugin
                 );
 
                 crawledUrlSet.Add(result.Url);
-                _streamingCallback.SendResearchProgressUpdate(
+                _clientUpdate.SendResearchProgressUpdate(
                     researchId,
                     $"Successfully processed: {result.Title}"
                 );

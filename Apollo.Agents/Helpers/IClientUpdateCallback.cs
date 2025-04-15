@@ -1,6 +1,6 @@
 namespace Apollo.Agents.Helpers;
 
-public interface IChatStreamingCallback
+public interface IClientUpdateCallback
 {
     void StreamPlannerResponse(string connectionId, string message);
     void StreamAgentResponse(string researchId, string message);

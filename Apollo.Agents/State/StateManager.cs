@@ -1,3 +1,4 @@
+using Apollo.Data.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
@@ -205,6 +206,8 @@ public class ResearchState
     public required string ResearchId { get; set; }
     public required string Title { get; set; }
     public required string Description { get; set; }
+    public ResearchType Type { get; set; }
+    public ResearchDepth Depth { get; set; }
     public List<ResearchQuestion> PendingResearchQuestions { get; set; } = [];
     public List<ResearchQuestion> CompletedResearchQuestions { get; set; } = [];
     public string? ActiveQuestionId { get; set; }

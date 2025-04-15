@@ -82,7 +82,7 @@ public static class ServiceExtensions
 
     public static IServiceCollection ConfigureResearch(this IServiceCollection services)
     {
-        services.AddScoped<IChatStreamingCallback, ChatStreamingCallback>();
+        services.AddScoped<IClientUpdateCallback, ClientUpdateCallback>();
         services.AddScoped<SaveResearchPlugin>();
         services.AddScoped<IResearchEventHandler, ResearchEventHandler>();
         services.AddScoped<IResearchPlanner, ResearchPlanner>();
@@ -90,6 +90,13 @@ public static class ServiceExtensions
         services.AddScoped<ISearchService, ExaSearchService>();
         services.AddScoped<ICrawlerService, FirecrawlService>();
         services.AddSingleton<IStateManager, StateManager>();
+        
+        services.AddScoped<IMemoryContext, MemoryContext>();
+        services.AddScoped<KernelMemoryPlugin>();
+        services.AddScoped<ResearchProcessorPlugin>();
+        services.AddScoped<IResearchManager, ResearchManager>();
+        services.AddScoped<ResearchOrchestrator>();
+
         services.AddMemoryCache();
         services.AddLogging(builder =>
         {

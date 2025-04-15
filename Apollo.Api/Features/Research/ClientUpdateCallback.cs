@@ -1,11 +1,11 @@
 using Apollo.Agents.Helpers;
 using Microsoft.AspNetCore.SignalR;
 
-public class ChatStreamingCallback : IChatStreamingCallback
+public class ClientUpdateCallback : IClientUpdateCallback
 {
     private readonly IHubContext<ResearchHub, IResearchHubClient> _hubContext;
 
-    public ChatStreamingCallback(IHubContext<ResearchHub, IResearchHubClient> hubContext)
+    public ClientUpdateCallback(IHubContext<ResearchHub, IResearchHubClient> hubContext)
     {
         _hubContext = hubContext;
     }

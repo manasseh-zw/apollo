@@ -26,21 +26,21 @@ public class ResearchPlanner : IResearchPlanner
     private readonly Kernel _kernel;
     private readonly IChatCompletionService _chat;
     private readonly IMemoryCache _cache;
-    private readonly IChatStreamingCallback _streamingCallback;
+    private readonly IClientUpdateCallback _clientUpdate;
     private readonly ILogger<ResearchPlanner> _logger;
     private readonly SaveResearchPlugin _saveResearchPlugin;
     private static readonly TimeSpan _cacheTimeout = TimeSpan.FromHours(1);
 
     public ResearchPlanner(
         IMemoryCache cache,
-        IChatStreamingCallback streamingCallback,
+        IClientUpdateCallback streamingCallback,
         ILogger<ResearchPlanner> logger,
         SaveResearchPlugin saveResearchPlugin
     )
     {
         _logger = logger;
         _cache = cache;
-        _streamingCallback = streamingCallback;
+        _clientUpdate = streamingCallback;
         _saveResearchPlugin = saveResearchPlugin;
 
         _logger.LogInformation("Initializing ResearchAssistant");
@@ -150,7 +150,7 @@ public class ResearchPlanner : IResearchPlanner
                 )
             )
             {
-                _streamingCallback.StreamPlannerResponse(connectionId, chunk.Content ?? "");
+                _clientUpdate.StreamPlannerResponse(connectionId, chunk.Content ?? "");
                 responseBuffer.Append(chunk.Content);
             }
 
