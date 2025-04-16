@@ -11,6 +11,7 @@ namespace Apollo.Agents.Research;
 
 public interface IResearchManager
 {
+    void Initialize(string researchId);
     Agent? SelectNextAgent(IReadOnlyList<Agent> agents, IReadOnlyList<ChatMessageContent> history);
     bool CheckTermination(Agent agent, IReadOnlyList<ChatMessageContent> history);
 }
@@ -25,6 +26,11 @@ public class ResearchManager : IResearchManager
     {
         _state = state;
         _logger = logger;
+    }
+
+    public void Initialize(string researchId)
+    {
+        _researchId = researchId;
     }
 
     public Agent? SelectNextAgent(
@@ -51,6 +57,7 @@ public class ResearchManager : IResearchManager
             lastAgentName ?? "N/A"
         );
 
+        // Handle initial state or after Coordinator/Analyzer
         if (
             string.IsNullOrEmpty(lastAgentName)
             || lastAgentName.Equals(
@@ -63,37 +70,55 @@ public class ResearchManager : IResearchManager
             )
         )
         {
+            // If analysis is needed, prioritize it over processing new questions
             if (state.NeedsAnalysis)
             {
                 _logger.LogInformation(
                     "[{ResearchId}] Selection: Needs analysis. Selecting ResearchAnalyzer.",
                     _researchId
                 );
-
                 return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchAnalyzerAgentName);
             }
 
-            // Check if there are pending questions *after* potentially setting the active one
+            // Try to set next pending question if none is active
             if (string.IsNullOrEmpty(state.ActiveQuestionId))
             {
-                _state.SetNextPendingQuestionAsActive(_researchId);
-                state = _state.GetState(_researchId); // Re-fetch state
+                var nextQuestionId = _state.SetNextPendingQuestionAsActive(_researchId);
+                if (string.IsNullOrEmpty(nextQuestionId))
+                {
+                    // No more questions and analysis is complete, move to synthesis
+                    if (!state.SynthesisComplete)
+                    {
+                        _logger.LogInformation(
+                            "[{ResearchId}] Selection: All questions processed, analysis complete. Selecting ReportSynthesizer.",
+                            _researchId
+                        );
+                        return agents.FirstOrDefault(a =>
+                            a.Id == AgentFactory.ReportSynthesizerAgentName
+                        );
+                    }
+                }
+                else
+                {
+                    // New question activated, select ResearchEngine
+                    _logger.LogInformation(
+                        "[{ResearchId}] Selection: New question activated. Selecting ResearchEngine.",
+                        _researchId
+                    );
+                    return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchEngineAgentName);
+                }
             }
-
-            // If no pending questions and analysis not needed (Analyzer decided no gaps or already done)
-            if (
-                !state.NeedsAnalysis
-                && !state.PendingResearchQuestions.Any(q => !q.IsProcessed)
-                && !state.SynthesisComplete
-            )
+            else
             {
+                // Active question exists, continue with ResearchEngine
                 _logger.LogInformation(
-                    "[{ResearchId}] Selection: No pending questions, analysis done/not needed. Selecting ReportSynthesizer.",
+                    "[{ResearchId}] Selection: Active question exists. Selecting ResearchEngine.",
                     _researchId
                 );
-                return agents.FirstOrDefault(a => a.Id == AgentFactory.ReportSynthesizerAgentName);
+                return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchEngineAgentName);
             }
         }
+        // After ResearchEngine completes a question
         else if (
             lastAgentName.Equals(
                 AgentFactory.ResearchEngineAgentName,
@@ -101,13 +126,13 @@ public class ResearchManager : IResearchManager
             )
         )
         {
-            // ResearchEngine calls MarkActiveQuestionComplete. Coordinator takes over.
             _logger.LogInformation(
                 "[{ResearchId}] Selection: After ResearchEngine. Selecting ResearchCoordinator.",
                 _researchId
             );
             return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchCoordinatorAgentName);
         }
+        // After ReportSynthesizer
         else if (
             lastAgentName.Equals(
                 AgentFactory.ReportSynthesizerAgentName,
@@ -115,14 +140,14 @@ public class ResearchManager : IResearchManager
             )
         )
         {
-            // Synthesizer marks completion. End of flow.
             _logger.LogInformation(
                 "[{ResearchId}] Selection: After ReportSynthesizer. Research complete. No agent selected.",
                 _researchId
             );
             return null;
         }
-        // Default fallback
+
+        // Default to Coordinator for unexpected states
         _logger.LogWarning(
             "[{ResearchId}] Selection: Unexpected state or last agent '{LastAgentName}'. Defaulting to ResearchCoordinator.",
             _researchId,

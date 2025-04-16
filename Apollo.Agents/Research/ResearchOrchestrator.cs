@@ -126,6 +126,8 @@ public class ResearchOrchestrator
             },
         };
 
+        (_manager as ResearchManager)?.Initialize(researchId);
+
         var chat = new AgentGroupChat([.. agents.Values])
         {
             ExecutionSettings = new()
