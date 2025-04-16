@@ -1,5 +1,6 @@
 using Apollo.Api.Extensions;
 using Apollo.Api.Features.Auth;
+using Apollo.Api.Features.Research;
 using Apollo.Config;
 using Apollo.Data.Models;
 using Microsoft.AspNetCore.Identity;
@@ -35,6 +36,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IJwtTokenManager, JwtTokenManager>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IResearchService, ResearchService>();
 builder.Services.ConfigureResearch();
 builder.Services.AddHttpClient(
     "Google",
@@ -62,6 +64,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapAuthEndpoints();
+app.MapResearchEndpoints();
 
 app.MapHub<ResearchHub>("/hubs/research");
 
