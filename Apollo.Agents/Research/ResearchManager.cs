@@ -11,9 +11,8 @@ namespace Apollo.Agents.Research;
 
 public interface IResearchManager
 {
-    void Initialize(string researchId, Dictionary<string, Agent> agents);
-    Agent? SelectNextAgent(AgentGroupChat chat, IReadOnlyList<ChatMessageContent> history);
-    bool CheckTermination(AgentGroupChat chat, IReadOnlyList<ChatMessageContent> history);
+    Agent? SelectNextAgent(IReadOnlyList<Agent> agents, IReadOnlyList<ChatMessageContent> history);
+    bool CheckTermination(Agent agent, IReadOnlyList<ChatMessageContent> history);
 }
 
 public class ResearchManager : IResearchManager
@@ -21,7 +20,6 @@ public class ResearchManager : IResearchManager
     private readonly IStateManager _state;
     private readonly ILogger<ResearchManager> _logger;
     private string? _researchId;
-    private Dictionary<string, Agent>? _agents;
 
     public ResearchManager(IStateManager state, ILogger<ResearchManager> logger)
     {
@@ -29,21 +27,11 @@ public class ResearchManager : IResearchManager
         _logger = logger;
     }
 
-    public void Initialize(string researchId, Dictionary<string, Agent> agents)
+    public Agent? SelectNextAgent(
+        IReadOnlyList<Agent> agents,
+        IReadOnlyList<ChatMessageContent> history
+    )
     {
-        _researchId = researchId;
-        _agents = agents;
-    }
-
-    public Agent? SelectNextAgent(AgentGroupChat chat, IReadOnlyList<ChatMessageContent> history)
-    {
-        if (_researchId == null || _agents == null)
-        {
-            throw new InvalidOperationException(
-                "ResearchManager not initialized. Call Initialize first."
-            );
-        }
-
         var lastMessage = history.LastOrDefault(m => m.Role == AuthorRole.Assistant);
         var lastAgentName = lastMessage?.AuthorName;
 
@@ -82,7 +70,7 @@ public class ResearchManager : IResearchManager
                     _researchId
                 );
 
-                return _agents[AgentFactory.ResearchAnalyzerAgentName];
+                return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchAnalyzerAgentName);
             }
 
             // Check if there are pending questions *after* potentially setting the active one
@@ -103,7 +91,7 @@ public class ResearchManager : IResearchManager
                     "[{ResearchId}] Selection: No pending questions, analysis done/not needed. Selecting ReportSynthesizer.",
                     _researchId
                 );
-                return _agents[AgentFactory.ReportSynthesizerAgentName];
+                return agents.FirstOrDefault(a => a.Id == AgentFactory.ReportSynthesizerAgentName);
             }
         }
         else if (
@@ -118,7 +106,7 @@ public class ResearchManager : IResearchManager
                 "[{ResearchId}] Selection: After ResearchEngine. Selecting ResearchCoordinator.",
                 _researchId
             );
-            return _agents[AgentFactory.ResearchCoordinatorAgentName];
+            return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchCoordinatorAgentName);
         }
         else if (
             lastAgentName.Equals(
@@ -140,10 +128,10 @@ public class ResearchManager : IResearchManager
             _researchId,
             lastAgentName
         );
-        return _agents[AgentFactory.ResearchCoordinatorAgentName];
+        return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchCoordinatorAgentName);
     }
 
-    public bool CheckTermination(AgentGroupChat chat, IReadOnlyList<ChatMessageContent> history)
+    public bool CheckTermination(Agent agent, IReadOnlyList<ChatMessageContent> history)
     {
         if (_researchId == null)
         {

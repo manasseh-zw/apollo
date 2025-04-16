@@ -126,21 +126,12 @@ public class ResearchOrchestrator
             },
         };
 
-        // Initialize the research manager with the current research ID and agents
-        (_manager as ResearchManager)?.Initialize(researchId, agents);
-
         var chat = new AgentGroupChat([.. agents.Values])
         {
             ExecutionSettings = new()
             {
-                SelectionStrategy = new KernelFunctionSelectionStrategy(
-                    KernelFunctionFactory.CreateFromMethod(_manager.SelectNextAgent),
-                    kernel
-                ),
-                TerminationStrategy = new KernelFunctionTerminationStrategy(
-                    KernelFunctionFactory.CreateFromMethod(_manager.CheckTermination),
-                    kernel
-                ),
+                SelectionStrategy = new ResearchSelectionStrategy(_manager),
+                TerminationStrategy = new ResearchTerminationStrategy(_manager),
             },
         };
 
