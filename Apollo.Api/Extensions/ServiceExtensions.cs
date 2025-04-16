@@ -85,6 +85,7 @@ public static class ServiceExtensions
         services.AddSingleton<IStateManager, StateManager>();
 
         services.AddScoped<IMemoryContext, MemoryContext>();
+        services.AddScoped<IWebScraper, WebScraperService>();
         services.AddScoped<KernelMemoryPlugin>();
         services.AddScoped<ResearchEnginePlugin>();
         services.AddScoped<StartResearchPlugin>();
