@@ -26,6 +26,7 @@ public class ResearchOrchestrator
     private readonly IResearchManager _manager;
     private readonly KernelPlugin _engine;
     private readonly KernelPlugin _memory;
+    private readonly KernelPlugin _complete;
     private const string UnknownAgentName = "Unknown Agent";
 
     public ResearchOrchestrator(
@@ -33,7 +34,10 @@ public class ResearchOrchestrator
         ILogger<ResearchOrchestrator> logger,
         IClientUpdateCallback clientUpdate,
         IStateManager state,
-        IResearchManager manager
+        IResearchManager manager,
+        ResearchEnginePlugin engine,
+        KernelMemoryPlugin memory,
+        CompleteResearchPlugin complete
     )
     {
         _repository = repository;
@@ -41,8 +45,10 @@ public class ResearchOrchestrator
         _clientUpdate = clientUpdate;
         _state = state;
         _manager = manager;
-        _engine = KernelPluginFactory.CreateFromType<ResearchEnginePlugin>("ResearchEnginePlugin");
-        _memory = KernelPluginFactory.CreateFromType<KernelMemoryPlugin>("KernelMemoryPlugin");
+
+        _engine = KernelPluginFactory.CreateFromObject(engine, "ResearchEnginePlugin");
+        _memory = KernelPluginFactory.CreateFromObject(memory, "KernelMemoryPlugin");
+        _complete = KernelPluginFactory.CreateFromObject(complete, "CompleteResearchPlugin");
     }
 
     public async Task StartResearchProcessAsync(string researchId)
@@ -114,10 +120,14 @@ public class ResearchOrchestrator
                     _state,
                     _clientUpdate,
                     researchId,
-                    _memory
+                    _memory,
+                    _complete
                 )
             },
         };
+
+        // Initialize the research manager with the current research ID and agents
+        (_manager as ResearchManager)?.Initialize(researchId, agents);
 
         var chat = new AgentGroupChat([.. agents.Values])
         {
@@ -143,7 +153,7 @@ public class ResearchOrchestrator
 
         var intialPrompt = new ChatMessageContent(
             AuthorRole.User,
-            $"Start the research process for '{initialState.Title}'. Coordinator, please begin."
+            $"Start the research process for '{initialState.Title}' of resarchId: '{initialState.ResearchId}'. Coordinator, please begin."
         );
 
         var currentMessageBuffer = new StringBuilder();

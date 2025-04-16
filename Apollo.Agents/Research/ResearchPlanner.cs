@@ -28,20 +28,20 @@ public class ResearchPlanner : IResearchPlanner
     private readonly IMemoryCache _cache;
     private readonly IClientUpdateCallback _clientUpdate;
     private readonly ILogger<ResearchPlanner> _logger;
-    private readonly SaveResearchPlugin _saveResearchPlugin;
+    private readonly StartResearchPlugin _startResearchPlugin;
     private static readonly TimeSpan _cacheTimeout = TimeSpan.FromHours(1);
 
     public ResearchPlanner(
         IMemoryCache cache,
         IClientUpdateCallback streamingCallback,
         ILogger<ResearchPlanner> logger,
-        SaveResearchPlugin saveResearchPlugin
+        StartResearchPlugin startResearchPlugin
     )
     {
         _logger = logger;
         _cache = cache;
         _clientUpdate = streamingCallback;
-        _saveResearchPlugin = saveResearchPlugin;
+        _startResearchPlugin = startResearchPlugin;
 
         _logger.LogInformation("Initializing ResearchAssistant");
 
@@ -56,7 +56,7 @@ public class ResearchPlanner : IResearchPlanner
 
         _chat = _kernel.GetRequiredService<IChatCompletionService>();
 
-        _kernel.Plugins.AddFromObject(_saveResearchPlugin, "SaveResearch");
+        _kernel.Plugins.AddFromObject(_startResearchPlugin, "StartResearch");
 
         _logger.LogInformation("ResearchAssistant initialized successfully");
     }

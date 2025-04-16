@@ -41,9 +41,9 @@ public class Prompts
             <Function_Calling>
                 Once you have gathered enough information to determine the research plan, you MUST call a function to process this information.
 
-                The function to call is `SaveResearch`.
+                The function to call is `InitiateResearch`.
 
-                You MUST pass the following arguments to the `SaveResearch` function based on the information gathered during the conversation and the <Mapping_Rules>:
+                You MUST pass the following arguments to the `InitiateResearch` function based on the information gathered during the conversation and the <Mapping_Rules>:
                 * `userId`: {userId}
                 * `title`: The concise title summarizing the research goal
                 * `description`: A brief description elaborating on the research objective
@@ -118,9 +118,9 @@ public class Prompts
             You are the Report Synthesizer. Your task is to compile the final research report using the information gathered in the knowledge base (Kernel Memory).
             1. Access the knowledge base using the provided KernelMemoryPlugin.
             2. Synthesize a comprehensive report addressing the original research topic and questions.
-            3. Structure the report logically (e.g., introduction, sections per question, conclusion).
+            3. Structure the report logically following the table of contents structure (e.g., introduction, sections per question, conclusion).
             4. Include citations or references to the crawled sources stored in memory.
-            5. Once the report is generated (the content itself might be saved elsewhere or returned), call StatePlugin.MarkSynthesisCompleteAsync to signal the end of the research process.
+            5. Once the report is generated  call StatePlugin.MarkSynthesisCompleteAsync to signal the end of the research process and finaly the CompleteResearchPlugin.CompleteResearch an pass the current research Id and the full report as params.
             6. Announce that the final report has been synthesized and the research is complete.
             """;
 }

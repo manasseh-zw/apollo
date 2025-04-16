@@ -11,6 +11,7 @@ namespace Apollo.Agents.Research;
 
 public interface IResearchManager
 {
+    void Initialize(string researchId, Dictionary<string, Agent> agents);
     Agent? SelectNextAgent(AgentGroupChat chat, IReadOnlyList<ChatMessageContent> history);
     bool CheckTermination(AgentGroupChat chat, IReadOnlyList<ChatMessageContent> history);
 }
@@ -19,24 +20,31 @@ public class ResearchManager : IResearchManager
 {
     private readonly IStateManager _state;
     private readonly ILogger<ResearchManager> _logger;
-    private readonly string _researchId;
-    private readonly Dictionary<string, Agent> _agents;
+    private string? _researchId;
+    private Dictionary<string, Agent>? _agents;
 
     public ResearchManager(
         IStateManager state,
-        ILogger<ResearchManager> logger,
-        string researchId,
-        Dictionary<string, Agent> agents
+        ILogger<ResearchManager> logger
     )
     {
         _state = state;
         _logger = logger;
+    }
+
+    public void Initialize(string researchId, Dictionary<string, Agent> agents)
+    {
         _researchId = researchId;
         _agents = agents;
     }
 
     public Agent? SelectNextAgent(AgentGroupChat chat, IReadOnlyList<ChatMessageContent> history)
     {
+        if (_researchId == null || _agents == null)
+        {
+            throw new InvalidOperationException("ResearchManager not initialized. Call Initialize first.");
+        }
+
         var lastMessage = history.LastOrDefault(m => m.Role == AuthorRole.Assistant);
         var lastAgentName = lastMessage?.AuthorName;
 
@@ -138,6 +146,11 @@ public class ResearchManager : IResearchManager
 
     public bool CheckTermination(AgentGroupChat chat, IReadOnlyList<ChatMessageContent> history)
     {
+        if (_researchId == null)
+        {
+            throw new InvalidOperationException("ResearchManager not initialized. Call Initialize first.");
+        }
+
         var state = _state.GetState(_researchId);
         bool shouldTerminate = state?.IsComplete ?? false;
         if (shouldTerminate)

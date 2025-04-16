@@ -16,4 +16,9 @@ public class ResearchNotifier : IResearchNotifier
     {
         await _hubContext.Clients.User(userId).ResearchSaved(researchId);
     }
+    
+    public async Task NotifyResearchCompleted(string userId, Guid researchId)
+    {
+        await _hubContext.Clients.User(userId).ResearchCompleted(researchId);
+    }
 }

@@ -116,7 +116,8 @@ public static class AgentFactory
         IStateManager sm,
         IClientUpdateCallback cb,
         string researchId,
-        KernelPlugin kernelMemoryPlugin
+        KernelPlugin kernelMemoryPlugin,
+        KernelPlugin CompleteResearchPlugin
     ) =>
         CreateAgent(
             kb,
@@ -125,6 +126,6 @@ public static class AgentFactory
             researchId,
             ReportSynthesizerAgentName,
             Prompts.ReportSynthesizer,
-            [kernelMemoryPlugin]
+            [kernelMemoryPlugin, CompleteResearchPlugin]
         );
 }

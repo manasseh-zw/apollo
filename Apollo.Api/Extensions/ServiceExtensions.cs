@@ -77,7 +77,6 @@ public static class ServiceExtensions
     public static IServiceCollection ConfigureResearch(this IServiceCollection services)
     {
         services.AddScoped<IClientUpdateCallback, ClientUpdateCallback>();
-        services.AddScoped<SaveResearchPlugin>();
         services.AddScoped<IResearchEventHandler, ResearchEventHandler>();
         services.AddScoped<IResearchPlanner, ResearchPlanner>();
         services.AddScoped<IResearchNotifier, ResearchNotifier>();
@@ -88,13 +87,14 @@ public static class ServiceExtensions
         services.AddScoped<IMemoryContext, MemoryContext>();
         services.AddScoped<KernelMemoryPlugin>();
         services.AddScoped<ResearchEnginePlugin>();
+        services.AddScoped<StartResearchPlugin>();
+        services.AddScoped<CompleteResearchPlugin>();
+
         services.AddScoped<IResearchManager, ResearchManager>();
         services.AddScoped<ResearchOrchestrator>();
 
-        services.AddSingleton<IResearchProcessor, ResearchProcessor>();
-        services.AddHostedService(sp =>
-            (ResearchProcessor)sp.GetRequiredService<IResearchProcessor>()
-        );
+        services.AddSingleton<IResearchMessageQueue, ResearchMessageQueue>();
+        services.AddHostedService<ResearchProcessor>();
 
         services.AddMemoryCache();
         services.AddLogging(builder =>

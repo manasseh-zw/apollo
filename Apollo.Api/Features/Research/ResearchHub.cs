@@ -5,6 +5,7 @@ public interface IResearchHubClient
 {
     Task ReceiveResponse(string response);
     Task ResearchSaved(Guid researchId);
+    Task ResearchCompleted(Guid researchId);
     Task RecieveAgentMessage(string author, string message);
     Task RecieveResearchProgressUpdate(string update);
 }

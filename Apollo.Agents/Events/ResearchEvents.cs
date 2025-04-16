@@ -2,7 +2,13 @@ using Apollo.Agents.Research;
 
 namespace Apollo.Agents.Events;
 
-public class ResearchSavedEvent
+public class ResearchStartEvent
+{
+    public Guid ResearchId { get; set; }
+    public string UserId { get; set; }
+}
+
+public class ResearchCompletedEvent
 {
     public Guid ResearchId { get; set; }
     public string UserId { get; set; }
@@ -10,28 +16,35 @@ public class ResearchSavedEvent
 
 public interface IResearchEventHandler
 {
-    Task HandleResearchSaved(ResearchSavedEvent @event);
+    Task HandleResearchStart(ResearchStartEvent @event);
+    Task HandleResearchCompleted(ResearchCompletedEvent @event);
 }
 
 public class ResearchEventHandler : IResearchEventHandler
 {
     private readonly IResearchNotifier _notifier;
-    private readonly IResearchProcessor _processor;
+    private readonly IResearchMessageQueue _queue;
 
-    public ResearchEventHandler(IResearchNotifier notifier, IResearchProcessor processor)
+    public ResearchEventHandler(IResearchNotifier notifier, IResearchMessageQueue queue)
     {
         _notifier = notifier;
-        _processor = processor;
+        _queue = queue;
     }
 
-    public async Task HandleResearchSaved(ResearchSavedEvent @event)
+    public async Task HandleResearchStart(ResearchStartEvent @event)
     {
         await _notifier.NotifyResearchSaved(@event.UserId, @event.ResearchId);
-        await _processor.EnqueueResearch(@event);
+        await _queue.Writer.WriteAsync(@event);
+    }
+
+    public async Task HandleResearchCompleted(ResearchCompletedEvent @event)
+    {
+        await _notifier.NotifyResearchCompleted(@event.UserId, @event.ResearchId);
     }
 }
 
 public interface IResearchNotifier
 {
     Task NotifyResearchSaved(string userId, Guid researchId);
+    Task NotifyResearchCompleted(string userId, Guid researchId);
 }
