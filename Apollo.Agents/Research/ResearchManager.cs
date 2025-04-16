@@ -23,10 +23,7 @@ public class ResearchManager : IResearchManager
     private string? _researchId;
     private Dictionary<string, Agent>? _agents;
 
-    public ResearchManager(
-        IStateManager state,
-        ILogger<ResearchManager> logger
-    )
+    public ResearchManager(IStateManager state, ILogger<ResearchManager> logger)
     {
         _state = state;
         _logger = logger;
@@ -42,7 +39,9 @@ public class ResearchManager : IResearchManager
     {
         if (_researchId == null || _agents == null)
         {
-            throw new InvalidOperationException("ResearchManager not initialized. Call Initialize first.");
+            throw new InvalidOperationException(
+                "ResearchManager not initialized. Call Initialize first."
+            );
         }
 
         var lastMessage = history.LastOrDefault(m => m.Role == AuthorRole.Assistant);
@@ -148,7 +147,9 @@ public class ResearchManager : IResearchManager
     {
         if (_researchId == null)
         {
-            throw new InvalidOperationException("ResearchManager not initialized. Call Initialize first.");
+            throw new InvalidOperationException(
+                "ResearchManager not initialized. Call Initialize first."
+            );
         }
 
         var state = _state.GetState(_researchId);

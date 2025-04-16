@@ -1,0 +1,42 @@
+@baseUrl=http://localhost:5141/api
+@authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjAxOTYyNWE1LWRjOTUtNzhhOS04NDMyLTVlZTJmZjcyZjFkYiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6ImRldi5tYW5hc3NlaEBnbWFpbC5jb20iLCJleHAiOjE3NDU1OTc5NDksImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTI3MCIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMSJ9.wcHqwvVCvaKFdHZPpB4XC_GtrNRh8nUSLL4qmBeHmVY
+
+### Email Sign Up
+POST {{baseUrl}}/auth/email/signup
+Content-Type: application/json
+
+{
+    "email": "john.doe@example.com",
+    "username": "johndoe",
+    "password": "StrongP@ssw0rd123"
+}
+
+### Sign In with Email
+POST {{baseUrl}}/auth/signin
+Content-Type: application/json
+
+{
+    "userIdentifier": "johndoe",
+    "password": "StrongP@ssw0rd123"
+}
+
+### Sign In with Email (using email as identifier)
+POST {{baseUrl}}/auth/signin
+Content-Type: application/json
+
+{
+    "userIdentifier": "john.doe@example.com",
+    "password": "StrongP@ssw0rd123"
+}
+
+### Google Sign Up
+POST {{baseUrl}}/auth/google/signup
+Content-Type: application/json
+
+{
+    "accessToken": "your_google_access_token_here"
+}
+
+### Get User Data
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{authToken}}

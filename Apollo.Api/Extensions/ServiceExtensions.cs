@@ -14,6 +14,7 @@ using Apollo.Search;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.KernelMemory.DataFormats.WebPages;
 using Microsoft.SemanticKernel;
 
 namespace Apollo.Api.Extensions;

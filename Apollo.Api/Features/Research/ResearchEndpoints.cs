@@ -12,6 +12,7 @@ public static class ResearchEndpoints
 
         group.MapGet("/{researchId}", GetResearch);
         group.MapGet("/", GetAllResearch);
+        group.MapPost("/", CreateResearch);
     }
 
     private static async Task<
@@ -51,6 +52,26 @@ public static class ResearchEndpoints
         }
 
         var result = await researchService.GetAllResearch(userId);
+
+        return TypedResults.Ok(result.Value);
+    }
+
+    private static async Task<
+        Results<Ok<CreateResearchResponse>, UnauthorizedHttpResult>
+    > CreateResearch(
+        [FromServices] IResearchService researchService,
+        HttpContext httpContext,
+        [FromBody] CreateResearchRequest request
+    )
+    {
+        var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        var result = await researchService.CreateResearch(userId, request);
 
         return TypedResults.Ok(result.Value);
     }

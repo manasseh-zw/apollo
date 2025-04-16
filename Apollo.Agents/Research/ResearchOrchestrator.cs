@@ -60,7 +60,7 @@ public class ResearchOrchestrator
 
         var initialState = _state.GetState(researchId);
 
-        if (initialState == null || initialState.PendingResearchQuestions.Any())
+        if (initialState == null || !initialState.PendingResearchQuestions.Any())
         {
             _logger.LogError(
                 "Cannot start research, there is no initial state or pending questions for id {researchId}",

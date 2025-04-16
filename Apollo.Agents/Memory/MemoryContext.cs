@@ -1,5 +1,7 @@
 using Apollo.Config;
+using Apollo.Crawler;
 using Apollo.Search.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
 
 namespace Apollo.Agents.Memory;
@@ -14,7 +16,7 @@ public class MemoryContext : IMemoryContext
 {
     private readonly MemoryServerless _memory;
 
-    public MemoryContext()
+    public MemoryContext(ICrawlerService crawler)
     {
         _memory = new KernelMemoryBuilder()
             .WithAzureOpenAITextEmbeddingGeneration(
@@ -38,7 +40,7 @@ public class MemoryContext : IMemoryContext
                 }
             )
             .WithSimpleQueuesPipeline()
-            .WithCustomWebScraper<WebScraperService>()
+            .WithCustomWebScraper(new WebScraperService(crawler))
             .Build<MemoryServerless>();
     }
 

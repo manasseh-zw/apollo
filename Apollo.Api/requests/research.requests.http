@@ -1,0 +1,53 @@
+@baseUrl=http://localhost:5141/api
+@authToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjAxOTYyNWE1LWRjOTUtNzhhOS04NDMyLTVlZTJmZjcyZjFkYiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6ImRldi5tYW5hc3NlaEBnbWFpbC5jb20iLCJleHAiOjE3NDU1OTc5NDksImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTI3MCIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMSJ9.wcHqwvVCvaKFdHZPpB4XC_GtrNRh8nUSLL4qmBeHmVY
+
+### Create New Research
+POST {{baseUrl}}/research
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "title": "Impact of AI on Healthcare",
+    "description": "Comprehensive analysis of how artificial intelligence is transforming healthcare delivery and patient outcomes",
+    "questions": [
+        "What are the main applications of AI in healthcare?",
+        "How is AI improving diagnostic accuracy?",
+        "What are the challenges and limitations of AI in healthcare?",
+        "How is AI affecting patient care and outcomes?"
+    ],
+    "type": "Academic",
+    "depth": "Comprehensive"
+}
+
+### Get Specific Research
+GET {{baseUrl}}/research/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{authToken}}
+
+### Get All Research
+GET {{baseUrl}}/research
+Authorization: Bearer {{authToken}}
+
+### WebSocket Connection Test
+# Note: This is a reference for WebSocket connection
+# Use a WebSocket client to connect to:
+# ws://localhost:5141/hubs/research
+# 
+# Example connection with authentication:
+# ws://localhost:5141/hubs/research?access_token={{authToken}}
+#
+# Messages to send:
+# 1. Start Research Chat:
+# {
+#     "protocol": "json",
+#     "version": 1,
+#     "target": "StartResearchChat",
+#     "arguments": ["research-session-id", "What are the latest developments in quantum computing?"]
+# }
+#
+# 2. Send Message:
+# {
+#     "protocol": "json",
+#     "version": 1,
+#     "target": "ReceiveMessage",
+#     "arguments": ["Tell me more about quantum entanglement"]
+# }
