@@ -24,9 +24,10 @@ public class ResearchOrchestrator
     private readonly IClientUpdateCallback _clientUpdate;
     private readonly IStateManager _state;
     private readonly IResearchManager _manager;
-    private readonly KernelPlugin _engine;
-    private readonly KernelPlugin _memory;
-    private readonly KernelPlugin _complete;
+
+    private readonly ResearchEnginePlugin _engineInstance; // Store the original instances if needed elsewhere
+    private readonly KernelMemoryPlugin _memoryInstance;
+    private readonly CompleteResearchPlugin _completeInstance;
     private const string UnknownAgentName = "Unknown Agent";
 
     public ResearchOrchestrator(
@@ -46,9 +47,9 @@ public class ResearchOrchestrator
         _state = state;
         _manager = manager;
 
-        _engine = KernelPluginFactory.CreateFromObject(engine, "ResearchEnginePlugin");
-        _memory = KernelPluginFactory.CreateFromObject(memory, "KernelMemoryPlugin");
-        _complete = KernelPluginFactory.CreateFromObject(complete, "CompleteResearchPlugin");
+        _engineInstance = engine;
+        _memoryInstance = memory;
+        _completeInstance = complete;
     }
 
     public async Task StartResearchProcessAsync(string researchId)
@@ -100,7 +101,7 @@ public class ResearchOrchestrator
                     _state,
                     _clientUpdate,
                     researchId,
-                    _engine
+                    _engineInstance
                 )
             },
             {
@@ -110,7 +111,7 @@ public class ResearchOrchestrator
                     _state,
                     _clientUpdate,
                     researchId,
-                    _memory
+                    _memoryInstance
                 )
             },
             {
@@ -120,8 +121,8 @@ public class ResearchOrchestrator
                     _state,
                     _clientUpdate,
                     researchId,
-                    _memory,
-                    _complete
+                    _memoryInstance,
+                    _completeInstance
                 )
             },
         };

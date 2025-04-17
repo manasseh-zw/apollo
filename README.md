@@ -25,3 +25,4 @@ instead of a shared state we could use events to pass around data
 
 decided to go fully agentic, consolidated the the query gen to ingestion agents into one research engine agent
 
+agents not using other plugins realized it might be an advertising issue the agents are not aweare of such functions
