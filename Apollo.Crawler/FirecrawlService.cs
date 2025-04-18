@@ -1,77 +1,28 @@
-using System.Net.Http.Json;
+using System.Text.Json;
 using Apollo.Config;
-using Apollo.Crawler.Models;
+using Firecrawl;
 using Microsoft.Extensions.Logging;
 
 namespace Apollo.Crawler;
 
 public class FirecrawlService : ICrawlerService
 {
-    private readonly HttpClient _httpClient;
-    private readonly ILogger<FirecrawlService>? _logger;
-    private const string BaseUrl = "https://api.firecrawl.dev/v1";
+    private readonly FirecrawlApp _client;
 
-    public FirecrawlService(
-        HttpClient httpClient,
-        ILogger<FirecrawlService>? logger = null,
-        string? apiKey = null
-    )
+    public FirecrawlService()
     {
-        _httpClient = httpClient;
-        _logger = logger;
-        _httpClient.DefaultRequestHeaders.Add(
-            "Authorization",
-            $"Bearer {apiKey ?? AppConfig.FirecrawlAI.ApiKey}"
-        );
+        _client = new FirecrawlApp(AppConfig.FirecrawlAI.ApiKey);
     }
 
-    public async Task<ScrapeResponse> ScrapeAsync(ScrapeRequest request)
+    public async Task<MapResponse> MapAsync(MapUrlsRequest request)
     {
-        _logger?.LogInformation(
-            "Sending scrape request: {Request}",
-            System.Text.Json.JsonSerializer.Serialize(request)
-        );
-
-        var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/scrape", request);
-
-        response.EnsureSuccessStatusCode();
-        var scrapeResponse =
-            await response.Content.ReadFromJsonAsync<ScrapeResponse>()
-            ?? throw new Exception("Failed to deserialize scrape response");
-
-        _logger?.LogInformation(
-            "Received scrape response: {Response}",
-            System.Text.Json.JsonSerializer.Serialize(
-                scrapeResponse,
-                new System.Text.Json.JsonSerializerOptions { WriteIndented = true }
-            )
-        );
-
-        return scrapeResponse;
+        var response = await _client.Mapping.MapUrlsAsync(request);
+        return response;
     }
 
-    public async Task<MapResponse> MapAsync(MapRequest request)
+    public async Task<ScrapeResponse> ScrapeAsync(ScrapeAndExtractFromUrlRequest request)
     {
-        _logger?.LogInformation(
-            "Sending map request: {Request}",
-            System.Text.Json.JsonSerializer.Serialize(request)
-        );
-
-        var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/map", request);
-
-        response.EnsureSuccessStatusCode();
-        var mapResponse =
-            await response.Content.ReadFromJsonAsync<MapResponse>()
-            ?? throw new Exception("Failed to deserialize map response");
-
-        _logger?.LogInformation(
-            "Received map response: {Response}",
-            System.Text.Json.JsonSerializer.Serialize(
-                mapResponse,
-                new System.Text.Json.JsonSerializerOptions { WriteIndented = true }
-            )
-        );
-
-        return mapResponse;
+        var response = await _client.Scraping.ScrapeAndExtractFromUrlAsync(request);
+        return response;
     }
 }

@@ -1,6 +1,7 @@
 using Apollo.Api.Extensions;
 using Apollo.Api.Features.Auth;
 using Apollo.Api.Features.Research;
+using Apollo.Api.Features.Test;
 using Apollo.Config;
 using Apollo.Data.Models;
 using Microsoft.AspNetCore.Identity;
@@ -65,6 +66,7 @@ app.UseAuthorization();
 
 app.MapAuthEndpoints();
 app.MapResearchEndpoints();
+app.MapTestEndpoints();
 
 app.MapHub<ResearchHub>("/hubs/research");
 

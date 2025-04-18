@@ -1,5 +1,6 @@
+using System.Text.Json;
 using Apollo.Crawler;
-using Apollo.Crawler.Models;
+using Firecrawl;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
@@ -7,42 +8,36 @@ using Xunit.Abstractions;
 namespace Apollo.Tests.Integration;
 
 [Trait("Category", "Integration")]
-public class FirecrawlServiceIntegrationTests : IDisposable
+public class FirecrawlServiceIntegrationTests
 {
     private readonly ITestOutputHelper _output;
     private readonly FirecrawlService _crawlerService;
-    private readonly string? _apiKey;
-    private readonly HttpClient _httpClient;
 
     public FirecrawlServiceIntegrationTests(ITestOutputHelper output)
     {
         _output = output;
-        _httpClient = new HttpClient();
-
         var loggerFactory = LoggerFactory.Create(builder =>
         {
             builder.AddConsole();
             builder.AddXUnit(_output);
         });
-        var logger = loggerFactory.CreateLogger<FirecrawlService>();
 
-        _crawlerService = new FirecrawlService(_httpClient, logger, _apiKey);
-    }
-
-    public void Dispose()
-    {
-        _httpClient.Dispose();
+        _crawlerService = new FirecrawlService();
     }
 
     [SkipIfNoApiKeyFact]
     public async Task ScrapeAsync_RealApi_ReturnsContent()
     {
         // Arrange
-        var request = new ScrapeRequest
+        var request = new ScrapeAndExtractFromUrlRequest
         {
             Url = "https://www.example.com",
-            Formats = ["markdown", "html"],
-            OnlyMainContent = true,
+            Formats =
+            [
+                ScrapeAndExtractFromUrlRequestFormat.Markdown,
+                ScrapeAndExtractFromUrlRequestFormat.Html,
+            ],
+            RemoveBase64Images = true,
         };
 
         // Act
@@ -67,14 +62,14 @@ public class FirecrawlServiceIntegrationTests : IDisposable
     public async Task MapAsync_RealApi_ReturnsLinks()
     {
         // Arrange
-        var request = new MapRequest { Url = "https://www.example.com", Limit = 5 };
+        var request = new MapUrlsRequest { Url = "https://www.example.com", Limit = 5 };
 
         // Act
         var result = await _crawlerService.MapAsync(request);
 
         // Log the response
         _output.WriteLine(
-            $"Map Response: {System.Text.Json.JsonSerializer.Serialize(result, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}"
+            $"Map Response: {JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true })}"
         );
 
         // Assert

@@ -1,4 +1,5 @@
 using Apollo.Crawler;
+using Firecrawl;
 using Microsoft.KernelMemory.DataFormats.WebPages;
 
 namespace Apollo.Agents.Memory;
@@ -17,9 +18,17 @@ public class WebScraperService : IWebScraper
         CancellationToken cancellationToken = default
     )
     {
-        var result = await _crawler.ScrapeAsync(new() { Url = url });
+        var result = await _crawler.ScrapeAsync(
+            new()
+            {
+                Url = url,
+                Formats = [ScrapeAndExtractFromUrlRequestFormat.Markdown],
+                RemoveBase64Images = true,
+                OnlyMainContent = true,
+            }
+        );
 
-        if (!result.Success)
+        if (!result.Success.HasValue || !result.Success.Value)
         {
             return new WebScraperResult()
             {

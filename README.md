@@ -8,7 +8,7 @@ challanges: how to have llm passed args and app state arguments in function call
 decision choose between rag or use large context window? best approach hybrid where we have rag for content we get from the web and the report is synthesied via the large context widnow were
 
 decision use semi agentic research process where i have agents that i invoke explicly as part of an overall multi step process, this is some what more deterministic and less room for error due to llm hallucniation,
-yes 
+yes
 Alternative 2 fully agentic with plugins for external services... this is of cause has more room for error but embraces the fully agentic approach.. idea: use a shared state between agents instead of each agent publishing all results into the group chat.. which wont be that great for the context
 
 struggled to undersatnd the relationshp between the dotnet semantic kernel memory capabilities and the Kernel Memeory,
@@ -26,3 +26,5 @@ instead of a shared state we could use events to pass around data
 decided to go fully agentic, consolidated the the query gen to ingestion agents into one research engine agent
 
 agents not using other plugins realized it might be an advertising issue the agents are not aweare of such functions
+
+for some reason could not use firecrawl api via Rest they have a weird request format.. had to use a dodgy lib but it works for now.

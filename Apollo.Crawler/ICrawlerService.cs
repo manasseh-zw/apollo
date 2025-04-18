@@ -1,9 +1,9 @@
-using Apollo.Crawler.Models;
+using Firecrawl;
 
 namespace Apollo.Crawler;
 
 public interface ICrawlerService
 {
-    Task<ScrapeResponse> ScrapeAsync(ScrapeRequest request);
-    Task<MapResponse> MapAsync(MapRequest request);
+    Task<ScrapeResponse> ScrapeAsync(ScrapeAndExtractFromUrlRequest request);
+    Task<MapResponse> MapAsync(MapUrlsRequest request);
 }
