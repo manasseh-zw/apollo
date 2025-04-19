@@ -1,0 +1,29 @@
+### Health Check
+GET http://localhost:8001/
+
+### Scrape Single URL
+POST http://localhost:8001/scrape
+Content-Type: application/json
+
+{
+    "url": "https://www.theverge.com/openai/648130/openai-social-network-x-competitor"
+}
+
+### Scrape Multiple URLs (Batch)
+POST https://manasseh-zw--scrape-batch.modal.run
+Content-Type: application/json
+
+{
+    "urls": [
+        "https://example.com",
+        "https://httpbin.org/html",
+        "https://news.ycombinator.com",
+        "https://www.theverge.com/openai/648130/openai-social-network-x-competitor",
+        "https://www.theverge.com/openai/648130/openai-social-network-x-competitor",
+        "https://www.theverge.com/openai/648130/openai-social-network-x-competitor",
+        "https://www.theverge.com/openai/648130/openai-social-network-x-competitor",
+        "https://www.theverge.com/openai/648130/openai-social-network-x-competitor",
+        "https://www.theverge.com/openai/648130/openai-social-network-x-competitor",
+        "https://www.theverge.com/openai/648130/openai-social-network-x-competitor"
+    ]
+}
