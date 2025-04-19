@@ -36,3 +36,5 @@ one of the biggest differencitators of my project is that i dont do a table of c
 now facing issues with firecrawl rate limits and timeouts.. i need a custom scraper using craw4ai
 
 faced some depenency isssue with crawl4ai for some reason in the latest stable version they added a dep that requires c++ build tools a huge depndency idk why they even did that its craazy this would also make setting up docker much trickier reverted to using an old version of crawl4ai
+
+now facing issues with kernel memory the webscarper interface does not allow batch processing..., might have to go with import documents where i have eahc url content as a page...

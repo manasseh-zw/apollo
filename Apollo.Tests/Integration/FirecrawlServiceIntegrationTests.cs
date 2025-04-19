@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using Apollo.Crawler;
 using Firecrawl;
@@ -29,56 +30,16 @@ public class FirecrawlServiceIntegrationTests
     public async Task ScrapeAsync_RealApi_ReturnsContent()
     {
         // Arrange
-        var request = new ScrapeAndExtractFromUrlRequest
-        {
-            Url = "https://www.example.com",
-            Formats =
-            [
-                ScrapeAndExtractFromUrlRequestFormat.Markdown,
-                ScrapeAndExtractFromUrlRequestFormat.Html,
-            ],
-            RemoveBase64Images = true,
-        };
-
+        var url = "www.example.com";
         // Act
-        var result = await _crawlerService.ScrapeAsync(request);
+        var result = await _crawlerService.ScrapeAsync(url);
 
         // Log the response
         _output.WriteLine(
-            $"Scrape Response: {System.Text.Json.JsonSerializer.Serialize(result, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}"
+            $"Scrape Response: {JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true })}"
         );
 
-        // Assert
         Assert.NotNull(result);
         Assert.True(result.Success);
-        Assert.NotNull(result.Data);
-        Assert.NotEmpty(result.Data.Markdown);
-        Assert.NotEmpty(result.Data.Html);
-        Assert.NotNull(result.Data.Metadata);
-        Assert.Equal(200, result.Data.Metadata.StatusCode);
-    }
-
-    [SkipIfNoApiKeyFact]
-    public async Task MapAsync_RealApi_ReturnsLinks()
-    {
-        // Arrange
-        var request = new MapUrlsRequest { Url = "https://www.example.com", Limit = 5 };
-
-        // Act
-        var result = await _crawlerService.MapAsync(request);
-
-        // Log the response
-        _output.WriteLine(
-            $"Map Response: {JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true })}"
-        );
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.True(result.Success);
-        Assert.NotEmpty(result.Links);
-        Assert.All(
-            result.Links,
-            link => Assert.True(Uri.IsWellFormedUriString(link, UriKind.Absolute))
-        );
     }
 }

@@ -1,7 +1,5 @@
-using System.Text.Json;
 using Apollo.Config;
 using Firecrawl;
-using Microsoft.Extensions.Logging;
 
 namespace Apollo.Crawler;
 
@@ -14,15 +12,23 @@ public class FirecrawlService : ICrawlerService
         _client = new FirecrawlApp(AppConfig.FirecrawlAI.ApiKey);
     }
 
-    public async Task<MapResponse> MapAsync(MapUrlsRequest request)
+    public async Task<WebCrawlResponse> ScrapeAsync(string url)
     {
-        var response = await _client.Mapping.MapUrlsAsync(request);
-        return response;
+        var response = await _client.Scraping.ScrapeAndExtractFromUrlAsync(
+            new ScrapeAndExtractFromUrlRequest { Url = url }
+        );
+
+        var webCrawlResponse = new WebCrawlResponse
+        {
+            Success = response.Success.GetValueOrDefault(),
+            Content = response.Data?.Markdown ?? "No content for this source",
+            Error = response.Success.GetValueOrDefault() ? string.Empty : "Unknown error occurred",
+        };
+        return webCrawlResponse;
     }
 
-    public async Task<ScrapeResponse> ScrapeAsync(ScrapeAndExtractFromUrlRequest request)
+    public Task<WebCrawlBatchResponse> ScrapeBatchAsync(List<string> urls)
     {
-        var response = await _client.Scraping.ScrapeAndExtractFromUrlAsync(request);
-        return response;
+        throw new NotImplementedException();
     }
 }

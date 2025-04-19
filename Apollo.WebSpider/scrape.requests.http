@@ -2,7 +2,7 @@
 GET http://localhost:8001/
 
 ### Scrape Single URL
-POST http://localhost:8001/scrape
+POST https://manasseh-zw--scrape.modal.run
 Content-Type: application/json
 
 {

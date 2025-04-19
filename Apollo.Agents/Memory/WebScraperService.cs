@@ -18,17 +18,9 @@ public class WebScraperService : IWebScraper
         CancellationToken cancellationToken = default
     )
     {
-        var result = await _crawler.ScrapeAsync(
-            new()
-            {
-                Url = url,
-                Formats = [ScrapeAndExtractFromUrlRequestFormat.Markdown],
-                RemoveBase64Images = true,
-                OnlyMainContent = true,
-            }
-        );
+        var result = await _crawler.ScrapeAsync(url);
 
-        if (!result.Success.HasValue || !result.Success.Value)
+        if (!result.Success)
         {
             return new WebScraperResult()
             {
@@ -39,7 +31,7 @@ public class WebScraperService : IWebScraper
 
         return new WebScraperResult()
         {
-            Content = BinaryData.FromString(result.Data.Markdown),
+            Content = BinaryData.FromString(result.Content),
             ContentType = "text/markdown",
             Success = true,
         };

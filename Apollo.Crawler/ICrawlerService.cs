@@ -4,6 +4,6 @@ namespace Apollo.Crawler;
 
 public interface ICrawlerService
 {
-    Task<ScrapeResponse> ScrapeAsync(ScrapeAndExtractFromUrlRequest request);
-    Task<MapResponse> MapAsync(MapUrlsRequest request);
+    Task<WebCrawlResponse> ScrapeAsync(string url);
+    Task<WebCrawlBatchResponse> ScrapeBatchAsync(List<string> urls);
 }

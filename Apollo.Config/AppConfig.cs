@@ -69,6 +69,18 @@ public static class AppConfig
                 ?? throw new Exception("Firecrawl API key is not set"),
         };
 
+    public static WebSpider WebSpider { get; } =
+        new()
+        {
+            ScrapeUrl =
+                Environment.GetEnvironmentVariable("WEBSPIDER_SCRAPE_URL")
+                ?? throw new Exception("Scrape URL is not set"),
+
+            ScrapeBatchUrl =
+                Environment.GetEnvironmentVariable("WEBSPIDER_SCRAPE_BATCH_URL")
+                ?? throw new Exception("Scrape Batch URL is not set"),
+        };
+
     public static Models Models { get; } =
         new() { Gpt4o = "gpt-4o", TextEmbeddingSmall = "text-embedding-3-small" };
 }
@@ -108,4 +120,10 @@ public class ExaAI
 public class FirecrawlAI
 {
     public string ApiKey { get; init; } = string.Empty;
+}
+
+public class WebSpider
+{
+    public string ScrapeUrl { get; set; } = string.Empty;
+    public string ScrapeBatchUrl { get; set; } = string.Empty;
 }

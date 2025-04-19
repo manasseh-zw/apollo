@@ -1,7 +1,6 @@
 using Apollo.Config;
 using Apollo.Crawler;
 using Apollo.Search.Models;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
 
 namespace Apollo.Agents.Memory;
@@ -56,6 +55,7 @@ public class MemoryContext : IMemoryContext
             { "Author", request.SearchResult.Author },
             { "Highlights", request.SearchResult.Highlights },
         };
+
         await _memory.ImportWebPageAsync(request.SearchResult.Url, tags: tags);
     }
 
