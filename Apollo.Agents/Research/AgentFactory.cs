@@ -20,9 +20,9 @@ public static class AgentFactory
 
     // Plugin Names (consistent with Orchestrator's original intent)
     private const string StatePluginName = nameof(StatePlugin); // Or keep as "StatePlugin" string literal
-    private const string ResearchEnginePluginName = "Research.Engine";
-    private const string KernelMemoryPluginName = "Research.Memory";
-    private const string CompleteResearchPluginName = "Research.Complete";
+    private const string ResearchEnginePluginName = "Research_Engine";
+    private const string KernelMemoryPluginName = "Research_Memory";
+    private const string CompleteResearchPluginName = "Research_Complete";
 
     public static ChatCompletionAgent CreateResearchCoordinator(
         IKernelBuilder kernelBuilder,

@@ -7,13 +7,12 @@ Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
 {
-    "title": "Impact of AI on Healthcare",
-    "description": "Comprehensive analysis of how artificial intelligence is transforming healthcare delivery and patient outcomes",
+    "title": "Atlantis: Myth, Memory, or Misplaced History?",
+    "description": "An exploration into the legend of the lost city of Atlantis — separating fact from fiction, examining possible real-world counterparts, and understanding why the myth has endured for centuries.",
     "questions": [
-        "What are the main applications of AI in healthcare?",
-        "How is AI improving diagnostic accuracy?",
-        "What are the challenges and limitations of AI in healthcare?",
-        "How is AI affecting patient care and outcomes?"
+        "What are the origins of the Atlantis story, and what did Plato actually describe?",
+        "Are there historical or geological events that could explain the Atlantis myth?",
+        "Which modern theories suggest real-world locations for Atlantis (e.g., Santorini, the Azores, Richat Structure)?"
     ],
     "type": "Academic",
     "depth": "Comprehensive"

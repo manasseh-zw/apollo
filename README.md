@@ -28,3 +28,11 @@ decided to go fully agentic, consolidated the the query gen to ingestion agents 
 agents not using other plugins realized it might be an advertising issue the agents are not aweare of such functions
 
 for some reason could not use firecrawl api via Rest they have a weird request format.. had to use a dodgy lib but it works for now.
+
+agents now can call functions, got thorugh teh first questin iteration had issues setting the next question as active and continueing
+
+one of the biggest differencitators of my project is that i dont do a table of contents before hand i have a set of questions that need to be answered, the table of contents is genrated on the fly which i think makes it more accurate and relevant to the resaerch inquery vs the model trying to find search queries to appease a table of contenst
+
+now facing issues with firecrawl rate limits and timeouts.. i need a custom scraper using craw4ai
+
+faced some depenency isssue with crawl4ai for some reason in the latest stable version they added a dep that requires c++ build tools a huge depndency idk why they even did that its craazy this would also make setting up docker much trickier reverted to using an old version of crawl4ai

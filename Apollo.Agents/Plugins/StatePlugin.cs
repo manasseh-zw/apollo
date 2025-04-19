@@ -20,6 +20,7 @@ public class StatePlugin
 
     [KernelFunction]
     [Description("Gets the details of the currently active research question.")]
+    [return: Description("The ID and text of the active research question.")]
     public (string, string) GetActiveResearchQuestion()
     {
         var state = _state.GetState(_researchId);
