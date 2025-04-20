@@ -6,7 +6,7 @@ POST https://manasseh-zw--scrape.modal.run
 Content-Type: application/json
 
 {
-    "url": "https://www.theverge.com/openai/648130/openai-social-network-x-competitor"
+    "url": "https://www.milanjovanovic.tech/blog/running-background-tasks-in-asp-net-core"
 }
 
 ### Scrape Multiple URLs (Batch)
@@ -18,6 +18,13 @@ Content-Type: application/json
         "https://example.com",
         "https://httpbin.org/html",
         "https://news.ycombinator.com",
+        "https://www.theverge.com/openai/648130/openai-social-network-x-competitor",
+        "https://www.theverge.com/openai/648130/openai-social-network-x-competitor",
+        "https://www.theverge.com/openai/648130/openai-social-network-x-competitor",
+        "https://www.theverge.com/openai/648130/openai-social-network-x-competitor",
+        "https://www.theverge.com/openai/648130/openai-social-network-x-competitor",
+        "https://www.theverge.com/openai/648130/openai-social-network-x-competitor",
+        "https://www.theverge.com/openai/648130/openai-social-network-x-competitor",
         "https://www.theverge.com/openai/648130/openai-social-network-x-competitor",
         "https://www.theverge.com/openai/648130/openai-social-network-x-competitor",
         "https://www.theverge.com/openai/648130/openai-social-network-x-competitor",

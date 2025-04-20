@@ -27,17 +27,13 @@ public class FirecrawlServiceIntegrationTests
     }
 
     [SkipIfNoApiKeyFact]
-    public async Task ScrapeAsync_RealApi_ReturnsContent()
+    public async Task ShouldScrapeAndReturnContent()
     {
-        // Arrange
-        var url = "www.example.com";
-        // Act
+        var url = "https://httpbin.org/html";
+
         var result = await _crawlerService.ScrapeAsync(url);
 
-        // Log the response
-        _output.WriteLine(
-            $"Scrape Response: {JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true })}"
-        );
+        _output.WriteLine($"Scrape Response: {JsonSerializer.Serialize(result)}");
 
         Assert.NotNull(result);
         Assert.True(result.Success);

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Apollo.Config;
 using Apollo.Search;
 using Apollo.Search.Models;
@@ -37,9 +38,8 @@ public class ExaSearchServiceIntegrationTests : IDisposable
     }
 
     [SkipIfNoApiKeyFact]
-    public async Task SearchAsync_RealApi_ReturnsResults()
+    public async Task SearchShouldReturnResults()
     {
-        // Arrange
         var request = new WebSearchRequest
         {
             Query = "artificial intelligence latest developments",
@@ -47,13 +47,9 @@ public class ExaSearchServiceIntegrationTests : IDisposable
             NumResults = 3,
         };
 
-        // Act
         var result = await _searchService.SearchAsync(request);
 
-        // Log the response
-        _output.WriteLine(
-            $"Search Response: {System.Text.Json.JsonSerializer.Serialize(result, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}"
-        );
+        _output.WriteLine($"Search Response: {JsonSerializer.Serialize(result)}");
 
         // Assert
         Assert.NotNull(result);
@@ -70,20 +66,14 @@ public class ExaSearchServiceIntegrationTests : IDisposable
     }
 
     [SkipIfNoApiKeyFact]
-    public async Task FindSimilarAsync_RealApi_ReturnsResults()
+    public async Task ShouldFindSimiliarAndReturnResults()
     {
-        // Arrange
         var url = "https://www.nature.com/articles/d41586-023-03266-1";
 
-        // Act
         var result = await _searchService.FindSimilarAsync(url, 3);
 
-        // Log the response
-        _output.WriteLine(
-            $"Similar Results: {System.Text.Json.JsonSerializer.Serialize(result, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}"
-        );
+        _output.WriteLine($"Similar Results: {JsonSerializer.Serialize(result)}");
 
-        // Assert
         Assert.NotNull(result);
         Assert.NotEmpty(result.Results);
         Assert.All(

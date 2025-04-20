@@ -65,16 +65,16 @@ public class ResearchEnginePlugin
                     $"Processing: {result.Title} from {result.Url}"
                 );
 
-                await _memory.CrawlAndIngest(
-                    new WebCrawlRequest(
-                        searchContext: new WebSearchContext(
-                            ResearchId: researchId,
-                            ResearchQuestion: question.Text,
-                            Query: query
-                        ),
-                        SearchResult: result
-                    )
-                );
+                // await _memory.inges(
+                //     new WebCrawlRequest(
+                //         searchContext: new WebSearchContext(
+                //             ResearchId: researchId,
+                //             ResearchQuestion: question.Text,
+                //             Query: query
+                //         ),
+                //         SearchResult: result
+                //     )
+                // );
 
                 crawledUrlSet.Add(result.Url);
                 _clientUpdate.SendResearchProgressUpdate(

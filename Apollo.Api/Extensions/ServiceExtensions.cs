@@ -95,7 +95,7 @@ public static class ServiceExtensions
         services.AddScoped<IResearchManager, ResearchManager>();
         services.AddScoped<ResearchOrchestrator>();
 
-        services.AddSingleton<IResearchMessageQueue, ResearchMessageQueue>();
+        services.AddSingleton<IResearchEventsQueue, ResearchEventsQueue>();
         services.AddHostedService<ResearchProcessor>();
 
         services.AddMemoryCache();

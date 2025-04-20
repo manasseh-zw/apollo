@@ -7,7 +7,7 @@ namespace Apollo.Agents.Memory;
 
 public interface IMemoryContext
 {
-    Task CrawlAndIngest(WebCrawlRequest request);
+    Task Ingest(string content, TagCollection tags);
     MemoryServerless GetMemoryContextInstance();
 }
 
@@ -18,6 +18,7 @@ public class MemoryContext : IMemoryContext
     public MemoryContext(ICrawlerService crawler)
     {
         _memory = new KernelMemoryBuilder()
+            .WithPostgresMemoryDb(AppConfig.DatabaseOptions.VectorConnectionString)
             .WithAzureOpenAITextEmbeddingGeneration(
                 new()
                 {
@@ -38,25 +39,13 @@ public class MemoryContext : IMemoryContext
                     Endpoint = AppConfig.AzureAI.Endpoint,
                 }
             )
-            .WithSimpleQueuesPipeline()
             .WithCustomWebScraper(new WebScraperService(crawler))
             .Build<MemoryServerless>();
     }
 
-    public async Task CrawlAndIngest(WebCrawlRequest request)
+    public async Task Ingest(string content, TagCollection tags)
     {
-        var tags = new TagCollection
-        {
-            { "ResearchId", request.searchContext.ResearchId },
-            { "ResearchQuestion", request.searchContext.ResearchQuestion },
-            { "SearchQuery", request.searchContext.Query },
-            { "Title", request.SearchResult.Title },
-            { "PublicationDate", request.SearchResult.PublishedDate },
-            { "Author", request.SearchResult.Author },
-            { "Highlights", request.SearchResult.Highlights },
-        };
-
-        await _memory.ImportWebPageAsync(request.SearchResult.Url, tags: tags);
+        await _memory.ImportTextAsync(content, tags: tags);
     }
 
     public MemoryServerless GetMemoryContextInstance()
@@ -64,7 +53,3 @@ public class MemoryContext : IMemoryContext
         return _memory;
     }
 }
-
-public record WebCrawlRequest(WebSearchContext searchContext, WebSearchResult SearchResult);
-
-public record WebSearchContext(string ResearchId, string ResearchQuestion, string Query);

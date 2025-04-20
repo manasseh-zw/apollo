@@ -6,23 +6,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Apollo.Agents.Research;
 
-public interface IResearchProcessor
-{
-    Task EnqueueResearch(ResearchStartEvent researchEvent);
-    Task ProcessResearch(
-        ResearchStartEvent researchEvent,
-        CancellationToken cancellationToken = default
-    );
-}
-
 public class ResearchProcessor : BackgroundService
 {
-    private readonly IResearchMessageQueue _queue;
+    private readonly IResearchEventsQueue _queue;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<ResearchProcessor> _logger;
 
     public ResearchProcessor(
-        IResearchMessageQueue queue,
+        IResearchEventsQueue queue,
         IServiceScopeFactory serviceScopeFactory,
         ILogger<ResearchProcessor> logger
     )
@@ -76,7 +67,5 @@ public class ResearchProcessor : BackgroundService
                 );
             }
         }
-
-        
     }
 }

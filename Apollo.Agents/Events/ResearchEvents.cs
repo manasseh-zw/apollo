@@ -23,9 +23,9 @@ public interface IResearchEventHandler
 public class ResearchEventHandler : IResearchEventHandler
 {
     private readonly IResearchNotifier _notifier;
-    private readonly IResearchMessageQueue _queue;
+    private readonly IResearchEventsQueue _queue;
 
-    public ResearchEventHandler(IResearchNotifier notifier, IResearchMessageQueue queue)
+    public ResearchEventHandler(IResearchNotifier notifier, IResearchEventsQueue queue)
     {
         _notifier = notifier;
         _queue = queue;
