@@ -98,6 +98,10 @@ public static class ServiceExtensions
         services.AddSingleton<IResearchEventsQueue, ResearchEventsQueue>();
         services.AddHostedService<ResearchProcessor>();
 
+        services.AddSingleton<IIngestEventsQueue, IngestEventsQueue>();
+        services.AddHostedService<IngestProcessor>();
+        services.AddScoped<IIngestEventHandler, IngestEventHandler>();
+
         services.AddMemoryCache();
         services.AddLogging(builder =>
         {

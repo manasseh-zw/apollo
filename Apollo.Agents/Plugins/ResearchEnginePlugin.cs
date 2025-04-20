@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Apollo.Agents.Events;
 using Apollo.Agents.Helpers;
 using Apollo.Agents.Memory;
 using Apollo.Agents.State;
@@ -15,18 +16,21 @@ public class ResearchEnginePlugin
     private readonly IStateManager _state;
     private readonly ISearchService _search;
     private readonly IClientUpdateCallback _clientUpdate;
+    private readonly IIngestEventsQueue _ingestQueue;
 
     public ResearchEnginePlugin(
         ISearchService search,
         IMemoryContext memory,
         IStateManager state,
-        IClientUpdateCallback streamingCallback
+        IClientUpdateCallback streamingCallback,
+        IIngestEventsQueue ingestQueue
     )
     {
         _memory = memory;
         _state = state;
         _search = search;
         _clientUpdate = streamingCallback;
+        _ingestQueue = ingestQueue;
     }
 
     [KernelFunction]
@@ -43,43 +47,46 @@ public class ResearchEnginePlugin
         var crawledUrls = state.CrawledUrls;
         var crawledUrlSet = new HashSet<string>(crawledUrls, StringComparer.OrdinalIgnoreCase);
 
-        //using nested foreach here for easier debugging, will optimize to task.whenall later
         foreach (var query in queries)
         {
             _clientUpdate.SendResearchProgressUpdate(researchId, $"Searching web for: {query}");
             var searchResponse = await PerformWebSearch(query);
 
-            foreach (var result in searchResponse.Results)
-            {
-                if (crawledUrlSet.Contains(result.Url))
-                {
-                    _clientUpdate.SendResearchProgressUpdate(
-                        researchId,
-                        $"Skipping already processed URL: {result.Url}"
-                    );
-                    continue;
-                }
+            var newResults = searchResponse
+                .Results.Where(result => !crawledUrlSet.Contains(result.Url))
+                .ToList();
 
+            if (newResults.Count > 0)
+            {
                 _clientUpdate.SendResearchProgressUpdate(
                     researchId,
-                    $"Processing: {result.Title} from {result.Url}"
+                    $"Processing {newResults.Count} new results for query: {query}"
                 );
 
-                // await _memory.inges(
-                //     new WebCrawlRequest(
-                //         searchContext: new WebSearchContext(
-                //             ResearchId: researchId,
-                //             ResearchQuestion: question.Text,
-                //             Query: query
-                //         ),
-                //         SearchResult: result
-                //     )
-                // );
+                await _ingestQueue.Writer.WriteAsync(
+                    new IngestEvent(
+                        Guid.Parse(researchId),
+                        new IngestRequest(
+                            new WebSearchContext(
+                                ResearchId: researchId,
+                                ResearchQuestion: question.Text,
+                                Query: query
+                            ),
+                            newResults
+                        )
+                    )
+                );
 
-                crawledUrlSet.Add(result.Url);
+                foreach (var result in newResults)
+                {
+                    crawledUrlSet.Add(result.Url);
+                }
+            }
+            else
+            {
                 _clientUpdate.SendResearchProgressUpdate(
                     researchId,
-                    $"Successfully processed: {result.Title}"
+                    $"No new URLs to process for query: {query}"
                 );
             }
         }

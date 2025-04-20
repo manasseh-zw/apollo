@@ -10,11 +10,11 @@ namespace Apollo.Agents.Plugins;
 /// </summary>
 public class KernelMemoryPlugin
 {
-    private readonly MemoryServerless _memory;
+    private readonly IMemoryContext _memory;
 
     public KernelMemoryPlugin(IMemoryContext memoryContext)
     {
-        _memory = memoryContext.GetMemoryContextInstance();
+        _memory = memoryContext;
     }
 
     [KernelFunction]
@@ -26,7 +26,7 @@ public class KernelMemoryPlugin
         CancellationToken cancellationToken = default
     )
     {
-        return await _memory.SearchAsync(query, cancellationToken: cancellationToken);
+        return await _memory.SearchAsync(query, cancellationToken);
     }
 
     [KernelFunction]
@@ -38,6 +38,6 @@ public class KernelMemoryPlugin
         CancellationToken cancellationToken = default
     )
     {
-        return await _memory.AskAsync(question, cancellationToken: cancellationToken);
+        return await _memory.AskAsync(question, cancellationToken);
     }
 }

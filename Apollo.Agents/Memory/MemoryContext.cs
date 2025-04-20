@@ -8,7 +8,8 @@ namespace Apollo.Agents.Memory;
 public interface IMemoryContext
 {
     Task Ingest(string content, TagCollection tags);
-    MemoryServerless GetMemoryContextInstance();
+    Task<SearchResult> SearchAsync(string query, CancellationToken cancellationToken = default);
+    Task<MemoryAnswer> AskAsync(string question, CancellationToken cancellationToken = default);
 }
 
 public class MemoryContext : IMemoryContext
@@ -48,8 +49,19 @@ public class MemoryContext : IMemoryContext
         await _memory.ImportTextAsync(content, tags: tags);
     }
 
-    public MemoryServerless GetMemoryContextInstance()
+    public async Task<SearchResult> SearchAsync(
+        string query,
+        CancellationToken cancellationToken = default
+    )
     {
-        return _memory;
+        return await _memory.SearchAsync(query, cancellationToken: cancellationToken);
+    }
+
+    public async Task<MemoryAnswer> AskAsync(
+        string question,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await _memory.AskAsync(question, cancellationToken: cancellationToken);
     }
 }
