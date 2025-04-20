@@ -32,6 +32,9 @@ public class IngestEventHandler : IIngestEventHandler
 
     public async Task HandleIngest(IngestEvent @event)
     {
+        var researchId = @event.ResearchId.ToString();
+        _memory.SetIngestionInProgress(researchId, true);
+
         try
         {
             var urls = @event.Request.SearchResults.Select(r => r.Url).ToList();
@@ -80,6 +83,10 @@ public class IngestEventHandler : IIngestEventHandler
                 @event.ResearchId
             );
             throw;
+        }
+        finally
+        {
+            _memory.SetIngestionInProgress(researchId, false);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Apollo.Config;
 using Apollo.Crawler;
 using Apollo.Search.Models;
@@ -10,11 +11,14 @@ public interface IMemoryContext
     Task Ingest(string content, TagCollection tags);
     Task<SearchResult> SearchAsync(string query, CancellationToken cancellationToken = default);
     Task<MemoryAnswer> AskAsync(string question, CancellationToken cancellationToken = default);
+    bool IsIngestionInProgress(string researchId);
+    void SetIngestionInProgress(string researchId, bool inProgress);
 }
 
 public class MemoryContext : IMemoryContext
 {
     private readonly MemoryServerless _memory;
+    private readonly ConcurrentDictionary<string, bool> _activeIngestions = new();
 
     public MemoryContext(ICrawlerService crawler)
     {
@@ -63,5 +67,18 @@ public class MemoryContext : IMemoryContext
     )
     {
         return await _memory.AskAsync(question, cancellationToken: cancellationToken);
+    }
+
+    public bool IsIngestionInProgress(string researchId)
+    {
+        return _activeIngestions.GetValueOrDefault(researchId, false);
+    }
+
+    public void SetIngestionInProgress(string researchId, bool inProgress)
+    {
+        if (inProgress)
+            _activeIngestions.TryAdd(researchId, true);
+        else
+            _activeIngestions.TryRemove(researchId, out _);
     }
 }
