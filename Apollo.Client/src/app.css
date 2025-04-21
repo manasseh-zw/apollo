@@ -194,7 +194,7 @@
 }
 
 .three-body {
-  --uib-size: 20px;
+  --uib-size: 17px;
   --uib-speed: 0.8s;
   --uib-color: #030303;
   position: relative;

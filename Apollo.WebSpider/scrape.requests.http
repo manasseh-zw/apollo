@@ -6,7 +6,7 @@ POST https://manasseh-zw--scrape.modal.run
 Content-Type: application/json
 
 {
-    "url": "https://www.milanjovanovic.tech/blog/running-background-tasks-in-asp-net-core"
+    "url": "https://en.wikipedia.org/wiki/Atlantis"
 }
 
 ### Scrape Multiple URLs (Batch)

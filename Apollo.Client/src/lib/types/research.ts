@@ -1,3 +1,22 @@
+export type FeedUpdateType = 'message' | 'searching' | 'search_results' | 'snippet';
+
+export type FeedUpdate = {
+  id: string;
+  type: FeedUpdateType;
+  content: string;
+  timestamp: string;
+  searchResults?: SearchResultItem[];
+  highlights?: string[];
+  query?: string;
+};
+
+export type ResearchSession = {
+  id: string;
+  startedAt: string;
+  status: 'active' | 'completed' | 'error';
+  sourcesCount: number;
+};
+
 export type Project = {
   id: number;
   title: string;
@@ -33,6 +52,7 @@ export type SearchResultItem = {
   url: string;
   snippet?: string;
   timestamp?: string;
+  highlights?: string[];
   isNatGeo?: boolean;
   isLiveScience?: boolean;
   isHistory?: boolean;

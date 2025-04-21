@@ -1,23 +1,36 @@
 "use client";
 
-import { useState } from "react";
-import { Check, CheckCircle, ChevronDown, Globe, Search } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Check, ChevronDown, Globe } from "lucide-react";
 import { Checkbox, Spinner, Avatar, AvatarGroup } from "@heroui/react";
 import type {
   TimelineItem,
   SearchResultItem,
   ResearchProgress,
+  FeedUpdate,
+  ResearchSession
 } from "../../../lib/types/research";
+import ResearchFeedUpdate from "./FeedUpdate";
 import TriLoader from "./TriLoader";
+import { useResearchTimer } from "../../../lib/hooks/useResearchTimer";
 
 export default function ResearchFeed() {
   const [expanded, setExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const mockSession: ResearchSession = {
+    id: "1",
+    startedAt: new Date(Date.now() - 1000 * 60 * 3).toISOString(), // 3 minutes ago
+    status: "active",
+    sourcesCount: 13
+  };
+
+  const elapsedTime = useResearchTimer(mockSession.startedAt);
+
   const progress: ResearchProgress = {
-    duration: "3m 6s",
-    sourcesCount: 13,
+    duration: elapsedTime,
+    sourcesCount: mockSession.sourcesCount,
     webPagesCount: 13,
     status: "completed",
   };
@@ -67,6 +80,38 @@ export default function ResearchFeed() {
     },
   ];
 
+  const feedUpdates: FeedUpdate[] = [
+    {
+      id: "1",
+      type: "message",
+      content:
+        "The request is about Atlantis, focusing on its origins, evidence of existence, and historical/cultural significance.",
+      timestamp: new Date().toISOString(),
+    },
+    {
+      id: "2",
+      type: "searching",
+      content: "",
+      query: "Atlantis origin and evidence",
+      timestamp: new Date().toISOString(),
+    },
+    {
+      id: "3",
+      type: "search_results",
+      content: "",
+      searchResults: searchResults,
+      timestamp: new Date().toISOString(),
+    },
+    {
+      id: "4",
+      type: "snippet",
+      content:
+        'Atlantis is a legendary island from Plato\'s dialogues "Timaeus" and "Critias," described as a powerful civilization 9,000 years before his time, located beyond the Strait of Gibraltar.',
+      highlights: ["Plato", "Timaeus", "Critias", "civilization"],
+      timestamp: new Date().toISOString(),
+    },
+  ];
+
   if (error) {
     return (
       <div className="flex h-full w-full items-center justify-center">
@@ -76,26 +121,22 @@ export default function ResearchFeed() {
   }
 
   return (
-    <div className="flex h-full w-full overflow-hidden  bg-white">
-      {/* Left sidebar */}
+    <div className="flex h-full w-full overflow-hidden bg-white">
       <div className="w-[317px] border-r border-gray-200 bg-content p-5 flex flex-col h-full">
         <div className="flex items-center gap-2">
           <TriLoader />
-          <h2 className="text-xl  text-gray-800">
+          <h2 className="text-xl text-gray-800">
             {progress.status === "completed" ? "Deep Research" : "In Progress"}
           </h2>
         </div>
         <p className="mt-2 text-sm text-gray-500">
-          {progress.duration} · {progress.sourcesCount} sources
+          {elapsedTime} · {progress.sourcesCount} sources
         </p>
 
-        {/* Timeline */}
         <div className="mt-6 flex-1 overflow-y-auto">
           <div className="relative">
-            {/* Timeline line */}
             <div className="absolute mt-1 left-[10px] top-0 h-full w-[2px] bg-gray-300"></div>
 
-            {/* Timeline items */}
             <div className="mb-8 flex flex-col gap-6">
               {timelineItems.map((item) => (
                 <TimelineItem key={item.id} {...item} />
@@ -104,82 +145,36 @@ export default function ResearchFeed() {
           </div>
         </div>
 
-        {/* Bottom sources indicator - using AvatarGroup */}
         <WebSourcesGroup sources={searchResults} />
       </div>
 
-      {/* Main content */}
       <div className="flex-1 relative">
         <div className="absolute inset-0 overflow-y-auto p-5">
           <h3 className="mb-4 text-lg font-medium text-gray-800">
             Exploring Atlantis inquiry
           </h3>
 
-          <ul className="mb-4 space-y-3">
-            <li className="flex items-start">
-              <span className="mr-2 mt-1 text-lg">•</span>
-              <p className="text-gray-700">
-                The request is about Atlantis, focusing on its origins, evidence
-                of existence, and historical/cultural significance.
-              </p>
-            </li>
-          </ul>
-
-          <div className="mb-4 flex items-center gap-2">
-            <Search className="h-4 w-4 text-gray-500" />
-            <p className="text-gray-700">
-              Searching for{" "}
-              <span className="font-medium">
-                "Atlantis origin and evidence"
-              </span>
-            </p>
-          </div>
-
-          <div className="mb-4 flex items-center gap-2">
-            <span className="text-lg">≡</span>
-            <p className="text-gray-700">
-              {searchResults.length} results found
-            </p>
-          </div>
-
-          {/* Search results */}
-          <div className="mb-4 space-y-3">
-            {searchResults.map((result) => (
-              <SearchResult key={result.id} {...result} />
+          <div className="space-y-6">
+            {feedUpdates.map((update) => (
+              <ResearchFeedUpdate key={update.id} update={update} />
             ))}
           </div>
 
           {expanded ? (
             <button
               onClick={() => setExpanded(false)}
-              className="mb-6 text-gray-600 hover:text-gray-800 flex items-center gap-1"
+              className="mt-4 text-gray-600 hover:text-gray-800 flex items-center gap-1"
             >
               Show less <ChevronDown className="h-4 w-4 transform rotate-180" />
             </button>
           ) : (
             <button
               onClick={() => setExpanded(true)}
-              className="mb-6 text-gray-600 hover:text-gray-800 flex items-center gap-1"
+              className="mt-4 text-gray-600 hover:text-gray-800 flex items-center gap-1"
             >
-              See more (5) <ChevronDown className="h-4 w-4" />
+              See more <ChevronDown className="h-4 w-4" />
             </button>
           )}
-
-          <div className="mb-4 flex items-center gap-2">
-            <Globe className="h-4 w-4 text-gray-500" />
-            <p className="font-medium text-gray-700">Browsing results</p>
-          </div>
-
-          <ul className="space-y-3">
-            <li className="flex items-start">
-              <span className="mr-2 mt-1 text-lg">•</span>
-              <p className="text-gray-700">
-                Atlantis is a legendary island from Plato's dialogues "Timaeus"
-                and "Critias," described as a powerful civilization 9,000 years
-                before his time, located beyond the Strait of Gibraltar.
-              </p>
-            </li>
-          </ul>
         </div>
       </div>
     </div>
