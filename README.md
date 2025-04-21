@@ -44,3 +44,5 @@ implemented ingest processor to which handles batch processing of all search res
 AllowMixingVolatileAndPersistentData = true //i set this to true since i am not dealing with documents at the moment;
 
 realized i was not adversiting the method that sets the next active question so the agent was looking ofr pending question when they were never set!
+
+Kind of difficult to debug, agent group chat gets stuck in a loop where it keeps on adding gap questions.

@@ -171,8 +171,9 @@ public class ResearchOrchestrator
                             currentMessageBuffer.ToString()
                         );
                         _logger.LogInformation(
-                            "[{ResearchId}] >> Sent buffered message from {AgentName}",
+                            "[{ResearchId}] >> {message} from {AgentName}",
                             researchId,
+                            currentMessageBuffer.ToString(),
                             currentAuthor
                         );
                     }
@@ -189,8 +190,9 @@ public class ResearchOrchestrator
                     currentMessageBuffer.ToString()
                 );
                 _logger.LogInformation(
-                    "[{ResearchId}] >> Sent final buffered message after loop from {AgentName}",
+                    "[{ResearchId}] >> Sent final message {message}  after loop from {AgentName}",
                     researchId,
+                    currentMessageBuffer.ToString(),
                     currentAuthor
                 );
             }
