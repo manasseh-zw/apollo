@@ -1,20 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
-import AgentChat from "../../../../components/library/AgentChat";
+import AgentChat from "../../../../components/research/AgentChat";
 import { Image } from "@heroui/react";
 
-export const Route = createFileRoute("/__app/library/$id/")({
+export const Route = createFileRoute("/__app/research/$id/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
   return (
-    <main className="w-full h-full grid grid-cols-12 gap-4 p-4">
+    <main className="w-full h-full grid grid-cols-12 gap-4 p-4 ">
       <div className="h-full col-span-8  p-4 flex flex-col overflow-hidden border-r-1 border-secondary-200 ">
         <div className="mb-4 flex items-center justify-between  ">
           <h2 className="text-medium font-medium text-primary">
             Quantum Computing
           </h2>
-          <div className="text-tiny text-primary-400">
+          <div className="text-tiny text-primary-600">
             Analyzing quantum computing impact...
           </div>
         </div>

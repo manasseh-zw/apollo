@@ -16,8 +16,8 @@ import { Route as IndexImport } from './routes/index'
 import { Route as AuthSignUpImport } from './routes/auth/sign-up'
 import { Route as AuthSignInImport } from './routes/auth/sign-in'
 import { Route as appResearchIndexImport } from './routes/__app/research/index'
-import { Route as appLibraryIndexImport } from './routes/__app/library/index'
-import { Route as appLibraryIdIndexImport } from './routes/__app/library/$id/index'
+import { Route as appHistoryIndexImport } from './routes/__app/history/index'
+import { Route as appResearchIdIndexImport } from './routes/__app/research/$id/index'
 import { Route as appResearchChatIdIndexImport } from './routes/__app/research/chat/$id/index'
 
 // Create/Update Routes
@@ -51,15 +51,15 @@ const appResearchIndexRoute = appResearchIndexImport.update({
   getParentRoute: () => appRoute,
 } as any)
 
-const appLibraryIndexRoute = appLibraryIndexImport.update({
-  id: '/library/',
-  path: '/library/',
+const appHistoryIndexRoute = appHistoryIndexImport.update({
+  id: '/history/',
+  path: '/history/',
   getParentRoute: () => appRoute,
 } as any)
 
-const appLibraryIdIndexRoute = appLibraryIdIndexImport.update({
-  id: '/library/$id/',
-  path: '/library/$id/',
+const appResearchIdIndexRoute = appResearchIdIndexImport.update({
+  id: '/research/$id/',
+  path: '/research/$id/',
   getParentRoute: () => appRoute,
 } as any)
 
@@ -101,11 +101,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignUpImport
       parentRoute: typeof rootRoute
     }
-    '/__app/library/': {
-      id: '/__app/library/'
-      path: '/library'
-      fullPath: '/library'
-      preLoaderRoute: typeof appLibraryIndexImport
+    '/__app/history/': {
+      id: '/__app/history/'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof appHistoryIndexImport
       parentRoute: typeof appImport
     }
     '/__app/research/': {
@@ -115,11 +115,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appResearchIndexImport
       parentRoute: typeof appImport
     }
-    '/__app/library/$id/': {
-      id: '/__app/library/$id/'
-      path: '/library/$id'
-      fullPath: '/library/$id'
-      preLoaderRoute: typeof appLibraryIdIndexImport
+    '/__app/research/$id/': {
+      id: '/__app/research/$id/'
+      path: '/research/$id'
+      fullPath: '/research/$id'
+      preLoaderRoute: typeof appResearchIdIndexImport
       parentRoute: typeof appImport
     }
     '/__app/research/chat/$id/': {
@@ -135,16 +135,16 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface appRouteChildren {
-  appLibraryIndexRoute: typeof appLibraryIndexRoute
+  appHistoryIndexRoute: typeof appHistoryIndexRoute
   appResearchIndexRoute: typeof appResearchIndexRoute
-  appLibraryIdIndexRoute: typeof appLibraryIdIndexRoute
+  appResearchIdIndexRoute: typeof appResearchIdIndexRoute
   appResearchChatIdIndexRoute: typeof appResearchChatIdIndexRoute
 }
 
 const appRouteChildren: appRouteChildren = {
-  appLibraryIndexRoute: appLibraryIndexRoute,
+  appHistoryIndexRoute: appHistoryIndexRoute,
   appResearchIndexRoute: appResearchIndexRoute,
-  appLibraryIdIndexRoute: appLibraryIdIndexRoute,
+  appResearchIdIndexRoute: appResearchIdIndexRoute,
   appResearchChatIdIndexRoute: appResearchChatIdIndexRoute,
 }
 
@@ -155,9 +155,9 @@ export interface FileRoutesByFullPath {
   '': typeof appRouteWithChildren
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
-  '/library': typeof appLibraryIndexRoute
+  '/history': typeof appHistoryIndexRoute
   '/research': typeof appResearchIndexRoute
-  '/library/$id': typeof appLibraryIdIndexRoute
+  '/research/$id': typeof appResearchIdIndexRoute
   '/research/chat/$id': typeof appResearchChatIdIndexRoute
 }
 
@@ -166,9 +166,9 @@ export interface FileRoutesByTo {
   '': typeof appRouteWithChildren
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
-  '/library': typeof appLibraryIndexRoute
+  '/history': typeof appHistoryIndexRoute
   '/research': typeof appResearchIndexRoute
-  '/library/$id': typeof appLibraryIdIndexRoute
+  '/research/$id': typeof appResearchIdIndexRoute
   '/research/chat/$id': typeof appResearchChatIdIndexRoute
 }
 
@@ -178,9 +178,9 @@ export interface FileRoutesById {
   '/__app': typeof appRouteWithChildren
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
-  '/__app/library/': typeof appLibraryIndexRoute
+  '/__app/history/': typeof appHistoryIndexRoute
   '/__app/research/': typeof appResearchIndexRoute
-  '/__app/library/$id/': typeof appLibraryIdIndexRoute
+  '/__app/research/$id/': typeof appResearchIdIndexRoute
   '/__app/research/chat/$id/': typeof appResearchChatIdIndexRoute
 }
 
@@ -191,9 +191,9 @@ export interface FileRouteTypes {
     | ''
     | '/auth/sign-in'
     | '/auth/sign-up'
-    | '/library'
+    | '/history'
     | '/research'
-    | '/library/$id'
+    | '/research/$id'
     | '/research/chat/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -201,9 +201,9 @@ export interface FileRouteTypes {
     | ''
     | '/auth/sign-in'
     | '/auth/sign-up'
-    | '/library'
+    | '/history'
     | '/research'
-    | '/library/$id'
+    | '/research/$id'
     | '/research/chat/$id'
   id:
     | '__root__'
@@ -211,9 +211,9 @@ export interface FileRouteTypes {
     | '/__app'
     | '/auth/sign-in'
     | '/auth/sign-up'
-    | '/__app/library/'
+    | '/__app/history/'
     | '/__app/research/'
-    | '/__app/library/$id/'
+    | '/__app/research/$id/'
     | '/__app/research/chat/$id/'
   fileRoutesById: FileRoutesById
 }
@@ -254,9 +254,9 @@ export const routeTree = rootRoute
     "/__app": {
       "filePath": "__app.tsx",
       "children": [
-        "/__app/library/",
+        "/__app/history/",
         "/__app/research/",
-        "/__app/library/$id/",
+        "/__app/research/$id/",
         "/__app/research/chat/$id/"
       ]
     },
@@ -266,16 +266,16 @@ export const routeTree = rootRoute
     "/auth/sign-up": {
       "filePath": "auth/sign-up.tsx"
     },
-    "/__app/library/": {
-      "filePath": "__app/library/index.tsx",
+    "/__app/history/": {
+      "filePath": "__app/history/index.tsx",
       "parent": "/__app"
     },
     "/__app/research/": {
       "filePath": "__app/research/index.tsx",
       "parent": "/__app"
     },
-    "/__app/library/$id/": {
-      "filePath": "__app/library/$id/index.tsx",
+    "/__app/research/$id/": {
+      "filePath": "__app/research/$id/index.tsx",
       "parent": "/__app"
     },
     "/__app/research/chat/$id/": {
