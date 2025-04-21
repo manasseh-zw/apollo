@@ -18,7 +18,6 @@ import { Route as AuthSignInImport } from './routes/auth/sign-in'
 import { Route as appResearchIndexImport } from './routes/__app/research/index'
 import { Route as appHistoryIndexImport } from './routes/__app/history/index'
 import { Route as appResearchIdIndexImport } from './routes/__app/research/$id/index'
-import { Route as appResearchChatIdIndexImport } from './routes/__app/research/chat/$id/index'
 
 // Create/Update Routes
 
@@ -60,12 +59,6 @@ const appHistoryIndexRoute = appHistoryIndexImport.update({
 const appResearchIdIndexRoute = appResearchIdIndexImport.update({
   id: '/research/$id/',
   path: '/research/$id/',
-  getParentRoute: () => appRoute,
-} as any)
-
-const appResearchChatIdIndexRoute = appResearchChatIdIndexImport.update({
-  id: '/research/chat/$id/',
-  path: '/research/chat/$id/',
   getParentRoute: () => appRoute,
 } as any)
 
@@ -122,13 +115,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appResearchIdIndexImport
       parentRoute: typeof appImport
     }
-    '/__app/research/chat/$id/': {
-      id: '/__app/research/chat/$id/'
-      path: '/research/chat/$id'
-      fullPath: '/research/chat/$id'
-      preLoaderRoute: typeof appResearchChatIdIndexImport
-      parentRoute: typeof appImport
-    }
   }
 }
 
@@ -138,14 +124,12 @@ interface appRouteChildren {
   appHistoryIndexRoute: typeof appHistoryIndexRoute
   appResearchIndexRoute: typeof appResearchIndexRoute
   appResearchIdIndexRoute: typeof appResearchIdIndexRoute
-  appResearchChatIdIndexRoute: typeof appResearchChatIdIndexRoute
 }
 
 const appRouteChildren: appRouteChildren = {
   appHistoryIndexRoute: appHistoryIndexRoute,
   appResearchIndexRoute: appResearchIndexRoute,
   appResearchIdIndexRoute: appResearchIdIndexRoute,
-  appResearchChatIdIndexRoute: appResearchChatIdIndexRoute,
 }
 
 const appRouteWithChildren = appRoute._addFileChildren(appRouteChildren)
@@ -158,7 +142,6 @@ export interface FileRoutesByFullPath {
   '/history': typeof appHistoryIndexRoute
   '/research': typeof appResearchIndexRoute
   '/research/$id': typeof appResearchIdIndexRoute
-  '/research/chat/$id': typeof appResearchChatIdIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -169,7 +152,6 @@ export interface FileRoutesByTo {
   '/history': typeof appHistoryIndexRoute
   '/research': typeof appResearchIndexRoute
   '/research/$id': typeof appResearchIdIndexRoute
-  '/research/chat/$id': typeof appResearchChatIdIndexRoute
 }
 
 export interface FileRoutesById {
@@ -181,7 +163,6 @@ export interface FileRoutesById {
   '/__app/history/': typeof appHistoryIndexRoute
   '/__app/research/': typeof appResearchIndexRoute
   '/__app/research/$id/': typeof appResearchIdIndexRoute
-  '/__app/research/chat/$id/': typeof appResearchChatIdIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -194,7 +175,6 @@ export interface FileRouteTypes {
     | '/history'
     | '/research'
     | '/research/$id'
-    | '/research/chat/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -204,7 +184,6 @@ export interface FileRouteTypes {
     | '/history'
     | '/research'
     | '/research/$id'
-    | '/research/chat/$id'
   id:
     | '__root__'
     | '/'
@@ -214,7 +193,6 @@ export interface FileRouteTypes {
     | '/__app/history/'
     | '/__app/research/'
     | '/__app/research/$id/'
-    | '/__app/research/chat/$id/'
   fileRoutesById: FileRoutesById
 }
 
@@ -256,8 +234,7 @@ export const routeTree = rootRoute
       "children": [
         "/__app/history/",
         "/__app/research/",
-        "/__app/research/$id/",
-        "/__app/research/chat/$id/"
+        "/__app/research/$id/"
       ]
     },
     "/auth/sign-in": {
@@ -276,10 +253,6 @@ export const routeTree = rootRoute
     },
     "/__app/research/$id/": {
       "filePath": "__app/research/$id/index.tsx",
-      "parent": "/__app"
-    },
-    "/__app/research/chat/$id/": {
-      "filePath": "__app/research/chat/$id/index.tsx",
       "parent": "/__app"
     }
   }

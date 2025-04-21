@@ -2,14 +2,12 @@ import { useEffect, useState, useRef } from "react";
 import { Avatar as UserAvatar } from "@heroui/react";
 import Avatar from "boring-avatars";
 import ChatPromptForm from "./ChatPromptForm";
-import { useParams, useRouter } from "@tanstack/react-router";
-import { useSearch } from "@tanstack/react-router";
 import * as signalR from "@microsoft/signalr";
 import { config } from "../../../../config";
 import { store } from "../../../lib/state/store";
 import ReactMarkdown from "react-markdown";
 import Thinking from "./Thinking";
-import { Logo, LogoLight } from "../../Icons";
+import { LogoLight } from "../../Icons";
 
 type Message = {
   id: number;
@@ -17,17 +15,12 @@ type Message = {
   sender: "assistant" | "user";
 };
 
-interface ChatSearchParams {
-  initialQuery?: string;
+interface ChatProps {
+  id: string;
+  initialQuery: string;
 }
 
-export default function ResearchChat() {
-  const router = useRouter();
-  const { id } = useParams({ from: "/__app/research/chat/$id/" });
-  const searchParams = useSearch({
-    from: "/__app/research/chat/$id/",
-  }) as ChatSearchParams;
-  const initialQuery = searchParams.initialQuery;
+export default function Chat({ id, initialQuery }: ChatProps) {
   const user = store.state.authState.user;
   const [messages, setMessages] = useState<Message[]>([]);
   const [connection, setConnection] = useState<signalR.HubConnection | null>(
@@ -77,8 +70,8 @@ export default function ResearchChat() {
       });
     });
 
-    newConnection.on("ResearchSaved", (id: string) => {
-      router.navigate({ to: `/library/${id}` });
+    newConnection.on("ResearchSaved", (savedId: string) => {
+      console.log("Research saved:", savedId);
     });
 
     newConnection
@@ -127,7 +120,7 @@ export default function ResearchChat() {
   };
 
   return (
-    <div className="flex flex-col h-full max-w-3xl mx-auto">
+    <div className="flex flex-col h-full w-full max-w-3xl mx-auto">
       <div className="flex-1 p-4 space-y-9 font-geist">
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
