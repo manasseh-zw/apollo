@@ -68,7 +68,7 @@ export default function AppSidebar() {
           "justify-center gap-0 pl-0": isCollapsed,
         })}
       >
-        <div className="flex items-center justify-center rounded-full gap-2">
+        <div className="flex items-center justify-center rounded-full gap-2 cursor-pointer">
           <LogoLight
             width={28}
             height={28}
@@ -93,7 +93,7 @@ export default function AppSidebar() {
       </div>
 
       <Spacer y={6} />
-      <div className="flex items-center gap-3 px-3">
+      <div className="flex items-center gap-3 px-3 cursor-pointer">
         {user.avatarUrl.length > 0 ? (
           <UserAvatar
             name={user.username.substring(0, 4)}

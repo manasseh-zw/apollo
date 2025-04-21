@@ -89,7 +89,7 @@ const messages: Message[] = [
 
 export default function AgentChat() {
   return (
-    <div className="flex flex-col h-full bg-content1 rounded-large overflow-hidden">
+    <div className="flex flex-col h-full rounded-large overflow-hidden bg-white">
       <div className="p-3  border-content4 flex items-center gap-3">
         <div className="flex -space-x-2">
           {Object.values(agents).map((agent) => (
@@ -100,7 +100,7 @@ export default function AgentChat() {
             />
           ))}
         </div>
-        <h2 className="text-small font-medium">Agent Collaboration</h2>
+        <h2 className="text-small font-medium">Agent Group Chat</h2>
       </div>
       <div className="flex-1 p-3 space-y-4 overflow-auto">
         {messages.map((message) => (
