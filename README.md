@@ -39,4 +39,8 @@ faced some depenency isssue with crawl4ai for some reason in the latest stable v
 
 now facing issues with kernel memory the webscarper interface does not allow batch processing..., might have to go with import documents where i have eahc url content as a page...
 
-implemented ingest processor to which handles batch processing of all saerch reseults for a research query.
+implemented ingest processor to which handles batch processing of all search reseults for a research query.
+
+AllowMixingVolatileAndPersistentData = true //i set this to true since i am not dealing with documents at the moment;
+
+realized i was not adversiting the method that sets the next active question so the agent was looking ofr pending question when they were never set!

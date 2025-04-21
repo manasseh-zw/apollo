@@ -11,8 +11,7 @@ Content-Type: application/json
     "description": "An exploration into the legend of the lost city of Atlantis — separating fact from fiction, examining possible real-world counterparts, and understanding why the myth has endured for centuries.",
     "questions": [
         "What are the origins of the Atlantis story, and what did Plato actually describe?",
-        "Are there historical or geological events that could explain the Atlantis myth?",
-        "Which modern theories suggest real-world locations for Atlantis (e.g., Santorini, the Azores, Richat Structure)?"
+        "Are there historical or geological events that could explain the Atlantis myth?"
     ],
     "type": "Academic",
     "depth": "Comprehensive"

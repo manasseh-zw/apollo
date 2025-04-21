@@ -9,10 +9,11 @@ public interface IStateManager
     Task<ResearchState> GetOrCreateState(string researchId, Func<Task<ResearchState>> factory);
     ResearchState GetState(string researchId);
     void UpdateState(string researchId, Action<ResearchState> updateAction);
-    string SetNextPendingQuestionAsActive(string researchId);
     void CompleteActiveQuestion(string researchId);
     void MarkResearchComplete(string researchId);
     void AddPendingQuestions(string researchId, List<string> newQuestions);
+    void UpdateTableOfContents(string researchId, List<string> sections);
+    string SetNextPendingQuestionAsActive(string researchId);
 }
 
 public class StateManager : IStateManager
@@ -75,7 +76,6 @@ public class StateManager : IStateManager
         }
     }
 
-    //plugin functions
     public string SetNextPendingQuestionAsActive(string researchId)
     {
         string nextQuestionId = string.Empty;
@@ -132,13 +132,16 @@ public class StateManager : IStateManager
                 activeQuestion.IsProcessed = true;
                 state.CompletedResearchQuestions.Add(activeQuestion);
                 state.PendingResearchQuestions.Remove(activeQuestion);
-                state.ActiveQuestionId = null; // Ready for the next one
+                state.ActiveQuestionId = null; // Clear current before setting next
                 _logger.LogInformation(
                     "Completed question {QuestionId} for {ResearchId}",
                     activeQuestion.Id,
                     researchId
                 );
                 _cache.Set(researchId, state, _cacheTimeout); // Update cache
+
+                // Immediately set next question as active
+                SetNextPendingQuestionAsActive(researchId);
             }
             else
             {
@@ -185,6 +188,22 @@ public class StateManager : IStateManager
                 researchId
             );
         }
+    }
+
+    public void UpdateTableOfContents(string researchId, List<string> sections)
+    {
+        UpdateState(
+            researchId,
+            state =>
+            {
+                state.TableOfContents = sections;
+                _logger.LogInformation(
+                    "Updated table of contents for {ResearchId} with {Count} sections",
+                    researchId,
+                    sections.Count
+                );
+            }
+        );
     }
 
     public void MarkResearchComplete(string researchId)

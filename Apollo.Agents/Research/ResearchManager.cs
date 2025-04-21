@@ -80,13 +80,10 @@ public class ResearchManager : IResearchManager
                 return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchAnalyzerAgentName);
             }
 
-            // Try to set next pending question if none is active
             if (string.IsNullOrEmpty(state.ActiveQuestionId))
             {
-                var nextQuestionId = _state.SetNextPendingQuestionAsActive(_researchId);
-                if (string.IsNullOrEmpty(nextQuestionId))
+                if (state.PendingResearchQuestions.Count < 1)
                 {
-                    // No more questions and analysis is complete, move to synthesis
                     if (!state.SynthesisComplete)
                     {
                         _logger.LogInformation(

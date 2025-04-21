@@ -113,4 +113,30 @@ public class StatePlugin
         );
         _state.MarkResearchComplete(_researchId);
     }
+
+    [KernelFunction]
+    [Description(
+        "Gets the current table of contents for the research report. Used by both ResearchAnalyzer and ReportSynthesizer."
+    )]
+    public List<string> GetTableOfContents()
+    {
+        var state = _state.GetState(_researchId);
+        return state.TableOfContents;
+    }
+
+    [KernelFunction]
+    [Description(
+        "Updates the table of contents for the research report. Called by ResearchAnalyzer to propose structure and ReportSynthesizer to finalize it."
+    )]
+    public void UpdateTableOfContents(
+        [Description("The new table of contents sections in order")] List<string> sections
+    )
+    {
+        _logger.LogInformation(
+            "[{ResearchId}] Updating table of contents with {Count} sections",
+            _researchId,
+            sections.Count
+        );
+        _state.UpdateTableOfContents(_researchId, sections);
+    }
 }

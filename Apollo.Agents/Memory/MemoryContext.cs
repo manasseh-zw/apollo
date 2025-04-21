@@ -23,7 +23,7 @@ public class MemoryContext : IMemoryContext
     public MemoryContext(ICrawlerService crawler)
     {
         _memory = new KernelMemoryBuilder()
-            .WithPostgresMemoryDb(AppConfig.DatabaseOptions.VectorConnectionString)
+            // .WithPostgresMemoryDb(AppConfig.DatabaseOptions.VectorConnectionString)
             .WithAzureOpenAITextEmbeddingGeneration(
                 new()
                 {
@@ -45,7 +45,10 @@ public class MemoryContext : IMemoryContext
                 }
             )
             .WithCustomWebScraper(new WebScraperService(crawler))
-            .Build<MemoryServerless>();
+            .Build<MemoryServerless>(
+            //this is fine because i am not storing any documents at the moment
+            // new() { AllowMixingVolatileAndPersistentData = true }
+            );
     }
 
     public async Task Ingest(string content, TagCollection tags)

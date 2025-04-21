@@ -82,7 +82,7 @@ public static class ServiceExtensions
         services.AddScoped<IResearchPlanner, ResearchPlanner>();
         services.AddScoped<IResearchNotifier, ResearchNotifier>();
         services.AddScoped<ISearchService, ExaSearchService>();
-        services.AddScoped<ICrawlerService, FirecrawlService>();
+        services.AddScoped<ICrawlerService, WebSpiderService>();
         services.AddSingleton<IStateManager, StateManager>();
 
         services.AddScoped<IMemoryContext, MemoryContext>();
