@@ -15,7 +15,7 @@ public class ContentsRequest
 public class TextOptions
 {
     public int? MaxCharacters { get; set; }
-    public bool IncludeHtmlTags { get; set; }
+    public bool IncludeHtmlTags { get; set; } = false;
 }
 
 public class HighlightsOptions

@@ -51,4 +51,6 @@ huhhhh now, switched to gpt4.1 it is faster and does communicatio better but it 
 
 had to polish my prompts to make every step clealy explained (this took about 3 days to solve btw)
 
-postgers ingest is stucky somwhere idk why that is happening, taking longer than usual 
+postgers ingest is stucky somwhere idk why that is happening, taking longer than usual ... (was targetting wrong db) it works
+
+now research engine does not want to process the next question after the first one it attempts to automatically call complete

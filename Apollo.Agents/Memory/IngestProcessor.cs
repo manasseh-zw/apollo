@@ -36,7 +36,7 @@ public class IngestProcessor : BackgroundService
 
                 using var scope = _serviceScopeFactory.CreateScope();
                 var handler = scope.ServiceProvider.GetRequiredService<IIngestEventHandler>();
-                handler.HandleIngest(ingestEvent);
+                handler.HandleIngestAsync(ingestEvent);
             }
             catch (Exception ex)
             {
@@ -50,4 +50,3 @@ public class IngestProcessor : BackgroundService
         }
     }
 }
-

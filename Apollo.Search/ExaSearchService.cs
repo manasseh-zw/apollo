@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 using Apollo.Config;
 using Apollo.Search.Models;
 using Microsoft.Extensions.Logging;
@@ -26,8 +27,11 @@ public class ExaSearchService : ISearchService
     {
         _logger?.LogInformation(
             "Sending search request: {Request}",
-            System.Text.Json.JsonSerializer.Serialize(request)
+            JsonSerializer.Serialize(request)
         );
+
+        request.ExcludeDomains = ["https://wikipedia.org/"];
+        request.Contents = new() { Text = new() { IncludeHtmlTags = false } };
 
         var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/search", request);
 
@@ -38,9 +42,9 @@ public class ExaSearchService : ISearchService
 
         _logger?.LogInformation(
             "Received search response: {Response}",
-            System.Text.Json.JsonSerializer.Serialize(
+            JsonSerializer.Serialize(
                 searchResponse,
-                new System.Text.Json.JsonSerializerOptions { WriteIndented = true }
+                new JsonSerializerOptions { WriteIndented = true }
             )
         );
 

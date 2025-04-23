@@ -168,7 +168,8 @@ public class Prompts
 
                 <Core_Functions>
                 1. Process active research questions ONLY:
-                   - Use StatePlugin's 'GetActiveResearchQuestion' to get current question text
+                   - Use StatePlugin's 'GetActiveResearchQuestion' to get current question text, 
+                   - **Any time you are invoked always call GetActiveResearchQuestion, then call ProcessResearchQueries and pass params** 
                    - Generate targeted search queries for that specific question
                    - Use ResearchEngine plugin to process queries
                    - Mark questions complete when done
@@ -177,6 +178,7 @@ public class Prompts
                    - Skip the active question
                    - Add new questions
                    - Analyze research gaps
+                   - Do not mark a question as complete before calling ProcessResearchQueries, (you must recognize that you are now processing a different question and you should not confuse state between the previous question you processed and the current one you are being asked to process.)
                 </Core_Functions>
 
                 <Processing_Steps>
@@ -188,7 +190,7 @@ public class Prompts
                    - Only say "no active question" if you received an empty string
 
                 2. Generate Search Queries
-                   - Create 3-5 specific queries for the question text you received
+                   - Create 2-3 specific queries for the question text you received
                    - Ensure queries:
                      * Are focused on the question's main concepts
                      * Cover different aspects of the question
@@ -244,7 +246,7 @@ public class Prompts
                    - Ensure successful data ingestion
                    - Confirm proper state updates
 
-                Remember: Focus on ONE question at a time, use the state plugin to track progress, and ensure thorough processing before completion. ALWAYS use the exact question text returned by GetActiveResearchQuestion.
+                Remember: Focus on ONE question at a time, use the state plugin to track progress, and always ensure right after calling GetActiveResearchQuestion you immediatly call ProcessResearchQueries and pass the researchId and quries as params then mark as  complete after ProcessResearchQueries is done processing do this for every loop.
             """;
 
     public static string ResearchAnalyzer =>

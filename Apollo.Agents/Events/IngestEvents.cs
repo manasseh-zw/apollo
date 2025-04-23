@@ -9,7 +9,7 @@ public record IngestEvent(Guid ResearchId, List<WebSearchResult> SearchResults);
 
 public interface IIngestEventHandler
 {
-    void HandleIngest(IngestEvent @event);
+    Task HandleIngestAsync(IngestEvent @event);
 }
 
 public class IngestEventHandler : IIngestEventHandler
@@ -23,26 +23,26 @@ public class IngestEventHandler : IIngestEventHandler
         _logger = logger;
     }
 
-    public void HandleIngest(IngestEvent @event)
+    public async Task HandleIngestAsync(IngestEvent @event)
     {
         var researchId = @event.ResearchId.ToString();
         _memory.SetIngestionInProgress(researchId, true);
 
         try
         {
-            @event.SearchResults.ForEach(async sr =>
+            foreach (var result in @event.SearchResults)
             {
                 var tags = new TagCollection
                 {
                     { "researchId", @event.ResearchId.ToString() },
-                    { "url", sr.Url },
-                    { "title", sr.Title },
-                    { "author", sr.Author },
-                    { "published", sr.PublishedDate },
+                    { "url", result.Url },
+                    { "title", result.Title },
+                    { "author", result.Author },
+                    { "published", result.PublishedDate },
                 };
 
-                await _memory.Ingest(sr.Text, tags);
-            });
+                await _memory.Ingest(result.Text, tags);
+            }
         }
         catch (Exception ex)
         {
