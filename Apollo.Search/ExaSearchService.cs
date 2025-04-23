@@ -29,23 +29,7 @@ public class ExaSearchService : ISearchService
             System.Text.Json.JsonSerializer.Serialize(request)
         );
 
-        var response = await _httpClient.PostAsJsonAsync(
-            $"{BaseUrl}/search",
-            new
-            {
-                query = request.Query,
-                useAutoprompt = request.UseAutoprompt,
-                type = request.Type,
-                category = request.Category,
-                numResults = request.NumResults,
-                contents = new
-                {
-                    text = request.IncludeText,
-                    summary = true,
-                    livecrawl = "always",
-                },
-            }
-        );
+        var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/search", request);
 
         response.EnsureSuccessStatusCode();
         var searchResponse =
@@ -63,19 +47,26 @@ public class ExaSearchService : ISearchService
         return searchResponse;
     }
 
-    public async Task<WebSearchResponse> FindSimilarAsync(string url, int numResults = 10)
+    public async Task<WebSearchResponse> FindSimilarAsync(string url, CommonRequest? options = null)
     {
         _logger?.LogInformation("Sending find similar request for URL: {Url}", url);
 
-        var response = await _httpClient.PostAsJsonAsync(
-            $"{BaseUrl}/findSimilar",
-            new
-            {
-                url = url,
-                numResults = numResults,
-                contents = new { text = true },
-            }
-        );
+        var request = new
+        {
+            url,
+            options?.NumResults,
+            options?.IncludeDomains,
+            options?.ExcludeDomains,
+            options?.StartCrawlDate,
+            options?.EndCrawlDate,
+            options?.StartPublishedDate,
+            options?.EndPublishedDate,
+            options?.IncludeText,
+            options?.ExcludeText,
+            options?.Contents,
+        };
+
+        var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/findSimilar", request);
 
         response.EnsureSuccessStatusCode();
         var searchResponse =
@@ -91,5 +82,73 @@ public class ExaSearchService : ISearchService
         );
 
         return searchResponse;
+    }
+
+    public async Task<WebSearchResponse> GetContentsAsync(
+        List<string> urls,
+        ContentsRequest? options = null
+    )
+    {
+        _logger?.LogInformation("Sending get contents request for URLs: {Urls}", urls);
+
+        var request = new
+        {
+            urls,
+            options?.Text,
+            options?.Highlights,
+            options?.Summary,
+            options?.Livecrawl,
+            options?.LivecrawlTimeout,
+            options?.Subpages,
+            options?.SubpageTarget,
+            options?.Extras,
+        };
+
+        var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/contents", request);
+
+        response.EnsureSuccessStatusCode();
+        var contentsResponse =
+            await response.Content.ReadFromJsonAsync<WebSearchResponse>()
+            ?? throw new Exception("Failed to deserialize contents response");
+
+        _logger?.LogInformation(
+            "Received contents response: {Response}",
+            System.Text.Json.JsonSerializer.Serialize(
+                contentsResponse,
+                new System.Text.Json.JsonSerializerOptions { WriteIndented = true }
+            )
+        );
+
+        return contentsResponse;
+    }
+
+    public async Task<AnswerResponse> AnswerAsync(AnswerRequest request)
+    {
+        _logger?.LogInformation(
+            "Sending answer request: {Request}",
+            System.Text.Json.JsonSerializer.Serialize(request)
+        );
+
+        if (request.Stream)
+        {
+            throw new NotImplementedException("Streaming is not yet implemented");
+        }
+
+        var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/answer", request);
+
+        response.EnsureSuccessStatusCode();
+        var answerResponse =
+            await response.Content.ReadFromJsonAsync<AnswerResponse>()
+            ?? throw new Exception("Failed to deserialize answer response");
+
+        _logger?.LogInformation(
+            "Received answer response: {Response}",
+            System.Text.Json.JsonSerializer.Serialize(
+                answerResponse,
+                new System.Text.Json.JsonSerializerOptions { WriteIndented = true }
+            )
+        );
+
+        return answerResponse;
     }
 }
