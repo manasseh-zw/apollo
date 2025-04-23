@@ -27,3 +27,17 @@ public record CreateResearchRequest(
     string Type,
     string Depth
 );
+
+public record ResearchHistoryItemResponse(
+    Guid Id,
+    string Title,
+    DateTime StartedAt
+);
+
+public record PaginatedResponse<T>(
+    List<T> Items,
+    int TotalCount,
+    int Page,
+    int PageSize,
+    bool HasMore
+);

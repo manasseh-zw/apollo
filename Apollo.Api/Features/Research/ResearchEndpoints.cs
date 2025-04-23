@@ -12,7 +12,26 @@ public static class ResearchEndpoints
 
         group.MapGet("/{researchId}", GetResearch);
         group.MapGet("/", GetAllResearch);
+        group.MapGet("/history", GetResearchHistory);
         group.MapPost("/", CreateResearch);
+    }
+
+    private static async Task<Results<Ok<PaginatedResponse<ResearchHistoryItemResponse>>, UnauthorizedHttpResult>> 
+    GetResearchHistory(
+        [FromServices] IResearchService researchService,
+        HttpContext httpContext,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 5)
+    {
+        var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        var result = await researchService.GetResearchHistory(userId, page, pageSize);
+        return TypedResults.Ok(result.Value);
     }
 
     private static async Task<

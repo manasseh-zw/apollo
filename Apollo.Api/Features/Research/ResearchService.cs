@@ -12,6 +12,7 @@ public interface IResearchService
     Task<Result<CreateResearchResponse>> CreateResearch(Guid userId, CreateResearchRequest request);
     Task<Result<ResearchResponse>> GetResearch(Guid userId, Guid researchId);
     Task<Result<List<ResearchResponse>>> GetAllResearch(Guid userId);
+    Task<Result<PaginatedResponse<ResearchHistoryItemResponse>>> GetResearchHistory(Guid userId, int page = 1, int pageSize = 5);
 }
 
 public class ResearchService : IResearchService
@@ -23,6 +24,36 @@ public class ResearchService : IResearchService
     {
         _repository = repository;
         _eventHandler = eventHandler;
+    }
+
+    public async Task<Result<PaginatedResponse<ResearchHistoryItemResponse>>> GetResearchHistory(Guid userId, int page = 1, int pageSize = 5)
+    {
+        var query = _repository.Research.Where(r => r.UserId == userId);
+        
+        var totalCount = await query.CountAsync();
+        
+        var items = await query
+            .OrderByDescending(r => r.StartedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(r => new ResearchHistoryItemResponse(
+                r.Id,
+                r.Title,
+                r.StartedAt
+            ))
+            .ToListAsync();
+
+        var hasMore = (page * pageSize) < totalCount;
+
+        var response = new PaginatedResponse<ResearchHistoryItemResponse>(
+            items,
+            totalCount,
+            page,
+            pageSize,
+            hasMore
+        );
+
+        return Result.Ok(response);
     }
 
     public async Task<Result<ResearchResponse>> GetResearch(Guid userId, Guid researchId)

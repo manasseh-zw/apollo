@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using Apollo.Config;
-using Apollo.Search.Models;
 using Microsoft.KernelMemory;
 
 namespace Apollo.Agents.Memory;
@@ -22,7 +21,7 @@ public class MemoryContext : IMemoryContext
     public MemoryContext()
     {
         _memory = new KernelMemoryBuilder()
-            // .WithPostgresMemoryDb(AppConfig.DatabaseOptions.VectorConnectionString)
+            .WithPostgresMemoryDb(AppConfig.DatabaseOptions.VectorConnectionString)
             .WithAzureOpenAITextEmbeddingGeneration(
                 new()
                 {
@@ -44,8 +43,8 @@ public class MemoryContext : IMemoryContext
                 }
             )
             .Build<MemoryServerless>(
-            //this is fine because i am not storing any documents at the moment
-            // new() { AllowMixingVolatileAndPersistentData = true }
+                //this is fine because i am not storing any documents at the moment
+                new() { AllowMixingVolatileAndPersistentData = true }
             );
     }
 

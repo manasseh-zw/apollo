@@ -10,6 +10,20 @@ export type FeedUpdate = {
   query?: string;
 };
 
+export type ResearchHistoryItem = {
+  id: string;
+  title: string;
+  startedAt: string;
+};
+
+export type PaginatedResponse<T> = {
+  items: T[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  hasMore: boolean;
+};
+
 export type ResearchSession = {
   id: string;
   startedAt: string;
