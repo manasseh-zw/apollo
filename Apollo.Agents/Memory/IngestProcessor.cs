@@ -36,7 +36,7 @@ public class IngestProcessor : BackgroundService
 
                 using var scope = _serviceScopeFactory.CreateScope();
                 var handler = scope.ServiceProvider.GetRequiredService<IIngestEventHandler>();
-                await handler.HandleIngest(ingestEvent);
+                handler.HandleIngest(ingestEvent);
             }
             catch (Exception ex)
             {
@@ -51,6 +51,3 @@ public class IngestProcessor : BackgroundService
     }
 }
 
-public record IngestRequest(WebSearchContext SearchContext, List<WebSearchResult> SearchResults);
-
-public record WebSearchContext(string ResearchQuestion, string Query);

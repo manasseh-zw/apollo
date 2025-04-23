@@ -64,13 +64,7 @@ public class ResearchEnginePlugin
                 );
 
                 await _ingestQueue.Writer.WriteAsync(
-                    new IngestEvent(
-                        Guid.Parse(researchId),
-                        new IngestRequest(
-                            new WebSearchContext(ResearchQuestion: question.Text, Query: query),
-                            newResults
-                        )
-                    )
+                    new IngestEvent(Guid.Parse(researchId), newResults)
                 );
 
                 foreach (var result in newResults)

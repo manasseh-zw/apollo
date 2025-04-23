@@ -1,97 +1,48 @@
 using Apollo.Agents.Memory;
-using Apollo.Crawler;
 using Apollo.Search.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.KernelMemory;
 
 namespace Apollo.Agents.Events;
 
-public record IngestEvent(Guid ResearchId, IngestRequest Request);
+public record IngestEvent(Guid ResearchId, List<WebSearchResult> SearchResults);
 
 public interface IIngestEventHandler
 {
-    Task HandleIngest(IngestEvent @event);
+    void HandleIngest(IngestEvent @event);
 }
 
 public class IngestEventHandler : IIngestEventHandler
 {
     private readonly IMemoryContext _memory;
-    private readonly ICrawlerService _crawler;
     private readonly ILogger<IngestEventHandler> _logger;
 
-    public IngestEventHandler(
-        IMemoryContext memory,
-        ICrawlerService crawler,
-        ILogger<IngestEventHandler> logger
-    )
+    public IngestEventHandler(IMemoryContext memory, ILogger<IngestEventHandler> logger)
     {
         _memory = memory;
-        _crawler = crawler;
         _logger = logger;
     }
 
-    public async Task HandleIngest(IngestEvent @event)
+    public void HandleIngest(IngestEvent @event)
     {
         var researchId = @event.ResearchId.ToString();
         _memory.SetIngestionInProgress(researchId, true);
 
         try
         {
-            var urls = @event.Request.SearchResults.Select(r => r.Url).ToList();
-
-            var batchResponse = await _crawler.ScrapeBatchAsync(urls);
-            //TODO : Summurize response such that we ingest only relevant content.
-            if (!batchResponse.Success)
+            @event.SearchResults.ForEach(async sr =>
             {
-                _logger.LogError(
-                    "Failed to crawl batch of URLs for research {ResearchId}",
-                    @event.ResearchId
-                );
-                return;
-            }
-
-            batchResponse.Results.ForEach(async r =>
-            {
-                if (!r.Success)
-                    return;
-
-                var searchResult = @event.Request.SearchResults.First(sr => sr.Url == r.Url);
                 var tags = new TagCollection
                 {
                     { "researchId", @event.ResearchId.ToString() },
-                    { "question", @event.Request.SearchContext.ResearchQuestion },
-                    { "query", @event.Request.SearchContext.Query },
-                    { "url", r.Url },
-                    { "title", searchResult.Title },
+                    { "url", sr.Url },
+                    { "title", sr.Title },
+                    { "author", sr.Author },
+                    { "published", sr.PublishedDate },
                 };
 
-                await _memory.Ingest(r.Content, tags);
+                await _memory.Ingest(sr.Text, tags);
             });
-            // // Process results in parallel
-            // var tasks =  batchResponse.Results.Select(async result =>
-            // {
-            //     if (!result.Success)
-            //         return;
-
-
-            //     var searchResult = @event.Request.SearchResults.First(r => r.Url == result.Url);
-            //     var tags = new TagCollection
-            //     {
-            //         { "researchId", @event.ResearchId.ToString() },
-            //         { "question", @event.Request.SearchContext.ResearchQuestion },
-            //         { "query", @event.Request.SearchContext.Query },
-            //         { "url", result.Url },
-            //         { "title", searchResult.Title },
-            //     };
-
-            //     await _memory.Ingest(result.Content, tags);
-            // });
-
-            // await Task.WhenAll(tasks);
-            // _logger.LogInformation(
-            //     "Successfully processed batch ingest for research {ResearchId}",
-            //     @event.ResearchId
-            // );
         }
         catch (Exception ex)
         {

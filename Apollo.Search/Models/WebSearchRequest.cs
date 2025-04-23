@@ -7,5 +7,5 @@ public class WebSearchRequest
     public string Type { get; set; } = "auto";
     public string? Category { get; set; }
     public int NumResults { get; set; } = 2;
-    public bool IncludeText { get; set; } = false;
+    public bool IncludeText { get; set; } = true;
 }

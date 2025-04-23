@@ -8,7 +8,6 @@ using Apollo.Agents.State;
 using Apollo.Api.Features.Research;
 using Apollo.Api.Utils;
 using Apollo.Config;
-using Apollo.Crawler;
 using Apollo.Data.Repository;
 using Apollo.Search;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -82,11 +81,9 @@ public static class ServiceExtensions
         services.AddScoped<IResearchPlanner, ResearchPlanner>();
         services.AddScoped<IResearchNotifier, ResearchNotifier>();
         services.AddScoped<ISearchService, ExaSearchService>();
-        services.AddScoped<ICrawlerService, WebSpiderService>();
         services.AddSingleton<IStateManager, StateManager>();
 
         services.AddScoped<IMemoryContext, MemoryContext>();
-        services.AddScoped<IWebScraper, WebScraperService>();
         services.AddScoped<KernelMemoryPlugin>();
         services.AddScoped<ResearchEnginePlugin>();
         services.AddScoped<StartResearchPlugin>();

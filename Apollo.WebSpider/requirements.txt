@@ -1,3 +1,0 @@
-crawl4ai==0.4.248
-fastapi>=0.115.12
-uvicorn>=0.34.1

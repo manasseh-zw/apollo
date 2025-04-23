@@ -13,10 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollo.Agents", "Apollo.Age
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollo.Search", "Apollo.Search\Apollo.Search.csproj", "{C18C2166-D3EA-48F5-8AEC-9A73D9880564}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollo.Tests", "Apollo.Tests\Apollo.Tests.csproj", "{2D9D9CD8-A8C5-4210-A910-CDB6832EC16D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apollo.Crawler", "Apollo.Crawler\Apollo.Crawler.csproj", "{0C47A10E-D010-4779-A3B1-1D8A66029586}"
-EndProject
 
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

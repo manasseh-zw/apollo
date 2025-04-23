@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using Apollo.Config;
-using Apollo.Crawler;
 using Apollo.Search.Models;
 using Microsoft.KernelMemory;
 
@@ -20,7 +19,7 @@ public class MemoryContext : IMemoryContext
     private readonly MemoryServerless _memory;
     private readonly ConcurrentDictionary<string, bool> _activeIngestions = new();
 
-    public MemoryContext(ICrawlerService crawler)
+    public MemoryContext()
     {
         _memory = new KernelMemoryBuilder()
             // .WithPostgresMemoryDb(AppConfig.DatabaseOptions.VectorConnectionString)
@@ -44,7 +43,6 @@ public class MemoryContext : IMemoryContext
                     Endpoint = AppConfig.AzureAI.Endpoint,
                 }
             )
-            .WithCustomWebScraper(new WebScraperService(crawler))
             .Build<MemoryServerless>(
             //this is fine because i am not storing any documents at the moment
             // new() { AllowMixingVolatileAndPersistentData = true }
