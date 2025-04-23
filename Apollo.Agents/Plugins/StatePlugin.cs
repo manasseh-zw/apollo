@@ -19,9 +19,11 @@ public class StatePlugin
     }
 
     [KernelFunction]
-    [Description("Gets the details of the currently active research question.")]
-    [return: Description("The ID and text of the active research question.")]
-    public (string, string) GetActiveResearchQuestion()
+    [Description("Gets the text of the currently active research question.")]
+    [return: Description(
+        "The text of the active research question, or empty string if no active question exists."
+    )]
+    public string GetActiveResearchQuestion()
     {
         var state = _state.GetState(_researchId);
         var activeQuestion = state?.GetActiveQuestion();
@@ -32,10 +34,10 @@ public class StatePlugin
                 _researchId,
                 activeQuestion.Id
             );
-            return (activeQuestion.Id, activeQuestion.Text);
+            return activeQuestion.Text;
         }
         _logger.LogWarning("[{ResearchId}] No active question found.", _researchId);
-        return ("No active research question.", "");
+        return string.Empty;
     }
 
     [KernelFunction]

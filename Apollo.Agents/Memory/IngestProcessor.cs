@@ -53,4 +53,4 @@ public class IngestProcessor : BackgroundService
 
 public record IngestRequest(WebSearchContext SearchContext, List<WebSearchResult> SearchResults);
 
-public record WebSearchContext(string ResearchId, string ResearchQuestion, string Query);
+public record WebSearchContext(string ResearchQuestion, string Query);

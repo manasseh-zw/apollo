@@ -40,7 +40,7 @@ public class MemoryContext : IMemoryContext
                     Auth = AzureOpenAIConfig.AuthTypes.APIKey,
                     APIKey = AppConfig.AzureAI.ApiKey,
                     APIType = AzureOpenAIConfig.APITypes.TextCompletion,
-                    Deployment = AppConfig.Models.Gpt4o,
+                    Deployment = AppConfig.Models.Gpt41,
                     Endpoint = AppConfig.AzureAI.Endpoint,
                 }
             )

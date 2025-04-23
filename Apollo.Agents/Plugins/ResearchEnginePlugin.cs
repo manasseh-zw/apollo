@@ -67,11 +67,7 @@ public class ResearchEnginePlugin
                     new IngestEvent(
                         Guid.Parse(researchId),
                         new IngestRequest(
-                            new WebSearchContext(
-                                ResearchId: researchId,
-                                ResearchQuestion: question.Text,
-                                Query: query
-                            ),
+                            new WebSearchContext(ResearchQuestion: question.Text, Query: query),
                             newResults
                         )
                     )
@@ -81,6 +77,14 @@ public class ResearchEnginePlugin
                 {
                     crawledUrlSet.Add(result.Url);
                 }
+                _state.UpdateState(
+                    researchId,
+                    (s) =>
+                    {
+                        s.CrawledUrls.AddRange(crawledUrlSet);
+                    }
+                );
+                crawledUrlSet.Clear();
             }
             else
             {

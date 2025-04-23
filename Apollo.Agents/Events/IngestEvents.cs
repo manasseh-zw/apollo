@@ -40,7 +40,7 @@ public class IngestEventHandler : IIngestEventHandler
             var urls = @event.Request.SearchResults.Select(r => r.Url).ToList();
 
             var batchResponse = await _crawler.ScrapeBatchAsync(urls);
-
+            //TODO : Summurize response such that we ingest only relevant content.
             if (!batchResponse.Success)
             {
                 _logger.LogError(
@@ -50,30 +50,48 @@ public class IngestEventHandler : IIngestEventHandler
                 return;
             }
 
-            // Process results in parallel
-            var tasks = batchResponse.Results.Select(async result =>
+            batchResponse.Results.ForEach(async r =>
             {
-                if (!result.Success)
+                if (!r.Success)
                     return;
 
-                var searchResult = @event.Request.SearchResults.First(r => r.Url == result.Url);
+                var searchResult = @event.Request.SearchResults.First(sr => sr.Url == r.Url);
                 var tags = new TagCollection
                 {
                     { "researchId", @event.ResearchId.ToString() },
                     { "question", @event.Request.SearchContext.ResearchQuestion },
                     { "query", @event.Request.SearchContext.Query },
-                    { "url", result.Url },
+                    { "url", r.Url },
                     { "title", searchResult.Title },
                 };
 
-                await _memory.Ingest(result.Content, tags);
+                await _memory.Ingest(r.Content, tags);
             });
+            // // Process results in parallel
+            // var tasks =  batchResponse.Results.Select(async result =>
+            // {
+            //     if (!result.Success)
+            //         return;
 
-            await Task.WhenAll(tasks);
-            _logger.LogInformation(
-                "Successfully processed batch ingest for research {ResearchId}",
-                @event.ResearchId
-            );
+
+            //     var searchResult = @event.Request.SearchResults.First(r => r.Url == result.Url);
+            //     var tags = new TagCollection
+            //     {
+            //         { "researchId", @event.ResearchId.ToString() },
+            //         { "question", @event.Request.SearchContext.ResearchQuestion },
+            //         { "query", @event.Request.SearchContext.Query },
+            //         { "url", result.Url },
+            //         { "title", searchResult.Title },
+            //     };
+
+            //     await _memory.Ingest(result.Content, tags);
+            // });
+
+            // await Task.WhenAll(tasks);
+            // _logger.LogInformation(
+            //     "Successfully processed batch ingest for research {ResearchId}",
+            //     @event.ResearchId
+            // );
         }
         catch (Exception ex)
         {

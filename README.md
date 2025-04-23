@@ -46,3 +46,9 @@ AllowMixingVolatileAndPersistentData = true //i set this to true since i am not 
 realized i was not adversiting the method that sets the next active question so the agent was looking ofr pending question when they were never set!
 
 Kind of difficult to debug, agent group chat gets stuck in a loop where it keeps on adding gap questions.
+
+huhhhh now, switched to gpt4.1 it is faster and does communicatio better but it was not able to undersatnd tuple responses so i switched teh getactiveqeustion to simply return the text of the question and that worked well now its calling functions
+
+had to polish my prompts to make every step clealy explained (this took about 3 days to solve btw)
+
+postgers ingest is stucky somwhere idk why that is happening, taking longer than usual 

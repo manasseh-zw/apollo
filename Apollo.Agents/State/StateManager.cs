@@ -88,9 +88,10 @@ public class StateManager : IStateManager
                 state.ActiveQuestionId = nextQuestion.Id;
                 nextQuestionId = nextQuestion.Id;
                 _logger.LogInformation(
-                    "Set active question for {ResearchId} to {QuestionId}",
+                    "Set active question for {ResearchId} to {QuestionId}: {QuestionText}",
                     researchId,
-                    nextQuestionId
+                    nextQuestionId,
+                    nextQuestion.Text
                 );
             }
             else
@@ -102,12 +103,12 @@ public class StateManager : IStateManager
                     researchId
                 );
             }
-            _cache.Set(researchId, state, TimeSpan.FromHours(2)); // Update cache
+            _cache.Set(researchId, state, _cacheTimeout); // Update cache with new timeout
         }
         else
         {
             _logger.LogWarning(
-                "SetNextPendingQuestionAsActiveAsync: State not found for {ResearchId}",
+                "SetNextPendingQuestionAsActive: State not found for {ResearchId}",
                 researchId
             );
         }
@@ -137,6 +138,7 @@ public class StateManager : IStateManager
                     activeQuestion.Id,
                     researchId
                 );
+                //TODO look into this
                 _cache.Set(researchId, state, _cacheTimeout); // Update cache
 
                 // Immediately set next question as active

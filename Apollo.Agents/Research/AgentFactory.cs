@@ -4,7 +4,6 @@ using Apollo.Agents.State;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
-// using Microsoft.SemanticKernel.Connectors.OpenAI; // Keep if used elsewhere
 using Microsoft.SemanticKernel.Plugins.Core; // For TimePlugin
 
 namespace Apollo.Agents.Research;
@@ -18,7 +17,6 @@ public static class AgentFactory
     public const string ResearchAnalyzerAgentName = "ResearchAnalyzer";
     public const string ReportSynthesizerAgentName = "ReportSynthesizer";
 
-    // Plugin Names (consistent with Orchestrator's original intent)
     private const string StatePluginName = nameof(StatePlugin); // Or keep as "StatePlugin" string literal
     private const string ResearchEnginePluginName = "Research_Engine";
     private const string KernelMemoryPluginName = "Research_Memory";

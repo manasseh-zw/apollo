@@ -82,7 +82,7 @@ public static class AppConfig
         };
 
     public static Models Models { get; } =
-        new() { Gpt4o = "gpt-4o", TextEmbeddingSmall = "text-embedding-3-small" };
+        new() { Gpt41 = "gpt-4.1", TextEmbeddingSmall = "text-embedding-3-small" };
 }
 
 public class DatabaseOptions
@@ -108,7 +108,7 @@ public class AzureAI
 
 public class Models
 {
-    public required string Gpt4o { get; set; }
+    public required string Gpt41 { get; set; }
     public required string TextEmbeddingSmall { get; set; }
 }
 

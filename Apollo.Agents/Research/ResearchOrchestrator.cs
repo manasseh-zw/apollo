@@ -76,7 +76,7 @@ public class ResearchOrchestrator
         );
 
         kernelBuilder.AddAzureOpenAIChatCompletion(
-            deploymentName: AppConfig.Models.Gpt4o,
+            deploymentName: AppConfig.Models.Gpt41,
             endpoint: AppConfig.AzureAI.Endpoint,
             apiKey: AppConfig.AzureAI.ApiKey
         );
@@ -217,17 +217,16 @@ public class ResearchOrchestrator
     private async Task InitializeResearch(Guid researchId)
     {
         var research =
-            await _repository
-                .Research.Where(r => r.Id == researchId)
-                .Include(x => x.Plan)
-                .FirstOrDefaultAsync() ?? throw new Exception("Research instance does not exist");
+            await _repository.Research.Include(x => x.Plan).FirstOrDefaultAsync()
+            ?? throw new Exception("Research instance does not exist");
 
+        var firstQuestion = research.Plan.Questions.First();
         await _state.GetOrCreateState(
             researchId.ToString(),
             async () =>
             {
                 await Task.CompletedTask;
-                return new ResearchState
+                var state = new ResearchState
                 {
                     ResearchId = researchId.ToString(),
                     Title = research.Title,
@@ -243,6 +242,14 @@ public class ResearchOrchestrator
                         })
                         .ToList(),
                 };
+
+                // Set the first question as active immediately
+                if (state.PendingResearchQuestions.Any())
+                {
+                    state.ActiveQuestionId = state.PendingResearchQuestions.First().Id;
+                }
+
+                return state;
             }
         );
     }
