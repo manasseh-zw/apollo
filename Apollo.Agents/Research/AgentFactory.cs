@@ -92,7 +92,7 @@ public static class AgentFactory
 
         var executionSettings = new PromptExecutionSettings
         {
-            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
+            FunctionChoiceBehavior = FunctionChoiceBehavior.Required(),
         };
 
         return new ChatCompletionAgent()
@@ -189,7 +189,7 @@ public static class AgentFactory
 
         var executionSettings = new PromptExecutionSettings
         {
-            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
+            FunctionChoiceBehavior = FunctionChoiceBehavior.Required(),
         };
 
         return new ChatCompletionAgent()
