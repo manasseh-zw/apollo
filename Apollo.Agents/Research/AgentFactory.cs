@@ -14,18 +14,18 @@ public static class AgentFactory
     public const string ResearchCoordinatorAgentName = "ResearchCoordinator";
     public const string ResearchEngineAgentName = "ResearchEngine";
     public const string ResearchAnalyzerAgentName = "ResearchAnalyzer";
-    public const string ReportSynthesizerAgentName = "ReportSynthesizer";
 
     private const string StatePluginName = nameof(StatePlugin);
     private const string ResearchEnginePluginName = "Research_Engine";
     private const string KernelMemoryPluginName = "Research_Memory";
-    private const string ReportGenerationPluginName = "Research_Generation";
+    private const string SynthesizeResearchPluginName = "Research_Synthesis";
 
     public static ChatCompletionAgent CreateResearchCoordinator(
         IKernelBuilder kernelBuilder,
         IStateManager state,
         IClientUpdateCallback streamingCallback,
-        string researchId
+        string researchId,
+        SynthesizeResearchPlugin synthesizeResearchPluginInstance
     )
     {
         var kernel = kernelBuilder.Build();
@@ -40,6 +40,12 @@ public static class AgentFactory
             StatePluginName
         );
         kernel.Plugins.Add(statePlugin);
+
+        var synthesizeResearchPlugin = KernelPluginFactory.CreateFromObject(
+            synthesizeResearchPluginInstance,
+            SynthesizeResearchPluginName
+        );
+        kernel.Plugins.Add(synthesizeResearchPlugin);
 
         var executionSettings = new PromptExecutionSettings
         {
@@ -108,7 +114,6 @@ public static class AgentFactory
     {
         var kernel = kernelBuilder.Build();
 
-        // Create and add StatePlugin
         var statePluginInstance = new StatePlugin(
             state,
             kernel.LoggerFactory.CreateLogger<StatePlugin>(),
@@ -137,48 +142,6 @@ public static class AgentFactory
             Id = ResearchAnalyzerAgentName,
             Name = ResearchAnalyzerAgentName,
             Instructions = Prompts.ResearchAnalyzer,
-            Arguments = new KernelArguments(executionSettings),
-        };
-    }
-
-    public static ChatCompletionAgent CreateReportSynthesizer(
-        IKernelBuilder kernelBuilder,
-        IStateManager state,
-        IClientUpdateCallback streamingCallback,
-        string researchId,
-        ReportGenerationPlugin reportGenerationPluginInstance
-    )
-    {
-        var kernel = kernelBuilder.Build();
-
-        var statePluginInstance = new StatePlugin(
-            state,
-            kernel.LoggerFactory.CreateLogger<StatePlugin>(),
-            researchId
-        );
-        var statePlugin = KernelPluginFactory.CreateFromObject(
-            statePluginInstance,
-            StatePluginName
-        );
-        kernel.Plugins.Add(statePlugin);
-
-        var reportGenerationPlugin = KernelPluginFactory.CreateFromObject(
-            reportGenerationPluginInstance,
-            ReportGenerationPluginName
-        );
-        kernel.Plugins.Add(reportGenerationPlugin);
-
-        var executionSettings = new PromptExecutionSettings
-        {
-            FunctionChoiceBehavior = FunctionChoiceBehavior.Required(),
-        };
-
-        return new ChatCompletionAgent()
-        {
-            Kernel = kernel,
-            Id = ReportSynthesizerAgentName,
-            Name = ReportSynthesizerAgentName,
-            Instructions = Prompts.ReportSynthesizer,
             Arguments = new KernelArguments(executionSettings),
         };
     }

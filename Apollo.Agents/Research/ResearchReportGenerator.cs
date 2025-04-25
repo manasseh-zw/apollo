@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.Text;
 using Apollo.Agents.Helpers;
 using Apollo.Agents.Memory;
@@ -11,25 +10,32 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.Google;
 
-namespace Apollo.Agents.Plugins;
+namespace Apollo.Agents.Research;
 
 #pragma warning disable SKEXP0070
-public class ReportGenerationPlugin
+public interface IResearchReportGenerator
+{
+    Task<string> GenerateReportAsync(
+        string researchId,
+        CancellationToken cancellationToken = default
+    );
+}
+
+public class ResearchReportGenerator : IResearchReportGenerator
 {
     private readonly IMemoryContext _memory;
     private readonly ApolloDbContext _repository;
     private readonly IClientUpdateCallback _clientUpdate;
     private readonly IStateManager _state;
-    private readonly ILogger<ReportGenerationPlugin> _logger;
-    private readonly Kernel _kernel;
+    private readonly ILogger<ResearchReportGenerator> _logger;
     private readonly IChatCompletionService _chat;
 
-    public ReportGenerationPlugin(
+    public ResearchReportGenerator(
         IMemoryContext memory,
         ApolloDbContext repository,
         IClientUpdateCallback clientUpdate,
         IStateManager state,
-        ILogger<ReportGenerationPlugin> logger
+        ILogger<ResearchReportGenerator> logger
     )
     {
         _memory = memory;
@@ -37,20 +43,19 @@ public class ReportGenerationPlugin
         _clientUpdate = clientUpdate;
         _state = state;
         _logger = logger;
-        _kernel = Kernel
+
+        var kernel = Kernel
             .CreateBuilder()
             .AddGoogleAIGeminiChatCompletion(
                 modelId: AppConfig.Models.GeminiPro25,
                 apiKey: AppConfig.Google.ApiKey
             )
             .Build();
-        _chat = _kernel.GetRequiredService<IChatCompletionService>();
+        _chat = kernel.GetRequiredService<IChatCompletionService>();
     }
 
-    [KernelFunction]
-    [Description("Generates the final research report by synthesizing all gathered information.")]
     public async Task<string> GenerateReportAsync(
-        [Description("The research ID")] string researchId,
+        string researchId,
         CancellationToken cancellationToken = default
     )
     {

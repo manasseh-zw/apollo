@@ -87,7 +87,7 @@ public static class ServiceExtensions
         services.AddScoped<KernelMemoryPlugin>();
         services.AddScoped<ResearchEnginePlugin>();
         services.AddScoped<StartResearchPlugin>();
-        services.AddScoped<CompleteResearchPlugin>();
+        services.AddScoped<ReportGenerationPlugin>();
 
         services.AddScoped<IResearchManager, ResearchManager>();
         services.AddScoped<ResearchOrchestrator>();

@@ -53,8 +53,7 @@ public class ResearchTerminationStrategy : TerminationStrategy
         CancellationToken cancellationToken
     )
     {
-        // Directly call your manager's logic
         bool shouldTerminate = _researchManager.CheckTermination(agent, history);
-        return Task.FromResult(shouldTerminate); // Return as Task<bool>
+        return Task.FromResult(shouldTerminate);
     }
 }

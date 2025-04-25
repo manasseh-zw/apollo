@@ -50,6 +50,7 @@ public class MemoryContext : IMemoryContext
                     Endpoint = AppConfig.AzureAI.Endpoint,
                 }
             )
+            .WithStructRagSearchClient()
             .Build<MemoryServerless>(
                 //this is fine because i am not storing any documents at the moment
                 new() { AllowMixingVolatileAndPersistentData = true }

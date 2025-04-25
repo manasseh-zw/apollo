@@ -57,20 +57,31 @@ public class ResearchManager : IResearchManager
             lastAgentName ?? "N/A"
         );
 
-        // Handle initial state or after Coordinator/Analyzer
+        // After ResearchAnalyzer, always go back to Coordinator
+        if (
+            lastAgentName?.Equals(
+                AgentFactory.ResearchAnalyzerAgentName,
+                StringComparison.OrdinalIgnoreCase
+            ) ?? false
+        )
+        {
+            _logger.LogInformation(
+                "[{ResearchId}] Selection: After Analyzer, returning to Coordinator for next step evaluation.",
+                _researchId
+            );
+            return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchCoordinatorAgentName);
+        }
+
+        // Handle initial state or after Coordinator
         if (
             string.IsNullOrEmpty(lastAgentName)
             || lastAgentName.Equals(
                 AgentFactory.ResearchCoordinatorAgentName,
                 StringComparison.OrdinalIgnoreCase
             )
-            || lastAgentName.Equals(
-                AgentFactory.ResearchAnalyzerAgentName,
-                StringComparison.OrdinalIgnoreCase
-            )
         )
         {
-            // If analysis is needed, prioritize it over processing new questions
+            // If analysis is needed, prioritize it
             if (state.NeedsAnalysis)
             {
                 _logger.LogInformation(
@@ -80,39 +91,29 @@ public class ResearchManager : IResearchManager
                 return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchAnalyzerAgentName);
             }
 
-            if (string.IsNullOrEmpty(state.ActiveQuestionId))
+            // If we have an active question or pending questions, use ResearchEngine
+            if (
+                !string.IsNullOrEmpty(state.ActiveQuestionId)
+                || state.PendingResearchQuestions.Any()
+            )
             {
-                if (state.PendingResearchQuestions.Count < 1)
-                {
-                    if (!state.SynthesisComplete)
-                    {
-                        _logger.LogInformation(
-                            "[{ResearchId}] Selection: All questions processed, analysis complete. Selecting ReportSynthesizer.",
-                            _researchId
-                        );
-                        return agents.FirstOrDefault(a =>
-                            a.Id == AgentFactory.ReportSynthesizerAgentName
-                        );
-                    }
-                }
-                else
-                {
-                    // New question activated, select ResearchEngine
-                    _logger.LogInformation(
-                        "[{ResearchId}] Selection: New question activated. Selecting ResearchEngine.",
-                        _researchId
-                    );
-                    return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchEngineAgentName);
-                }
-            }
-            else
-            {
-                // Active question exists, continue with ResearchEngine
                 _logger.LogInformation(
-                    "[{ResearchId}] Selection: Active question exists. Selecting ResearchEngine.",
+                    "[{ResearchId}] Selection: Questions pending. Selecting ResearchEngine.",
                     _researchId
                 );
                 return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchEngineAgentName);
+            }
+
+            // If ready for synthesis, stay with Coordinator (it will handle synthesis)
+            if (!state.SynthesisComplete && state.TableOfContents?.Any() == true)
+            {
+                _logger.LogInformation(
+                    "[{ResearchId}] Selection: Ready for synthesis. Staying with Coordinator.",
+                    _researchId
+                );
+                return agents.FirstOrDefault(a =>
+                    a.Id == AgentFactory.ResearchCoordinatorAgentName
+                );
             }
         }
         // After ResearchEngine completes a question
@@ -128,20 +129,6 @@ public class ResearchManager : IResearchManager
                 _researchId
             );
             return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchCoordinatorAgentName);
-        }
-        // After ReportSynthesizer
-        else if (
-            lastAgentName.Equals(
-                AgentFactory.ReportSynthesizerAgentName,
-                StringComparison.OrdinalIgnoreCase
-            )
-        )
-        {
-            _logger.LogInformation(
-                "[{ResearchId}] Selection: After ReportSynthesizer. Research complete. No agent selected.",
-                _researchId
-            );
-            return null;
         }
 
         // Default to Coordinator for unexpected states

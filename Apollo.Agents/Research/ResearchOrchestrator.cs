@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
-using Microsoft.SemanticKernel.Agents.Chat;
 using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Apollo.Agents.Research;
@@ -25,9 +24,9 @@ public class ResearchOrchestrator
     private readonly IStateManager _state;
     private readonly IResearchManager _manager;
 
-    private readonly ResearchEnginePlugin _engineInstance; // Store the original instances if needed elsewhere
+    private readonly ResearchEnginePlugin _engineInstance;
     private readonly KernelMemoryPlugin _memoryInstance;
-    private readonly ReportGenerationPlugin _reportGenerationInstance;
+    private readonly SynthesizeResearchPlugin _synthesizeResearchInstance;
     private const string UnknownAgentName = "Unknown Agent";
 
     public ResearchOrchestrator(
@@ -38,7 +37,7 @@ public class ResearchOrchestrator
         IResearchManager manager,
         ResearchEnginePlugin engine,
         KernelMemoryPlugin memory,
-        ReportGenerationPlugin reportGeneration
+        SynthesizeResearchPlugin synthesizeResearch
     )
     {
         _repository = repository;
@@ -49,7 +48,7 @@ public class ResearchOrchestrator
 
         _engineInstance = engine;
         _memoryInstance = memory;
-        _reportGenerationInstance = reportGeneration;
+        _synthesizeResearchInstance = synthesizeResearch;
     }
 
     public async Task StartResearchProcessAsync(string researchId)
@@ -91,7 +90,8 @@ public class ResearchOrchestrator
                     kernelBuilder,
                     _state,
                     _clientUpdate,
-                    researchId
+                    researchId,
+                    _synthesizeResearchInstance
                 )
             },
             {
@@ -112,16 +112,6 @@ public class ResearchOrchestrator
                     _clientUpdate,
                     researchId,
                     _memoryInstance
-                )
-            },
-            {
-                AgentFactory.ReportSynthesizerAgentName,
-                AgentFactory.CreateReportSynthesizer(
-                    kernelBuilder,
-                    _state,
-                    _clientUpdate,
-                    researchId,
-                    _reportGenerationInstance
                 )
             },
         };

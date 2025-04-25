@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="KernelMemory.StructRAG" Version="0.0.16" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.3" />
     <PackageReference Include="Microsoft.KernelMemory.AI.AzureOpenAI" Version="0.98.250324.1" />
     <PackageReference Include="Microsoft.KernelMemory.Core" Version="0.98.250324.1" />
