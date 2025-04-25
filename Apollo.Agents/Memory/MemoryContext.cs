@@ -7,8 +7,16 @@ namespace Apollo.Agents.Memory;
 public interface IMemoryContext
 {
     Task Ingest(string content, TagCollection tags);
-    Task<SearchResult> SearchAsync(string query, CancellationToken cancellationToken = default);
-    Task<MemoryAnswer> AskAsync(string question, CancellationToken cancellationToken = default);
+    Task<SearchResult> SearchAsync(
+        string researchId,
+        string query,
+        CancellationToken cancellationToken = default
+    );
+    Task<MemoryAnswer> AskAsync(
+        string researchId,
+        string question,
+        CancellationToken cancellationToken = default
+    );
     bool IsIngestionInProgress(string researchId);
     void SetIngestionInProgress(string researchId, bool inProgress);
 }
@@ -54,19 +62,29 @@ public class MemoryContext : IMemoryContext
     }
 
     public async Task<SearchResult> SearchAsync(
+        string researchId,
         string query,
         CancellationToken cancellationToken = default
     )
     {
-        return await _memory.SearchAsync(query, cancellationToken: cancellationToken);
+        return await _memory.SearchAsync(
+            query,
+            filter: MemoryFilters.ByTag("researchId", researchId),
+            cancellationToken: cancellationToken
+        );
     }
 
     public async Task<MemoryAnswer> AskAsync(
+        string researchId,
         string question,
         CancellationToken cancellationToken = default
     )
     {
-        return await _memory.AskAsync(question, cancellationToken: cancellationToken);
+        return await _memory.AskAsync(
+            question,
+            filter: MemoryFilters.ByTag("researchId", researchId),
+            cancellationToken: cancellationToken
+        );
     }
 
     public bool IsIngestionInProgress(string researchId)

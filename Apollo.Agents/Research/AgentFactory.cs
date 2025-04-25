@@ -4,7 +4,6 @@ using Apollo.Agents.State;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
-using Microsoft.SemanticKernel.Plugins.Core; // For TimePlugin
 
 namespace Apollo.Agents.Research;
 
@@ -17,34 +16,30 @@ public static class AgentFactory
     public const string ResearchAnalyzerAgentName = "ResearchAnalyzer";
     public const string ReportSynthesizerAgentName = "ReportSynthesizer";
 
-    private const string StatePluginName = nameof(StatePlugin); // Or keep as "StatePlugin" string literal
+    private const string StatePluginName = nameof(StatePlugin);
     private const string ResearchEnginePluginName = "Research_Engine";
     private const string KernelMemoryPluginName = "Research_Memory";
-    private const string CompleteResearchPluginName = "Research_Complete";
+    private const string ReportGenerationPluginName = "Research_Generation";
 
     public static ChatCompletionAgent CreateResearchCoordinator(
         IKernelBuilder kernelBuilder,
-        IStateManager state, // Pass the state manager service
+        IStateManager state,
         IClientUpdateCallback streamingCallback,
         string researchId
     )
     {
         var kernel = kernelBuilder.Build();
 
-        // Create and add StatePlugin (unique instance per agent)
         var statePluginInstance = new StatePlugin(
-            state, // Use the passed state manager
+            state,
             kernel.LoggerFactory.CreateLogger<StatePlugin>(),
             researchId
         );
         var statePlugin = KernelPluginFactory.CreateFromObject(
             statePluginInstance,
-            StatePluginName // Use consistent name
+            StatePluginName
         );
         kernel.Plugins.Add(statePlugin);
-
-        // Add Time Plugin
-        kernel.Plugins.AddFromType<TimePlugin>();
 
         var executionSettings = new PromptExecutionSettings
         {
@@ -83,12 +78,10 @@ public static class AgentFactory
         kernel.Plugins.Add(statePlugin);
 
         var researchEnginePlugin = KernelPluginFactory.CreateFromObject(
-            researchEnginePluginInstance, // Use the passed instance
-            ResearchEnginePluginName // Use the defined name
+            researchEnginePluginInstance,
+            ResearchEnginePluginName
         );
         kernel.Plugins.Add(researchEnginePlugin);
-
-        kernel.Plugins.AddFromType<TimePlugin>();
 
         var executionSettings = new PromptExecutionSettings
         {
@@ -110,7 +103,7 @@ public static class AgentFactory
         IStateManager state,
         IClientUpdateCallback streamingCallback,
         string researchId,
-        KernelMemoryPlugin kernelMemoryPluginInstance // Pass the actual plugin instance
+        KernelMemoryPlugin kernelMemoryPluginInstance
     )
     {
         var kernel = kernelBuilder.Build();
@@ -133,12 +126,9 @@ public static class AgentFactory
         );
         kernel.Plugins.Add(kernelMemoryPlugin);
 
-        // Add Time Plugin
-        kernel.Plugins.AddFromType<TimePlugin>();
-
         var executionSettings = new PromptExecutionSettings
         {
-            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
+            FunctionChoiceBehavior = FunctionChoiceBehavior.Required(),
         };
 
         return new ChatCompletionAgent()
@@ -156,8 +146,7 @@ public static class AgentFactory
         IStateManager state,
         IClientUpdateCallback streamingCallback,
         string researchId,
-        KernelMemoryPlugin kernelMemoryPluginInstance, // Pass the actual plugin instance
-        CompleteResearchPlugin completeResearchPluginInstance // Pass the actual plugin instance
+        ReportGenerationPlugin reportGenerationPluginInstance
     )
     {
         var kernel = kernelBuilder.Build();
@@ -173,19 +162,11 @@ public static class AgentFactory
         );
         kernel.Plugins.Add(statePlugin);
 
-        var kernelMemoryPlugin = KernelPluginFactory.CreateFromObject(
-            kernelMemoryPluginInstance,
-            KernelMemoryPluginName
+        var reportGenerationPlugin = KernelPluginFactory.CreateFromObject(
+            reportGenerationPluginInstance,
+            ReportGenerationPluginName
         );
-        kernel.Plugins.Add(kernelMemoryPlugin);
-
-        var completeResearchPlugin = KernelPluginFactory.CreateFromObject(
-            completeResearchPluginInstance,
-            CompleteResearchPluginName
-        );
-        kernel.Plugins.Add(completeResearchPlugin);
-
-        kernel.Plugins.AddFromType<TimePlugin>();
+        kernel.Plugins.Add(reportGenerationPlugin);
 
         var executionSettings = new PromptExecutionSettings
         {

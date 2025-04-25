@@ -27,7 +27,7 @@ public class ResearchOrchestrator
 
     private readonly ResearchEnginePlugin _engineInstance; // Store the original instances if needed elsewhere
     private readonly KernelMemoryPlugin _memoryInstance;
-    private readonly CompleteResearchPlugin _completeInstance;
+    private readonly ReportGenerationPlugin _reportGenerationInstance;
     private const string UnknownAgentName = "Unknown Agent";
 
     public ResearchOrchestrator(
@@ -38,7 +38,7 @@ public class ResearchOrchestrator
         IResearchManager manager,
         ResearchEnginePlugin engine,
         KernelMemoryPlugin memory,
-        CompleteResearchPlugin complete
+        ReportGenerationPlugin reportGeneration
     )
     {
         _repository = repository;
@@ -49,7 +49,7 @@ public class ResearchOrchestrator
 
         _engineInstance = engine;
         _memoryInstance = memory;
-        _completeInstance = complete;
+        _reportGenerationInstance = reportGeneration;
     }
 
     public async Task StartResearchProcessAsync(string researchId)
@@ -121,8 +121,7 @@ public class ResearchOrchestrator
                     _state,
                     _clientUpdate,
                     researchId,
-                    _memoryInstance,
-                    _completeInstance
+                    _reportGenerationInstance
                 )
             },
         };

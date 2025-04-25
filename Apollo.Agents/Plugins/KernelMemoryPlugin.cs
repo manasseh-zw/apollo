@@ -22,11 +22,12 @@ public class KernelMemoryPlugin
         "Searches the knowledge base (Kernel Memory) for relevant information based on a query."
     )]
     public async Task<SearchResult> SearchMemoryAsync(
+        [Description("The researchId")] string researchId,
         [Description("The search query")] string query,
         CancellationToken cancellationToken = default
     )
     {
-        return await _memory.SearchAsync(query, cancellationToken);
+        return await _memory.SearchAsync(researchId, query, cancellationToken);
     }
 
     [KernelFunction]
@@ -34,10 +35,11 @@ public class KernelMemoryPlugin
         "Asks a question to the knowledge base (Kernel Memory) and gets a synthesized answer."
     )]
     public async Task<MemoryAnswer> AskMemoryAsync(
+        [Description("The researchId")] string researchId,
         [Description("The question to ask the memory")] string question,
         CancellationToken cancellationToken = default
     )
     {
-        return await _memory.AskAsync(question, cancellationToken);
+        return await _memory.AskAsync(researchId, question, cancellationToken);
     }
 }

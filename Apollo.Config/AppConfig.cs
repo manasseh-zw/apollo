@@ -53,6 +53,14 @@ public static class AppConfig
                 ?? throw new Exception("Azure AI Endpoint is not set"),
         };
 
+    public static Google Google { get; } =
+        new()
+        {
+            ApiKey =
+                Environment.GetEnvironmentVariable("GOOGLE_AI_API_KEY")
+                ?? throw new Exception("Google AI apikey is not set"),
+        };
+
     public static ExaAI ExaAI { get; } =
         new()
         {
@@ -61,28 +69,13 @@ public static class AppConfig
                 ?? throw new Exception("Exa API key is not set"),
         };
 
-    public static FirecrawlAI FirecrawlAI { get; } =
-        new()
-        {
-            ApiKey =
-                Environment.GetEnvironmentVariable("FIRECRAWL_API_KEY")
-                ?? throw new Exception("Firecrawl API key is not set"),
-        };
-
-    public static WebSpider WebSpider { get; } =
-        new()
-        {
-            ScrapeUrl =
-                Environment.GetEnvironmentVariable("WEBSPIDER_SCRAPE_URL")
-                ?? throw new Exception("Scrape URL is not set"),
-
-            ScrapeBatchUrl =
-                Environment.GetEnvironmentVariable("WEBSPIDER_SCRAPE_BATCH_URL")
-                ?? throw new Exception("Scrape Batch URL is not set"),
-        };
-
     public static Models Models { get; } =
-        new() { Gpt41 = "gpt-4.1", TextEmbeddingSmall = "text-embedding-3-small" };
+        new()
+        {
+            Gpt41 = "gpt-4.1",
+            TextEmbeddingSmall = "text-embedding-3-small",
+            GeminiPro25 = "gemini-2.5-pro-preview-03-25",
+        };
 }
 
 public class DatabaseOptions
@@ -106,24 +99,19 @@ public class AzureAI
     public string Endpoint { get; init; } = string.Empty;
 }
 
+public class Google
+{
+    public string ApiKey { get; init; } = string.Empty;
+}
+
 public class Models
 {
     public required string Gpt41 { get; set; }
+    public required string GeminiPro25 { get; set; }
     public required string TextEmbeddingSmall { get; set; }
 }
 
 public class ExaAI
 {
     public string ApiKey { get; init; } = string.Empty;
-}
-
-public class FirecrawlAI
-{
-    public string ApiKey { get; init; } = string.Empty;
-}
-
-public class WebSpider
-{
-    public string ScrapeUrl { get; set; } = string.Empty;
-    public string ScrapeBatchUrl { get; set; } = string.Empty;
 }

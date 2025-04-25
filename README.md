@@ -54,3 +54,13 @@ had to polish my prompts to make every step clealy explained (this took about 3 
 postgers ingest is stucky somwhere idk why that is happening, taking longer than usual ... (was targetting wrong db) it works
 
 now research engine does not want to process the next question after the first one it attempts to automatically call complete
+
+how to best combine Kernel Memory's retrieval and section-focused synthesis (AskAsync vs SearchAsync) with a powerful large-context model (Gemini 2.5 Pro via Semantic Kernel) for final report generation, specifically facing the challenge of reliably passing and including the original source URLs in the synthesized multi-page output.
+
+Two-Stage Synthesis: Use Kernel Memory's AskAsync to generate synthesized content for each section based on its relevant memories, then pass these pre-synthesized sections to a large-context model (Gemini via SK) for a final synthesis and structuring of the entire report.
+
+Retrieval + Single-Stage Synthesis: Use Kernel Memory's SearchAsync to retrieve the raw, relevant document chunks and their source information for each section, then pass all of these raw chunks and sources to the large-context model (Gemini via SK) for a single, comprehensive synthesis of the entire report. (More robust for preserving and including source URLs).
+
+decided to go with 2 stage synthesis, also kernel memory has nice filter by researchId
+
+making the function choice behaviour to required makes a huge difference they must call functions now
