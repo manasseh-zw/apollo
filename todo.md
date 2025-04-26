@@ -1,8 +1,3 @@
-todo: - make research flow operational from end to end
--make sure exa service integration is working with Kernel memory vector ingestion - ensure agents are able to autonomously go through each research question until analysis stage [x] done!
-
--might have to rethink how analysis and synthesis is being done, we could possible have a meta agent implementation , where the research analyzer and report synthesizers are now meta agents who trigger other agents via plugins which will so the analysis and final report synthesis (this allows us to use a specialized model for parts of the research with different requirements.. in this case we would use a reasoning model to synthesize the final report) for the analysis phase we could simply do a memory.ask against our data and the text gen model we have used to build the kernel memory will do the semantic serching to deitermine if there are any research gaps...
-
     - wireup the agents updates with the client research/id page to show realtime data of the on going research progress and agent respones etc
     - on the frontend we need to display research history on the sidebar where we show on goining an finished past research sessions, indicator for currely on going reseach, make it work for collapsed and expanded states
     - work on the ui for the resaerch complete state where we have the final report being shown.. /potentially chat with resaerch memories integrate exa answer aswell to enhance it
@@ -19,3 +14,8 @@ todo: - make research flow operational from end to end
     - enhancement features
          - integrate images into our final report... use images provided by exa search to have a 'resarch gallery' where for each query where for each search result where there is an image provided we have a chat completion service where we upload these images and their corresponding urls then ai gives descripbes the image and we keep a registry of image urls with theier associated descriptions we can use these in our researsch report syntehis process to have the final report mardkwon genrated include those images strategically use mardown html markup syntax to dsiplay text content and images aside or tables too..
          - this research image gallery may also be useful when creating the ppt, we also have ai imagen availble ..
+
+immediate todo - finish up the history chat modal - on hide history on expanded sidebar recent chats, on collapse show history button hide recent chats, history button triggers modal, with resaerch history - add status ping dot button if the research is active little blue ping dot aanimated like a sonner radar animation at the end of that research chat itme in the sidenav,
+now for new resaerch that has been completed but not viewed yet by the user we set the resarch status to green that is complete but not opened yet.. other wise there is not ping dot animated thing...
+
+    - move the research sidenav item to the app sidebar level where it looks the same but is a button with full radius and fully white bg to contrast

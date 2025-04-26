@@ -13,6 +13,8 @@ public interface IStateManager
     void MarkResearchComplete(string researchId);
     void AddPendingQuestions(string researchId, List<string> newQuestions);
     void UpdateTableOfContents(string researchId, List<string> sections);
+    void MarkAnalysisStarted(string researchId);
+    void MarkAnalysisComplete(string researchId);
 }
 
 public class StateManager : IStateManager
@@ -219,6 +221,30 @@ public class StateManager : IStateManager
             }
         );
     }
+
+    public void MarkAnalysisStarted(string researchId)
+    {
+        UpdateState(
+            researchId,
+            state =>
+            {
+                state.IsAnalyzing = true;
+                _logger.LogInformation("[{ResearchId}] Analysis phase started.", researchId);
+            }
+        );
+    }
+
+    public void MarkAnalysisComplete(string researchId)
+    {
+        UpdateState(
+            researchId,
+            state =>
+            {
+                state.IsAnalyzing = false;
+                _logger.LogInformation("[{ResearchId}] Analysis phase completed.", researchId);
+            }
+        );
+    }
 }
 
 public class ResearchState
@@ -235,6 +261,7 @@ public class ResearchState
     public List<string> TableOfContents { get; set; } = [];
     public bool IsComplete { get; set; } = false;
     public bool NeedsAnalysis { get; set; } = false;
+    public bool IsAnalyzing { get; set; } = false;
     public bool SynthesisComplete { get; set; } = false;
 
     public ResearchQuestion? GetActiveQuestion()

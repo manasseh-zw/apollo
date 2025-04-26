@@ -8,11 +8,10 @@ using Apollo.Data.Repository;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.Google;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 namespace Apollo.Agents.Research;
 
-#pragma warning disable SKEXP0070
 public interface IResearchReportGenerator
 {
     Task<string> GenerateReportAsync(
@@ -46,9 +45,10 @@ public class ResearchReportGenerator : IResearchReportGenerator
 
         var kernel = Kernel
             .CreateBuilder()
-            .AddGoogleAIGeminiChatCompletion(
-                modelId: AppConfig.Models.GeminiPro25,
-                apiKey: AppConfig.Google.ApiKey
+            .AddAzureOpenAIChatCompletion(
+                deploymentName: AppConfig.Models.Gpt41,
+                endpoint: AppConfig.AzureAI.Endpoint,
+                apiKey: AppConfig.AzureAI.ApiKey
             )
             .Build();
         _chat = kernel.GetRequiredService<IChatCompletionService>();
@@ -75,137 +75,134 @@ public class ResearchReportGenerator : IResearchReportGenerator
                 throw new Exception("Table of contents is empty. Cannot generate report.");
             }
 
-            // Initialize structures to hold section data
-            var sectionContents =
-                new List<(string Section, string Content, List<SourceMetadata> Sources)>();
+            // Create tasks for concurrent processing of all sections
+            var sectionTasks =
+                new List<Task<(string Section, string Content, List<SourceMetadata> Sources)>>();
 
-            // Process each section
             for (int i = 0; i < toc.Count; i++)
             {
                 var section = toc[i];
-                _clientUpdate.SendResearchProgressUpdate(
-                    researchId,
-                    $"Gathering information for section {i + 1} of {toc.Count}: {section}"
-                );
+                var sectionIndex = i; // Capture for progress updates
 
-                // Query memory for comprehensive information about this section
-                var memoryResults = await _memory.AskAsync(
-                    researchId,
-                    $"Provide a comprehensive analysis of '{section}', including all relevant facts, data, and findings. Include specific details and ensure all information is properly attributed to sources.",
+                var sectionTask = Task.Run(
+                    async () =>
+                    {
+                        _clientUpdate.SendResearchProgressUpdate(
+                            researchId,
+                            $"Gathering information for section {sectionIndex + 1} of {toc.Count}: {section}"
+                        );
+
+                        var memoryResults = await _memory.AskAsync(
+                            researchId,
+                            $"Provide a comprehensive analysis of '{section}', including all relevant facts, data, and findings. Include specific details and ensure all information is properly attributed to sources.",
+                            cancellationToken
+                        );
+
+                        if (memoryResults.RelevantSources.Count < 1)
+                        {
+                            _logger.LogWarning(
+                                "[{ResearchId}] No memory results found for section: {Section}",
+                                researchId,
+                                section
+                            );
+                            return (section, string.Empty, new List<SourceMetadata>());
+                        }
+
+                        var sources = new List<SourceMetadata>();
+                        foreach (var source in memoryResults.RelevantSources)
+                        {
+                            foreach (var partition in source.Partitions)
+                            {
+                                if (partition.Tags != null)
+                                {
+                                    var metadata = new SourceMetadata
+                                    {
+                                        Url = partition
+                                            .Tags.FirstOrDefault(t => t.Key == "url")
+                                            .Value?.FirstOrDefault(),
+                                        Title = partition
+                                            .Tags.FirstOrDefault(t => t.Key == "title")
+                                            .Value?.FirstOrDefault(),
+                                        Author = partition
+                                            .Tags.FirstOrDefault(t => t.Key == "author")
+                                            .Value?.FirstOrDefault(),
+                                        PublishedDate = partition
+                                            .Tags.FirstOrDefault(t => t.Key == "published")
+                                            .Value?.FirstOrDefault(),
+                                    };
+
+                                    if (
+                                        !string.IsNullOrEmpty(metadata.Title)
+                                        || !string.IsNullOrEmpty(metadata.Url)
+                                    )
+                                    {
+                                        sources.Add(metadata);
+                                    }
+                                }
+                            }
+                        }
+
+                        return (section, memoryResults.Result, sources);
+                    },
                     cancellationToken
                 );
 
-                if (memoryResults.RelevantSources.Count < 1)
-                {
-                    _logger.LogWarning(
-                        "[{ResearchId}] No memory results found for section: {Section}",
-                        researchId,
-                        section
-                    );
-                    continue;
-                }
-
-                var sources = new List<SourceMetadata>();
-                foreach (var source in memoryResults.RelevantSources)
-                {
-                    foreach (var partition in source.Partitions)
-                    {
-                        if (partition.Tags != null)
-                        {
-                            var metadata = new SourceMetadata
-                            {
-                                Url = partition
-                                    .Tags.FirstOrDefault(t => t.Key == "url")
-                                    .Value?.FirstOrDefault(),
-                                Title = partition
-                                    .Tags.FirstOrDefault(t => t.Key == "title")
-                                    .Value?.FirstOrDefault(),
-                                Author = partition
-                                    .Tags.FirstOrDefault(t => t.Key == "author")
-                                    .Value?.FirstOrDefault(),
-                                PublishedDate = partition
-                                    .Tags.FirstOrDefault(t => t.Key == "published")
-                                    .Value?.FirstOrDefault(),
-                            };
-
-                            if (
-                                !string.IsNullOrEmpty(metadata.Title)
-                                || !string.IsNullOrEmpty(metadata.Url)
-                            )
-                            {
-                                sources.Add(metadata);
-                            }
-                        }
-                    }
-                }
-
-                // Store the section content and its sources
-                sectionContents.Add((section, memoryResults.Result, sources));
+                sectionTasks.Add(sectionTask);
             }
+
+            var sectionResults = await Task.WhenAll(sectionTasks);
+
+            var sectionContents = sectionResults
+                .Where(result => !string.IsNullOrEmpty(result.Content))
+                .ToList();
 
             _clientUpdate.SendResearchProgressUpdate(researchId, "Synthesizing final report...");
 
-            // Prepare the synthesis prompt
-            var synthesisPrompt = new StringBuilder();
-            synthesisPrompt.AppendLine(
-                $"Generate a comprehensive exhaustive research report on '{research.Title}'."
-            );
-            synthesisPrompt.AppendLine(
-                "\nYou will be provided with section-by-section content and their associated sources. Your task is to:"
-            );
-            synthesisPrompt.AppendLine("1. Synthesize the information into a cohesive report");
-            synthesisPrompt.AppendLine(
-                "2. Remove redundancies and overlapping information between sections"
-            );
-            synthesisPrompt.AppendLine("3. Ensure proper flow and transitions between sections");
-            synthesisPrompt.AppendLine(
-                "4. Include all relevant citations using [Author, Year] format"
-            );
-            synthesisPrompt.AppendLine("5. Format the output in Markdown");
-            synthesisPrompt.AppendLine("\nHere is the section-by-section content:\n");
-
+            var formattedSections = new StringBuilder();
             foreach (var (section, content, sources) in sectionContents)
             {
-                synthesisPrompt.AppendLine($"## {section}");
-                synthesisPrompt.AppendLine("Content:");
-                synthesisPrompt.AppendLine(content);
-                synthesisPrompt.AppendLine("\nSources for this section:");
+                formattedSections.AppendLine($"## {section}");
+                formattedSections.AppendLine("Content:");
+                formattedSections.AppendLine(content);
+                formattedSections.AppendLine("\nSources for this section:");
                 foreach (var source in sources.DistinctBy(s => s.Url))
                 {
-                    synthesisPrompt.AppendLine(
+                    formattedSections.AppendLine(
                         $"- {source.Title} | {source.Author} | {source.Url} | {source.PublishedDate}"
                     );
                 }
-                synthesisPrompt.AppendLine("\n---\n");
+                formattedSections.AppendLine("\n---\n");
             }
 
-            synthesisPrompt.AppendLine(
-                "\nPlease generate the final report following these guidelines:"
+            var promptFileName =
+                $"synthesis_prompt_{researchId}_{DateTime.UtcNow:yyyyMMdd_HHmmss}.txt";
+            await File.WriteAllTextAsync(
+                promptFileName,
+                formattedSections.ToString(),
+                cancellationToken
             );
-            synthesisPrompt.AppendLine(
-                "1. Use proper Markdown formatting (headers, lists, emphasis)"
+            _logger.LogInformation(
+                "[{ResearchId}] Saved synthesis sections to file: {FileName}",
+                researchId,
+                promptFileName
             );
-            synthesisPrompt.AppendLine("2. Include a table of contents at the start");
-            synthesisPrompt.AppendLine(
-                "3. End with a References section listing all cited sources"
-            );
-            synthesisPrompt.AppendLine("4. Ensure all factual claims have appropriate citations");
 
-            // Generate the final report using Gemini
             var chatHistory = new ChatHistory();
-            chatHistory.AddUserMessage(synthesisPrompt.ToString());
+            chatHistory.AddSystemMessage(Prompts.ReportSynthesizerPrompt);
+            chatHistory.AddUserMessage(formattedSections.ToString());
 
             var finalReport = await _chat.GetChatMessageContentAsync(
                 chatHistory,
+                executionSettings: new OpenAIPromptExecutionSettings() { MaxTokens = 32768 },
                 cancellationToken: cancellationToken
             );
 
-            // Save the report
             var report = new ResearchReport
             {
                 Content = finalReport.Content,
                 ResearchId = research.Id,
             };
+
             research.Report = report;
             research.Status = ResearchStatus.Complete;
 

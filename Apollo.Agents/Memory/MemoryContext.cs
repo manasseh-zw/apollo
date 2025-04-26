@@ -38,6 +38,7 @@ public class MemoryContext : IMemoryContext
                     APIType = AzureOpenAIConfig.APITypes.EmbeddingGeneration,
                     Deployment = AppConfig.Models.TextEmbeddingSmall,
                     Endpoint = AppConfig.AzureAI.Endpoint,
+                    EmbeddingDimensions = 1536,
                 }
             )
             .WithAzureOpenAITextGeneration(
@@ -48,8 +49,10 @@ public class MemoryContext : IMemoryContext
                     APIType = AzureOpenAIConfig.APITypes.TextCompletion,
                     Deployment = AppConfig.Models.Gpt41,
                     Endpoint = AppConfig.AzureAI.Endpoint,
+                    MaxTokenTotal = 1047576,
                 }
             )
+            .WithSearchClientConfig(new() { AnswerTokens = 32768 })
             .WithStructRagSearchClient()
             .Build<MemoryServerless>(
                 //this is fine because i am not storing any documents at the moment

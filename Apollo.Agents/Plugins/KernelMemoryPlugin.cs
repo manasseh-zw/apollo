@@ -19,24 +19,14 @@ public class KernelMemoryPlugin
 
     [KernelFunction]
     [Description(
-        "Searches the knowledge base (Kernel Memory) for relevant information based on a query."
-    )]
-    public async Task<SearchResult> SearchMemoryAsync(
-        [Description("The researchId")] string researchId,
-        [Description("The search query")] string query,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await _memory.SearchAsync(researchId, query, cancellationToken);
-    }
-
-    [KernelFunction]
-    [Description(
-        "Asks a question to the knowledge base (Kernel Memory) and gets a synthesized answer."
+        "Asks a question to the knowledge base (Kernel Memory) and gets a synthesized answer. Use this to get brief summaries or key findings about specific aspects of the research."
     )]
     public async Task<MemoryAnswer> AskMemoryAsync(
         [Description("The researchId")] string researchId,
-        [Description("The question to ask the memory")] string question,
+        [Description(
+            "The question to ask the memory. Frame questions to request brief summaries or key findings."
+        )]
+            string question,
         CancellationToken cancellationToken = default
     )
     {

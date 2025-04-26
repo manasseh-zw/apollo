@@ -61,6 +61,14 @@ public static class AppConfig
                 ?? throw new Exception("Google AI apikey is not set"),
         };
 
+    public static OpenAI OpenAI { get; } =
+        new()
+        {
+            ApiKey =
+                Environment.GetEnvironmentVariable("OPENAI_API_KEY")
+                ?? throw new Exception("OPEN AI apikey is not set"),
+        };
+
     public static ExaAI ExaAI { get; } =
         new()
         {
@@ -72,6 +80,7 @@ public static class AppConfig
     public static Models Models { get; } =
         new()
         {
+            GptO4mini = "o4-mini",
             Gpt41 = "gpt-4.1",
             TextEmbeddingSmall = "text-embedding-3-small",
             GeminiPro25 = "gemini-2.5-pro-preview-03-25",
@@ -104,8 +113,14 @@ public class Google
     public string ApiKey { get; init; } = string.Empty;
 }
 
+public class OpenAI
+{
+    public string ApiKey { get; init; } = string.Empty;
+}
+
 public class Models
 {
+    public required string GptO4mini { get; set; }
     public required string Gpt41 { get; set; }
     public required string GeminiPro25 { get; set; }
     public required string TextEmbeddingSmall { get; set; }

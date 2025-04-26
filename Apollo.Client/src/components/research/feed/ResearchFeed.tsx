@@ -8,7 +8,7 @@ import type {
   SearchResultItem,
   ResearchProgress,
   FeedUpdate,
-  ResearchSession
+  ResearchSession,
 } from "../../../lib/types/research";
 import ResearchFeedUpdate from "./FeedUpdate";
 import TriLoader from "./TriLoader";
@@ -23,7 +23,7 @@ export default function ResearchFeed() {
     id: "1",
     startedAt: new Date(Date.now() - 1000 * 60 * 3).toISOString(), // 3 minutes ago
     status: "active",
-    sourcesCount: 13
+    sourcesCount: 13,
   };
 
   const elapsedTime = useResearchTimer(mockSession.startedAt);
@@ -121,7 +121,7 @@ export default function ResearchFeed() {
   }
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-white">
+    <div className="flex h-full w-full overflow-hidden bg-white font-geist">
       <div className="w-[317px] border-r border-gray-200 bg-content p-5 flex flex-col h-full">
         <div className="flex items-center gap-2">
           <TriLoader />

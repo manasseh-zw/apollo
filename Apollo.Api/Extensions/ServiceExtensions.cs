@@ -13,8 +13,6 @@ using Apollo.Search;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.KernelMemory.DataFormats.WebPages;
-using Microsoft.SemanticKernel;
 
 namespace Apollo.Api.Extensions;
 
@@ -87,10 +85,11 @@ public static class ServiceExtensions
         services.AddScoped<KernelMemoryPlugin>();
         services.AddScoped<ResearchEnginePlugin>();
         services.AddScoped<StartResearchPlugin>();
-        services.AddScoped<ReportGenerationPlugin>();
+        services.AddScoped<SynthesizeResearchPlugin>();
 
         services.AddScoped<IResearchManager, ResearchManager>();
         services.AddScoped<ResearchOrchestrator>();
+        services.AddScoped<IResearchReportGenerator, ResearchReportGenerator>();
 
         services.AddSingleton<IResearchEventsQueue, ResearchEventsQueue>();
         services.AddHostedService<ResearchProcessor>();

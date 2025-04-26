@@ -55,6 +55,8 @@ postgers ingest is stucky somwhere idk why that is happening, taking longer than
 
 now research engine does not want to process the next question after the first one it attempts to automatically call complete
 
+decined to not use my custom scraper and just got with exa since it provides the crawled content of the site too + given the time constraints i was taking on a bit too much altoghtough the webspider was workging its not the most efficient the research takes that much longer with inplace ther eusing exa content which it returns
+
 how to best combine Kernel Memory's retrieval and section-focused synthesis (AskAsync vs SearchAsync) with a powerful large-context model (Gemini 2.5 Pro via Semantic Kernel) for final report generation, specifically facing the challenge of reliably passing and including the original source URLs in the synthesized multi-page output.
 
 Two-Stage Synthesis: Use Kernel Memory's AskAsync to generate synthesized content for each section based on its relevant memories, then pass these pre-synthesized sections to a large-context model (Gemini via SK) for a final synthesis and structuring of the entire report.
@@ -64,3 +66,10 @@ Retrieval + Single-Stage Synthesis: Use Kernel Memory's SearchAsync to retrieve 
 decided to go with 2 stage synthesis, also kernel memory has nice filter by researchId
 
 making the function choice behaviour to required makes a huge difference they must call functions now
+
+decided to eliminate the synthesizer agent and have that be a seperate service such that i have more control over the process
+
+did a task.await all for searching memory inthe final syntehsis and cut the vector seach time by half for each section whic i thought ...
+
+followed prompt engineering guide from https://cookbook.openai.com/examples/gpt4-1_prompting_guide
+tried to do the synthesis with google gemini but im facing ratelimis which is fvery wiered...  then ust used gpt4.1 its also very good and has similar context window   

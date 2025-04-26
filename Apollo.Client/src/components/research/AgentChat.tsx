@@ -29,16 +29,6 @@ const agents = {
     role: "Web Navigator",
     avatar: "/agents/agent3.jpg",
   },
-  theia: {
-    name: "Theia",
-    role: "Truth Seeker",
-    avatar: "/agents/agent4.jpg",
-  },
-  chronos: {
-    name: "Chronos",
-    role: "Knowledge Curator",
-    avatar: "/agents/agent5.jpg",
-  },
 };
 
 // Sample messages for demonstration
@@ -66,18 +56,6 @@ const messages: Message[] = [
     agent: agents.athena,
     text: "Already soaring through IEEE and arXiv repositories 🦉 I've discovered several groundbreaking papers on Shor's algorithm optimizations. Theia, you might want to examine these findings closely.",
     timestamp: "12:03",
-  },
-  {
-    id: 5,
-    agent: agents.theia,
-    text: "Thank you, Athena! ✨ These papers are fascinating. I'm seeing a consistent pattern in the research - quantum computers with just 4000 qubits could potentially break current RSA encryption. Chronos, this seems significant for our timeline analysis.",
-    timestamp: "12:04",
-  },
-  {
-    id: 6,
-    agent: agents.chronos,
-    text: "Indeed, Theia! This aligns with the temporal patterns I'm observing. The pace of quantum computing development has accelerated significantly since 2022. Apollo, shall I prepare a chronological evolution of these breakthroughs?",
-    timestamp: "12:05",
   },
   {
     id: 7,

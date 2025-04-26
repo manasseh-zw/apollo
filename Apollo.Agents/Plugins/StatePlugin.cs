@@ -141,4 +141,45 @@ public class StatePlugin
         );
         _state.UpdateTableOfContents(_researchId, sections);
     }
+
+    [KernelFunction]
+    [Description(
+        "Marks the analysis phase as started. Called by ResearchCoordinator before delegating to ResearchAnalyzer."
+    )]
+    public void MarkAnalysisStarted()
+    {
+        _logger.LogInformation(
+            "[{ResearchId}] Marking analysis phase as started via StatePlugin.",
+            _researchId
+        );
+        _state.MarkAnalysisStarted(_researchId);
+    }
+
+    [KernelFunction]
+    [Description(
+        "Marks the analysis phase as complete. Called by ResearchAnalyzer after finishing its analysis."
+    )]
+    public void MarkAnalysisComplete()
+    {
+        _logger.LogInformation(
+            "[{ResearchId}] Marking analysis phase as complete via StatePlugin.",
+            _researchId
+        );
+        _state.MarkAnalysisComplete(_researchId);
+    }
+
+    [KernelFunction]
+    [Description(
+        "Gets the research context (title and description) for the current research project."
+    )]
+    [return: Description("A string containing the research title and description.")]
+    public string GetResearchContext()
+    {
+        var state = _state.GetState(_researchId);
+        _logger.LogInformation(
+            "[{ResearchId}] Getting research context via StatePlugin.",
+            _researchId
+        );
+        return $"Title: {state.Title}\nDescription: {state.Description}";
+    }
 }

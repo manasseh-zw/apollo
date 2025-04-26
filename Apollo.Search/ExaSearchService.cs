@@ -30,6 +30,7 @@ public class ExaSearchService : ISearchService
             JsonSerializer.Serialize(request)
         );
 
+        //exclude wikipedia
         request.ExcludeDomains = ["https://wikipedia.org/"];
         request.Contents = new() { Text = new() { IncludeHtmlTags = false } };
 

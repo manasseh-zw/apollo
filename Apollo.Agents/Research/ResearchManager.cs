@@ -57,6 +57,16 @@ public class ResearchManager : IResearchManager
             lastAgentName ?? "N/A"
         );
 
+        // If analysis is in progress, keep the Analyzer working
+        if (state.IsAnalyzing)
+        {
+            _logger.LogInformation(
+                "[{ResearchId}] Selection: Analysis in progress. Continuing with ResearchAnalyzer.",
+                _researchId
+            );
+            return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchAnalyzerAgentName);
+        }
+
         // After ResearchAnalyzer, always go back to Coordinator
         if (
             lastAgentName?.Equals(
