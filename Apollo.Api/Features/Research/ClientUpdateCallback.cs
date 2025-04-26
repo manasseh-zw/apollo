@@ -1,3 +1,4 @@
+using Apollo.Agents.Contracts;
 using Apollo.Agents.Helpers;
 using Microsoft.AspNetCore.SignalR;
 
@@ -15,13 +16,18 @@ public class ClientUpdateCallback : IClientUpdateCallback
         _hubContext.Clients.Client(connectionId).ReceiveResponse(message ?? string.Empty);
     }
 
-    public void StreamAgentMessage(string researchId, string author, string message)
+    public void SendQuestionTimelineUpdate(QuestionTimelineUpdateEvent update)
     {
-        _hubContext.Clients.Group(researchId).RecieveAgentMessage(author, message);
+        _hubContext.Clients.Group(update.ResearchId).ReceiveQuestionTimelineUpdate(update);
     }
 
-    public void SendResearchProgressUpdate(string researchId, string update)
+    public void SendResearchFeedUpdate(ResearchFeedUpdateEvent update)
     {
-        _hubContext.Clients.Group(researchId).RecieveResearchProgressUpdate(update);
+        _hubContext.Clients.Group(update.ResearchId).ReceiveResearchFeedUpdate(update);
+    }
+
+    public void SendAgentChatMessage(AgentChatMessageEvent message)
+    {
+        _hubContext.Clients.Group(message.ResearchId).ReceiveAgentChatMessage(message);
     }
 }

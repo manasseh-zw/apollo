@@ -1,8 +1,11 @@
 import { Search } from "lucide-react";
-import type { FeedUpdate, SearchResultItem } from "../../../lib/types/research";
+import type {
+  ResearchFeedUpdate,
+  SearchResultItem,
+} from "../../../lib/types/research";
 
 interface ResearchFeedUpdateProps {
-  update: FeedUpdate;
+  update: ResearchFeedUpdate;
 }
 
 export function MessageUpdate({ content }: { content: string }) {
@@ -81,24 +84,15 @@ function SearchResult({
 }: SearchResultItem) {
   return (
     <div className="flex items-start gap-3 group cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors">
-      <div className="flex h-6 w-6 items-center justify-center">
-        {icon === "W" ? (
-          <span className="font-serif italic text-gray-700">W</span>
-        ) : icon === "NG" ? (
-          <div className="flex h-5 w-5 items-center justify-center bg-yellow-500 text-[10px] font-bold text-black">
-            {icon}
-          </div>
-        ) : icon === "LS" ? (
-          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-400 text-[10px] font-bold text-white">
-            {icon}
-          </div>
-        ) : icon === "H" ? (
-          <div className="flex h-5 w-5 items-center justify-center bg-yellow-500 text-[10px] font-bold text-black">
-            {icon}
-          </div>
-        ) : (
-          icon
-        )}
+      <div className="flex h-6 w-6 items-center justify-center overflow-hidden rounded">
+        <img
+          src={icon}
+          alt={`${title} favicon`}
+          className="h-full w-full object-contain"
+          onError={(e) => {
+            e.currentTarget.src = "https://www.google.com/favicon.ico";
+          }}
+        />
       </div>
       <div>
         <div className="flex items-center gap-1">
@@ -132,16 +126,16 @@ function SearchResult({
   );
 }
 
-export default function ResearchFeedUpdate({
+export default function ResearchFeedUpdateComponent({
   update,
 }: ResearchFeedUpdateProps) {
   switch (update.type) {
     case "message":
-      return <MessageUpdate content={update.content} />;
+      return <MessageUpdate content={update.message} />;
     case "searching":
       return <SearchingUpdate query={update.query || ""} />;
     case "search_results":
-      return <SearchResultsUpdate results={update.searchResults || []} />;
+      return <SearchResultsUpdate results={update.results || []} />;
     case "snippet":
       return (
         <SnippetUpdate

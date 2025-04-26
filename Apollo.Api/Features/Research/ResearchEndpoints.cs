@@ -16,12 +16,14 @@ public static class ResearchEndpoints
         group.MapPost("/", CreateResearch);
     }
 
-    private static async Task<Results<Ok<PaginatedResponse<ResearchHistoryItemResponse>>, UnauthorizedHttpResult>> 
-    GetResearchHistory(
+    private static async Task<
+        Results<Ok<PaginatedResponse<ResearchHistoryItemResponse>>, UnauthorizedHttpResult>
+    > GetResearchHistory(
         [FromServices] IResearchService researchService,
         HttpContext httpContext,
         [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 5)
+        [FromQuery] int pageSize = 5
+    )
     {
         var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier);
 

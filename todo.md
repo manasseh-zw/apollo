@@ -1,3 +1,20 @@
+    - create a standard client update types... research feed update(can be search results, search progress message, current query being executed, question being currely worked on , phase... e.g. now analysiing data ...  table of content update, now syntehsiszing.. ) , and agent message update(agent name, message content)...
+
+    these are to be insync realtime signalR with the client so in the ui we have a quesion timeline stepper where we show questions to be processed and questions the current question being processed.....
+
+    we have the research feed main pabel where we get the researfch feed update type events so essentially on the client we have a thread and we append each new resach feed update item to it and render it accordinly .. so we have differnt types depending on the type of update it can be a  simple progress message, web search execution message i.e.: "searching the web for "query"..., search results(search result componet on the client , render the favicon.. snippet highlihts etc summary ), table of contents ... updadate we might need a tbale of contents component there... so these are resaerch feed updates,
+
+    then we have the agent chat updates for the agent groupchat we hae where we show the inter agent comms coing on we send the message content and the agement message they sent.. in teh chat history...
+
+    so first we need to establish common types regardng the actual resaerch entity the research report...
+    then we create the common update event types.. the question timeline update, the resaercfh feed update (many sub types, each with a correspodning ui component to render it), then the agent group chat udpatse.. 
+
+    so on the backend we need to fix our client updates sucht that they are dispatched at the correct stage and we send the correct types for each stage such that it flows nicely in teh client ui.., so we have to idenfiy update areas..... 
+
+    we will deal with state persistance accross sessions later now we just want towier sync and wiere updtes form teh backend to the client in teh simplest possible way then we can move into a a update message queue and server side update cache .. later 
+
+    mainly using client update callback but we can implment a better pattern if you have a better one in mind , fix all do make suggestions make a plan first and consult with me before we chagen any code.. ohh ofcuase we need to have a clean implementaito no featching the research from the id param in the client to on resech/id to know what to render then we pass that to the agent and feed so they join the repesctive udpates groupchats... 
+
     - wireup the agents updates with the client research/id page to show realtime data of the on going research progress and agent respones etc
     - on the frontend we need to display research history on the sidebar where we show on goining an finished past research sessions, indicator for currely on going reseach, make it work for collapsed and expanded states
     - work on the ui for the resaerch complete state where we have the final report being shown.. /potentially chat with resaerch memories integrate exa answer aswell to enhance it

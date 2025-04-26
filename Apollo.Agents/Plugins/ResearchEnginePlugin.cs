@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Apollo.Agents.Contracts;
 using Apollo.Agents.Events;
 using Apollo.Agents.Helpers;
 using Apollo.Agents.Memory;
@@ -22,14 +23,14 @@ public class ResearchEnginePlugin
         ISearchService search,
         IMemoryContext memory,
         IStateManager state,
-        IClientUpdateCallback streamingCallback,
+        IClientUpdateCallback clientUpdate,
         IIngestEventsQueue ingestQueue
     )
     {
         _memory = memory;
         _state = state;
         _search = search;
-        _clientUpdate = streamingCallback;
+        _clientUpdate = clientUpdate;
         _ingestQueue = ingestQueue;
     }
 
@@ -49,24 +50,29 @@ public class ResearchEnginePlugin
 
         foreach (var query in queries)
         {
-            _clientUpdate.SendResearchProgressUpdate(researchId, $"Searching web for: {query}");
-            var searchResponse = await PerformWebSearch(query);
+            // Send searching update
+            _clientUpdate.SendResearchFeedUpdate(
+                new WebSearchFeedUpdate
+                {
+                    ResearchId = researchId,
+                    Type = "searching",
+                    Query = query,
+                }
+            );
 
+            var searchResponse = await PerformWebSearch(query);
             var newResults = searchResponse
                 .Results.Where(result => !crawledUrlSet.Contains(result.Url))
                 .ToList();
 
             if (newResults.Count > 0)
             {
-                _clientUpdate.SendResearchProgressUpdate(
-                    researchId,
-                    $"Processing {newResults.Count} new results for query: {query}"
-                );
-
+                // First, queue all new results for ingestion
                 await _ingestQueue.Writer.WriteAsync(
                     new IngestEvent(Guid.Parse(researchId), newResults)
                 );
 
+                // Update crawled URLs in state
                 foreach (var result in newResults)
                 {
                     crawledUrlSet.Add(result.Url);
@@ -78,13 +84,42 @@ public class ResearchEnginePlugin
                         s.CrawledUrls.AddRange(crawledUrlSet);
                     }
                 );
-                crawledUrlSet.Clear();
+
+                // Now send individual results with delay
+                foreach (var result in newResults)
+                {
+                    var searchResultItem = new SearchResultItemContract
+                    {
+                        Id = Guid.NewGuid().ToString(), // Generate unique ID for the result
+                        Icon = result.Favicon ?? "https://www.google.com/favicon.ico",
+                        Title = result.Title,
+                        Url = result.Url,
+                        Snippet = result.Summary ?? result.Text,
+                        Highlights = result.Highlights,
+                    };
+
+                    _clientUpdate.SendResearchFeedUpdate(
+                        new SearchResultsFeedUpdate
+                        {
+                            ResearchId = researchId,
+                            Type = "search_results",
+                            Results = [searchResultItem],
+                        }
+                    );
+
+                    // Delay before sending next result
+                    await Task.Delay(3000);
+                }
             }
             else
             {
-                _clientUpdate.SendResearchProgressUpdate(
-                    researchId,
-                    $"No new URLs to process for query: {query}"
+                _clientUpdate.SendResearchFeedUpdate(
+                    new ProgressMessageFeedUpdate
+                    {
+                        ResearchId = researchId,
+                        Type = "message",
+                        Message = $"No new results found for query: {query}",
+                    }
                 );
             }
         }

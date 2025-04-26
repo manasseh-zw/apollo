@@ -1,3 +1,4 @@
+using Apollo.Agents.Contracts;
 using Apollo.Agents.Research;
 using Microsoft.AspNetCore.SignalR;
 
@@ -6,8 +7,11 @@ public interface IResearchHubClient
     Task ReceiveResponse(string response);
     Task ResearchSaved(Guid researchId);
     Task ResearchCompleted(Guid researchId);
-    Task RecieveAgentMessage(string author, string message);
-    Task RecieveResearchProgressUpdate(string update);
+
+    // New methods for research updates
+    Task ReceiveQuestionTimelineUpdate(QuestionTimelineUpdateEvent update);
+    Task ReceiveResearchFeedUpdate(ResearchFeedUpdateEvent update);
+    Task ReceiveAgentChatMessage(AgentChatMessageEvent message);
 }
 
 public class ResearchHub : Hub<IResearchHubClient>

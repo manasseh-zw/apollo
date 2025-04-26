@@ -1,3 +1,5 @@
+using Apollo.Agents.Contracts;
+using Apollo.Agents.Helpers;
 using Apollo.Data.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -21,12 +23,18 @@ public class StateManager : IStateManager
 {
     private readonly IMemoryCache _cache;
     private readonly ILogger<StateManager> _logger;
+    private readonly IClientUpdateCallback _clientUpdate;
     private static readonly TimeSpan _cacheTimeout = TimeSpan.FromHours(1);
 
-    public StateManager(IMemoryCache cache, ILogger<StateManager> logger)
+    public StateManager(
+        IMemoryCache cache,
+        ILogger<StateManager> logger,
+        IClientUpdateCallback clientUpdate
+    )
     {
         _cache = cache;
         _logger = logger;
+        _clientUpdate = clientUpdate;
     }
 
     public async Task<ResearchState> GetOrCreateState(
@@ -118,6 +126,27 @@ public class StateManager : IStateManager
         return nextQuestionId;
     }
 
+    private void SendTimelineUpdate(string researchId, ResearchState state)
+    {
+        var timelineItems = state
+            .PendingResearchQuestions.Concat(state.CompletedResearchQuestions)
+            .Select(q => new QuestionTimelineItem
+            {
+                Id = q.Id,
+                Text = q.Text,
+                Active = q.Id == state.ActiveQuestionId,
+                Status =
+                    q.IsProcessed ? QuestionStatus.Completed
+                    : q.Id == state.ActiveQuestionId ? QuestionStatus.InProgress
+                    : QuestionStatus.Pending,
+            })
+            .ToList();
+
+        _clientUpdate.SendQuestionTimelineUpdate(
+            new QuestionTimelineUpdateEvent { ResearchId = researchId, Questions = timelineItems }
+        );
+    }
+
     public void CompleteActiveQuestion(string researchId)
     {
         if (
@@ -140,8 +169,10 @@ public class StateManager : IStateManager
                     activeQuestion.Id,
                     researchId
                 );
-                //TODO look into this
                 _cache.Set(researchId, state, _cacheTimeout); // Update cache
+
+                // Send timeline update
+                SendTimelineUpdate(researchId, state);
 
                 // Immediately set next question as active
                 SetNextPendingQuestionAsActive(researchId);
@@ -183,6 +214,9 @@ public class StateManager : IStateManager
             }
             state.NeedsAnalysis = false;
             _cache.Set(researchId, state, _cacheTimeout);
+
+            // Send timeline update after adding new questions
+            SendTimelineUpdate(researchId, state);
         }
         else
         {

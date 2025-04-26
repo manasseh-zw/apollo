@@ -1,4 +1,5 @@
 using System.Text;
+using Apollo.Agents.Contracts;
 using Apollo.Agents.Helpers;
 using Apollo.Agents.Plugins;
 using Apollo.Agents.State;
@@ -132,7 +133,14 @@ public class ResearchOrchestrator
             researchId
         );
 
-        _clientUpdate.SendResearchProgressUpdate(researchId, "research is now initiating!");
+        _clientUpdate.SendResearchFeedUpdate(
+            new ProgressMessageFeedUpdate
+            {
+                ResearchId = researchId,
+                Type = "message",
+                Message = "Research is now initiating!",
+            }
+        );
 
         var intialPrompt = new ChatMessageContent(
             AuthorRole.User,
@@ -154,10 +162,13 @@ public class ResearchOrchestrator
                 {
                     if (currentMessageBuffer.Length > 0)
                     {
-                        _clientUpdate.StreamAgentMessage(
-                            researchId,
-                            currentAuthor,
-                            currentMessageBuffer.ToString()
+                        _clientUpdate.SendAgentChatMessage(
+                            new AgentChatMessageEvent
+                            {
+                                ResearchId = researchId,
+                                Author = currentAuthor,
+                                Message = currentMessageBuffer.ToString(),
+                            }
                         );
                         _logger.LogInformation(
                             "[{ResearchId}] >> {message} from {AgentName}",
@@ -173,10 +184,13 @@ public class ResearchOrchestrator
             }
             if (currentMessageBuffer.Length > 0 && currentAuthor != null)
             {
-                _clientUpdate.StreamAgentMessage(
-                    researchId,
-                    currentAuthor,
-                    currentMessageBuffer.ToString()
+                _clientUpdate.SendAgentChatMessage(
+                    new AgentChatMessageEvent
+                    {
+                        ResearchId = researchId,
+                        Author = currentAuthor,
+                        Message = currentMessageBuffer.ToString(),
+                    }
                 );
                 _logger.LogInformation(
                     "[{ResearchId}] >> Sent final message {message}  after loop from {AgentName}",

@@ -1,4 +1,5 @@
 using System.Text;
+using Apollo.Agents.Contracts;
 using Apollo.Agents.Helpers;
 using Apollo.Agents.Memory;
 using Apollo.Agents.State;
@@ -60,7 +61,14 @@ public class ResearchReportGenerator : IResearchReportGenerator
     )
     {
         _logger.LogInformation("[{ResearchId}] Starting report generation", researchId);
-        _clientUpdate.SendResearchProgressUpdate(researchId, "Starting report generation...");
+        _clientUpdate.SendResearchFeedUpdate(
+            new ProgressMessageFeedUpdate
+            {
+                ResearchId = researchId,
+                Type = "message",
+                Message = "Starting report generation...",
+            }
+        );
 
         try
         {
@@ -87,9 +95,14 @@ public class ResearchReportGenerator : IResearchReportGenerator
                 var sectionTask = Task.Run(
                     async () =>
                     {
-                        _clientUpdate.SendResearchProgressUpdate(
-                            researchId,
-                            $"Gathering information for section {sectionIndex + 1} of {toc.Count}: {section}"
+                        _clientUpdate.SendResearchFeedUpdate(
+                            new ProgressMessageFeedUpdate
+                            {
+                                ResearchId = researchId,
+                                Type = "message",
+                                Message =
+                                    $"Gathering information for section {sectionIndex + 1} of {toc.Count}: {section}",
+                            }
                         );
 
                         var memoryResults = await _memory.AskAsync(
@@ -156,7 +169,14 @@ public class ResearchReportGenerator : IResearchReportGenerator
                 .Where(result => !string.IsNullOrEmpty(result.Content))
                 .ToList();
 
-            _clientUpdate.SendResearchProgressUpdate(researchId, "Synthesizing final report...");
+            _clientUpdate.SendResearchFeedUpdate(
+                new ProgressMessageFeedUpdate
+                {
+                    ResearchId = researchId,
+                    Type = "message",
+                    Message = "Synthesizing final report...",
+                }
+            );
 
             var formattedSections = new StringBuilder();
             foreach (var (section, content, sources) in sectionContents)
@@ -209,7 +229,14 @@ public class ResearchReportGenerator : IResearchReportGenerator
             await _repository.ResearchReports.AddAsync(report, cancellationToken);
             await _repository.SaveChangesAsync(cancellationToken);
 
-            _clientUpdate.SendResearchProgressUpdate(researchId, "Report generation complete!");
+            _clientUpdate.SendResearchFeedUpdate(
+                new ProgressMessageFeedUpdate
+                {
+                    ResearchId = researchId,
+                    Type = "message",
+                    Message = "Report generation complete!",
+                }
+            );
             _logger.LogInformation(
                 "[{ResearchId}] Report generation completed successfully",
                 researchId

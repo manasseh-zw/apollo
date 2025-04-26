@@ -1,113 +1,61 @@
+import { useState, useEffect, useRef } from "react";
 import { Avatar } from "@heroui/react";
+import { HubConnection } from "@microsoft/signalr";
+import type { AgentChatMessage } from "../../lib/types/research";
+import { LogoLight } from "../Icons";
+import ReactMarkdown from "react-markdown";
 
-type Agent = {
-  name: string;
-  role: string;
-  avatar: string;
-};
+interface AgentChatProps {
+  connection: HubConnection | null;
+  researchId: string;
+}
 
-type Message = {
-  id: number;
-  text: string;
-  agent: Agent;
-  timestamp: string;
-};
+export default function AgentChat({ connection, researchId }: AgentChatProps) {
+  const [messages, setMessages] = useState<AgentChatMessage[]>([]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-const agents = {
-  apollo: {
-    name: "Apollo",
-    role: "Research Orchestrator",
-    avatar: "/agents/agent1.jpg",
-  },
-  hermes: {
-    name: "Hermes",
-    role: "Query Explorer",
-    avatar: "/agents/agent2.jpg",
-  },
-  athena: {
-    name: "Athena",
-    role: "Web Navigator",
-    avatar: "/agents/agent3.jpg",
-  },
-};
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
-// Sample messages for demonstration
-const messages: Message[] = [
-  {
-    id: 1,
-    agent: agents.apollo,
-    text: "I've received a fascinating query about quantum computing's impact on modern cryptography. Hermes, could you help us explore the most relevant search paths?",
-    timestamp: "12:01",
-  },
-  {
-    id: 2,
-    agent: agents.hermes,
-    text: "On it, Apollo! I'm weaving through the digital pathways... 🔍 Found some promising trails: recent breakthroughs in quantum algorithms, post-quantum encryption standards, and real-world implementation challenges. Where should we focus first?",
-    timestamp: "12:02",
-  },
-  {
-    id: 3,
-    agent: agents.apollo,
-    text: "Let's prioritize the recent breakthroughs. Athena, would you navigate the academic realm for us? Focus on peer-reviewed papers from the last two years.",
-    timestamp: "12:02",
-  },
-  {
-    id: 4,
-    agent: agents.athena,
-    text: "Already soaring through IEEE and arXiv repositories 🦉 I've discovered several groundbreaking papers on Shor's algorithm optimizations. Theia, you might want to examine these findings closely.",
-    timestamp: "12:03",
-  },
-  {
-    id: 7,
-    agent: agents.apollo,
-    text: "Perfect timing, everyone! 🌟 Let's synthesize these findings. I'm seeing a clear narrative forming about the urgency of quantum-resistant cryptography. Hermes, could you explore some practical implementation cases next?",
-    timestamp: "12:06",
-  },
-];
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
-export default function AgentChat() {
+  useEffect(() => {
+    if (!connection) return;
+
+    connection.on("ReceiveAgentChatMessage", (message: AgentChatMessage) => {
+      setMessages((prev) => [...prev, message]);
+    });
+
+    return () => {
+      connection.off("ReceiveAgentChatMessage");
+    };
+  }, [connection]);
+
   return (
-    <div className="flex flex-col h-full rounded-large overflow-hidden bg-white">
-      <div className="p-3  border-content4 flex items-center gap-3">
-        <div className="flex -space-x-2">
-          {Object.values(agents).map((agent) => (
-            <Avatar
-              key={agent.name}
-              src={agent.avatar}
-              className="w-6 h-6 ring-2 ring-content1"
-            />
-          ))}
-        </div>
-        <h2 className="text-small font-medium">Agent Group Chat</h2>
-      </div>
-      <div className="flex-1 p-3 space-y-4 overflow-auto">
-        {messages.map((message) => (
+    <div className="flex flex-col h-full w-full">
+      <div className="flex-1 p-4 space-y-9 font-geist overflow-y-auto">
+        {messages.map((message, index) => (
           <div
-            key={message.id}
-            className="flex items-start gap-2 group animate-in fade-in slide-in-from-bottom-2 duration-300"
+            key={`${message.timestamp}-${index}`}
+            className="flex items-start gap-3"
           >
-            <Avatar
-              src={message.agent.avatar}
-              className="w-7 h-7 transition-transform group-hover:scale-105"
-            />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-baseline gap-2 flex-wrap">
-                <span className="font-medium text-small truncate">
-                  {message.agent.name}
-                </span>
-                <span className="text-tiny text-default-500 truncate">
-                  {message.agent.role}
-                </span>
-                <span className="text-tiny text-default-400 ml-auto flex-shrink-0">
-                  {message.timestamp}
-                </span>
+            <div className="flex-shrink-0">
+              <div className="bg-primary p-[.55rem] rounded-full">
+                <LogoLight width={22} height={22} />
               </div>
-              <p className="mt-1 text-small text-foreground-600 leading-relaxed break-words">
-                {message.text}
-              </p>
+            </div>
+            <div className="flex flex-col flex-1 overflow-hidden">
+              <div className="text-sm text-gray-500 mb-1">{message.author}</div>
+              <div className="prose prose-sm dark:prose-invert">
+                <ReactMarkdown>{message.message}</ReactMarkdown>
+              </div>
             </div>
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
     </div>
   );
