@@ -1,13 +1,10 @@
 import React from "react";
 import { cn } from "@heroui/react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { Tooltip, Skeleton, Button } from "@heroui/react";
 import { DynamicIcon, type IconName } from "lucide-react/dynamic";
-import { apiRequest } from "../../lib/utils/api";
-import type {
-  ResearchHistoryItem,
-  PaginatedResponse,
-} from "../../lib/types/research";
+import type { ResearchHistoryItem } from "../../lib/types/research";
+import { ArrowDown, ChevronDown } from "lucide-react";
 
 export type SidebarItem = {
   key: string;
@@ -16,98 +13,43 @@ export type SidebarItem = {
   href?: string;
 };
 
-export const sidebarItems: SidebarItem[] = [
-  {
-    key: "research",
-    href: "/research",
-    iconName: "telescope",
-    title: "Research",
-  },
-  {
-    key: "history",
-    href: "/history",
-    iconName: "history",
-    title: "History",
-  },
-];
+export const sidebarItems: SidebarItem[] = [];
 
 export type SidebarProps = {
   isCompact?: boolean;
   className?: string;
+  historyItems: ResearchHistoryItem[];
+  isLoadingInitial: boolean;
+  error: string | null;
+  hasMore: boolean;
+  handleLoadMore: () => void;
+  activeResearchId: string | null;
+  showRecentChats: boolean;
 };
 
 const SidebarNav = React.forwardRef<HTMLElement, SidebarProps>(
-  ({ isCompact, className }, ref) => {
-    const [historyItems, setHistoryItems] = React.useState<
-      ResearchHistoryItem[]
-    >([]);
-    const [isLoadingInitial, setIsLoadingInitial] = React.useState(true);
-    const [isLoadingMore, setIsLoadingMore] = React.useState(false);
-    const [error, setError] = React.useState<string | null>(null);
-    const [currentPage, setCurrentPage] = React.useState(1);
-    const [hasMore, setHasMore] = React.useState(false);
-
-    const pathname = useRouterState({
-      select: (s) => s.location.pathname,
-    });
-
-    const activeRoute = pathname.split("/")[1];
-    const activeResearchId = pathname.startsWith("/research/")
-      ? pathname.split("/")[2]
-      : null;
-
-    const fetchHistory = React.useCallback(async (page: number) => {
-      const isInitialFetch = page === 1;
-      try {
-        if (isInitialFetch) {
-          setIsLoadingInitial(true);
-        } else {
-          setIsLoadingMore(true);
-        }
-
-        const response = await apiRequest<
-          PaginatedResponse<ResearchHistoryItem>
-        >(`/api/research/history?page=${page}&pageSize=5`);
-
-        if (response.success && response.data) {
-          if (isInitialFetch) {
-            setHistoryItems(response.data.items);
-          } else {
-            //@ts-ignore
-            setHistoryItems((prev) => [...prev, ...response.data.items]);
-          }
-          setHasMore(response.data.hasMore);
-          setCurrentPage(page);
-        } else {
-          setError("Failed to load research history");
-        }
-      } catch (err) {
-        setError("Failed to load research history");
-      } finally {
-        if (isInitialFetch) {
-          setIsLoadingInitial(false);
-        } else {
-          setIsLoadingMore(false);
-        }
-      }
-    }, []);
-
-    React.useEffect(() => {
-      fetchHistory(1);
-    }, [fetchHistory]);
-
-    const handleLoadMore = () => {
-      if (!isLoadingMore && hasMore) {
-        fetchHistory(currentPage + 1);
-      }
-    };
-
+  (
+    {
+      isCompact,
+      className,
+      historyItems,
+      isLoadingInitial,
+      error,
+      hasMore,
+      handleLoadMore,
+      activeResearchId,
+      showRecentChats,
+    },
+    ref
+  ) => {
     const renderHistoryItems = () => {
+      if (!showRecentChats) return null;
+
       if (isLoadingInitial) {
         return Array(3)
           .fill(0)
           .map((_, i) => (
-            <div key={i} className="px-2 min-h-5  flex items-center">
+            <div key={i} className="px-2 min-h-5 flex items-center">
               <Skeleton className="w-full h-3 rounded-md bg-primary-700/30" />
             </div>
           ));
@@ -137,21 +79,29 @@ const SidebarNav = React.forwardRef<HTMLElement, SidebarProps>(
                 )}
               >
                 {!isCompact && (
-                  <span
-                    className={cn("text-sm truncate max-w-[160px] relative", {
-                      "text-primary-foreground": isActive,
-                      "text-primary-foreground/80 group-hover:text-primary-foreground":
-                        !isActive,
-                    })}
-                  >
-                    {item.title}
-                    {!isActive && (
-                      <span
-                        className="absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-primary  to-transparent"
-                        aria-hidden="true"
-                      />
+                  <div className="flex items-center justify-between w-full">
+                    <span
+                      className={cn("text-sm truncate max-w-[160px] relative", {
+                        "text-primary-foreground": isActive,
+                        "text-primary-foreground/80 group-hover:text-primary-foreground":
+                          !isActive,
+                      })}
+                    >
+                      {item.title}
+                      {!isActive && (
+                        <span
+                          className="absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-primary to-transparent"
+                          aria-hidden="true"
+                        />
+                      )}
+                    </span>
+                    {isActive && (
+                      <span className="flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                      </span>
                     )}
-                  </span>
+                  </div>
                 )}
               </Link>
             );
@@ -163,9 +113,7 @@ const SidebarNav = React.forwardRef<HTMLElement, SidebarProps>(
                     {historyItemContent}
                   </Tooltip>
                 ) : (
-                  <Tooltip content={item.title} placement="right">
-                    {historyItemContent}
-                  </Tooltip>
+                  historyItemContent
                 )}
               </div>
             );
@@ -174,11 +122,13 @@ const SidebarNav = React.forwardRef<HTMLElement, SidebarProps>(
           {!isCompact && hasMore && (
             <Button
               size="sm"
-              variant="light"
-              className="w-full text-primary-foreground/60 hover:text-primary-foreground"
-              isLoading={isLoadingMore}
+              //@ts-ignore
+              variant=""
+              className="w-full text-primary-foreground/60 hover:text-primary-foreground "
+              isLoading={false}
               onPress={handleLoadMore}
-              isDisabled={isLoadingMore}
+              isDisabled={false}
+              endContent={<ChevronDown className="mt-[3px]" size={15} />}
             >
               Show more
             </Button>
@@ -196,7 +146,7 @@ const SidebarNav = React.forwardRef<HTMLElement, SidebarProps>(
         )}
       >
         {sidebarItems.map((item) => {
-          const isActive = activeRoute === item.key;
+          const isActive = false;
 
           const itemContent = (
             <Link
@@ -247,8 +197,8 @@ const SidebarNav = React.forwardRef<HTMLElement, SidebarProps>(
           );
         })}
 
-        {!isCompact && historyItems.length > 0 && (
-          <div className="h-px bg-primary-800/30 " aria-hidden="true" />
+        {showRecentChats && historyItems.length > 0 && (
+          <div className="h-px bg-primary-800/30" aria-hidden="true" />
         )}
 
         {renderHistoryItems()}

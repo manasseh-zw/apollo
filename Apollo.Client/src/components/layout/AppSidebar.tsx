@@ -4,7 +4,7 @@ import {
   cn,
   Spacer,
   Tooltip,
-  Chip,
+  useDisclosure,
 } from "@heroui/react";
 import React from "react";
 import { LogoLight } from "../../components/Icons";
@@ -12,22 +12,42 @@ import { useMediaQuery } from "usehooks-ts";
 import {
   ChevronLeft,
   ChevronRight,
+  History,
   LogOut,
   Menu,
-  MinusCircle,
-  Sidebar,
-  SidebarIcon,
+  Telescope,
 } from "lucide-react";
 import Avatar from "boring-avatars";
 import { store } from "../../lib/state/store";
 import SidebarDrawer from "./SidebarDrawer";
 import SidebarNav from "./SidebarNav";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { apiRequest } from "../../lib/utils/api";
+import type {
+  ResearchHistoryItem,
+  PaginatedResponse,
+} from "../../lib/types/research";
+import HistoryModalTrigger from "./HistoryModal";
 
 const SIDEBAR_COLLAPSED_KEY = "apolllo-sidebar-collapsed";
 
 export default function AppSidebar() {
   const user = store.state.authState.user;
   const [isOpen, setIsOpen] = React.useState(false);
+  const {
+    isOpen: isHistoryOpen,
+    onOpen: onHistoryOpen,
+    onOpenChange: onHistoryOpenChange,
+  } = useDisclosure();
+
+  const [historyItems, setHistoryItems] = React.useState<ResearchHistoryItem[]>(
+    []
+  );
+  const [isLoadingInitial, setIsLoadingInitial] = React.useState(true);
+  const [isLoadingMore, setIsLoadingMore] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [hasMore, setHasMore] = React.useState(false);
 
   const [isCollapsed, setIsCollapsed] = React.useState<boolean>(() => {
     if (typeof window !== "undefined") {
@@ -38,6 +58,60 @@ export default function AppSidebar() {
   });
 
   const isMobile = useMediaQuery("(max-width: 640px)");
+  const pathname = useRouterState({
+    select: (s) => s.location.pathname,
+  });
+
+  const activeRoute = pathname.split("/")[1];
+  const activeResearchId = pathname.startsWith("/research/")
+    ? pathname.split("/")[2]
+    : null;
+
+  const fetchHistory = React.useCallback(async (page: number) => {
+    const isInitialFetch = page === 1;
+    try {
+      if (isInitialFetch) {
+        setIsLoadingInitial(true);
+      } else {
+        setIsLoadingMore(true);
+      }
+
+      const response = await apiRequest<PaginatedResponse<ResearchHistoryItem>>(
+        `/api/research/history?page=${page}&pageSize=5`
+      );
+
+      if (response.success && response.data) {
+        if (isInitialFetch) {
+          setHistoryItems(response.data.items);
+        } else {
+          //@ts-ignore
+          setHistoryItems((prev) => [...prev, ...response.data.items]);
+        }
+        setHasMore(response.data.hasMore);
+        setCurrentPage(page);
+      } else {
+        setError("Failed to load research history");
+      }
+    } catch (err) {
+      setError("Failed to load research history");
+    } finally {
+      if (isInitialFetch) {
+        setIsLoadingInitial(false);
+      } else {
+        setIsLoadingMore(false);
+      }
+    }
+  }, []);
+
+  React.useEffect(() => {
+    fetchHistory(1);
+  }, [fetchHistory]);
+
+  const handleLoadMore = () => {
+    if (!isLoadingMore && hasMore) {
+      fetchHistory(currentPage + 1);
+    }
+  };
 
   const onToggle = React.useCallback(() => {
     const newState = !isCollapsed;
@@ -75,7 +149,7 @@ export default function AppSidebar() {
             className="text-primary-foreground"
           />
           <span
-            className={cn("w-full uppercase font-geist  text-white", {
+            className={cn("w-full uppercase font-geist text-white", {
               hidden: isCollapsed,
             })}
           >
@@ -94,7 +168,7 @@ export default function AppSidebar() {
 
       <Spacer y={6} />
       <div className="flex items-center gap-3 px-3 cursor-pointer">
-        {user.avatarUrl.length > 0 ? (
+        {user.avatarUrl ? (
           <UserAvatar
             name={user.username.substring(0, 4)}
             src={user.avatarUrl}
@@ -122,7 +196,50 @@ export default function AppSidebar() {
 
       <Spacer y={6} />
 
-      <SidebarNav isCompact={isCollapsed} />
+      <div className="flex flex-col gap-2 mb-4">
+        <Tooltip content="Research" isDisabled={!isCollapsed} placement="right">
+          <Link
+            to="/research"
+            className={cn(
+              "flex items-center gap-2 px-3 min-h-11 rounded-2xl h-[44px] transition-colors bg-white",
+              {
+                "w-11 h-10 justify-center p-0": isCollapsed,
+                "bg-white text-primary": activeRoute === "research",
+              }
+            )}
+          >
+            <Telescope size={22} className={cn("text-primary")} />
+            {!isCollapsed && (
+              <span className="text-sm text-primary">Research</span>
+            )}
+          </Link>
+        </Tooltip>
+
+        {isCollapsed && (
+          <Tooltip content="History" placement="right">
+            <button
+              onClick={onHistoryOpen}
+              className="flex items-center justify-center w-11 h-10 p-0 rounded-large transition-colors hover:bg-primary-800/30"
+            >
+              <History
+                size={22}
+                className="text-primary-foreground/80 group-hover:text-primary-foreground"
+              />
+            </button>
+          </Tooltip>
+        )}
+      </div>
+
+      <SidebarNav
+        isCompact={isCollapsed}
+        historyItems={historyItems}
+        isLoadingInitial={isLoadingInitial}
+        error={error}
+        hasMore={hasMore}
+        handleLoadMore={handleLoadMore}
+        activeResearchId={activeResearchId}
+        showRecentChats={!isCollapsed}
+      />
 
       <Spacer y={8} />
 
@@ -164,6 +281,12 @@ export default function AppSidebar() {
           </button>
         </Tooltip>
       </div>
+
+      <HistoryModalTrigger
+        items={historyItems}
+        isOpen={isHistoryOpen}
+        onOpenChange={onHistoryOpenChange}
+      />
     </div>
   );
 
@@ -177,7 +300,7 @@ export default function AppSidebar() {
           variant="flat"
           onPress={() => setIsOpen(true)}
         >
-          <SidebarIcon size={24} />
+          <Menu size={24} />
         </Button>
       )}
 

@@ -15,7 +15,10 @@
          - integrate images into our final report... use images provided by exa search to have a 'resarch gallery' where for each query where for each search result where there is an image provided we have a chat completion service where we upload these images and their corresponding urls then ai gives descripbes the image and we keep a registry of image urls with theier associated descriptions we can use these in our researsch report syntehis process to have the final report mardkwon genrated include those images strategically use mardown html markup syntax to dsiplay text content and images aside or tables too..
          - this research image gallery may also be useful when creating the ppt, we also have ai imagen availble ..
 
-immediate todo - finish up the history chat modal - on hide history on expanded sidebar recent chats, on collapse show history button hide recent chats, history button triggers modal, with resaerch history - add status ping dot button if the research is active little blue ping dot aanimated like a sonner radar animation at the end of that research chat itme in the sidenav,
+immediate todo - finish up the history chat modal - on hide history on expanded sidebar recent chats, on collapse show history button hide recent chats, history button triggers modal, with resaerch history - add status ping dot button if the research is active and is still ongoing little blue ping dot aanimated like a sonner radar animation at the end of that research chat itme in the sidenav,
 now for new resaerch that has been completed but not viewed yet by the user we set the resarch status to green that is complete but not opened yet.. other wise there is not ping dot animated thing...
 
-    - move the research sidenav item to the app sidebar level where it looks the same but is a button with full radius and fully white bg to contrast
+    - move the research sidenav item to the app-sidebar level where it looks the same but is a button with full radius and fully white bg to contrast the other sidenav items , maybe do the same
+    with the history button it should also be at the app-sidbar level but without the white bg contrast
+
+    -
