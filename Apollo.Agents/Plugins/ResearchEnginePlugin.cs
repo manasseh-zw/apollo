@@ -55,7 +55,7 @@ public class ResearchEnginePlugin
                 new WebSearchFeedUpdate
                 {
                     ResearchId = researchId,
-                    Type = "searching",
+                    Type = ResearchFeedUpdateType.Searching,
                     Query = query,
                 }
             );
@@ -67,12 +67,10 @@ public class ResearchEnginePlugin
 
             if (newResults.Count > 0)
             {
-                // First, queue all new results for ingestion
                 await _ingestQueue.Writer.WriteAsync(
                     new IngestEvent(Guid.Parse(researchId), newResults)
                 );
 
-                // Update crawled URLs in state
                 foreach (var result in newResults)
                 {
                     crawledUrlSet.Add(result.Url);
@@ -87,14 +85,14 @@ public class ResearchEnginePlugin
 
                 // Now send individual results with delay
                 foreach (var result in newResults)
-                {   
+                {
                     var searchResultItem = new SearchResultItemContract
                     {
-                        Id = Guid.NewGuid().ToString(), // Generate unique ID for the result
+                        Id = Guid.NewGuid().ToString(),
                         Icon = result.Favicon ?? "https://www.google.com/favicon.ico",
                         Title = result.Title,
                         Url = result.Url,
-                        Snippet = result.Summary ?? result.Text,
+                        Snippet = result.Summary ?? null,
                         Highlights = result.Highlights ?? [],
                     };
 
@@ -102,12 +100,11 @@ public class ResearchEnginePlugin
                         new SearchResultsFeedUpdate
                         {
                             ResearchId = researchId,
-                            Type = "search_results",
+                            Type = ResearchFeedUpdateType.SearchResults,
                             Results = [searchResultItem],
                         }
                     );
 
-                    // Delay before sending next result
                     await Task.Delay(5000);
                 }
             }
@@ -117,7 +114,7 @@ public class ResearchEnginePlugin
                     new ProgressMessageFeedUpdate
                     {
                         ResearchId = researchId,
-                        Type = "message",
+                        Type = ResearchFeedUpdateType.Message,
                         Message = $"No new results found for query: {query}",
                     }
                 );

@@ -28,7 +28,16 @@ public enum QuestionStatus
 
 public abstract record ResearchFeedUpdateEvent : ClientUpdateEvent
 {
-    public string Type { get; init; } = null!;
+    public ResearchFeedUpdateType Type { get; init; }
+}
+
+public enum ResearchFeedUpdateType
+{
+    Message,
+    Searching,
+    SearchResults,
+    Snippet,
+    TableOfContents,
 }
 
 public record ProgressMessageFeedUpdate : ResearchFeedUpdateEvent

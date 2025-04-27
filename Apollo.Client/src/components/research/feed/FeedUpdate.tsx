@@ -1,7 +1,8 @@
 import { Search } from "lucide-react";
-import type {
-  ResearchFeedUpdate,
-  SearchResultItem,
+import {
+  type ResearchFeedUpdate,
+  type SearchResultItem,
+  ResearchFeedUpdateType,
 } from "../../../lib/types/research";
 
 interface ResearchFeedUpdateProps {
@@ -49,7 +50,6 @@ export function SnippetUpdate({
   content: string;
   highlights?: string[] | undefined;
 }) {
-  // If we have highlights, wrap them in highlight spans
   if (highlights.length && highlights.length > 0) {
     let highlightedContent = content;
     highlights.forEach((highlight) => {
@@ -82,9 +82,12 @@ function SearchResult({
   snippet,
   highlights = [],
 }: SearchResultItem) {
+  // Extract domain from URL
+  const domain = url.replace(/^https?:\/\//, '').split('/')[0];
+
   return (
     <div className="flex items-start gap-3 group cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors">
-      <div className="flex h-6 w-6 items-center justify-center overflow-hidden rounded">
+      <div className="flex h-6 w-6 pt-1 items-center justify-center overflow-hidden rounded">
         <img
           src={icon}
           alt={`${title} favicon`}
@@ -94,32 +97,36 @@ function SearchResult({
           }}
         />
       </div>
-      <div>
+      <div className="flex-1">
         <div className="flex items-center gap-1">
-          <p className="font-medium text-gray-800 group-hover:text-primary transition-colors">
+          <p className="font-medium text-primary group-hover:text-primary transition-colors">
             {title}
           </p>
         </div>
-        <p className="text-sm text-gray-500">{url}</p>
+        <a className="text-sm text-blue-500" href={url}>{domain}</a>
         {snippet && (
-          <p className="mt-2 text-sm text-gray-600">
-            {highlights.length && highlights.length > 0 ? (
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: highlights.reduce(
-                    (acc, highlight) =>
-                      acc.replace(
-                        new RegExp(highlight, "gi"),
-                        `<span class="bg-yellow-100 px-1 rounded">${highlight}</span>`
-                      ),
-                    snippet
-                  ),
-                }}
-              />
-            ) : (
-              snippet
-            )}
-          </p>
+          <div className="relative mt-3 pl-4 prose">
+            <div className="absolute left-0 top-0 w-[1px] h-full bg-content2 rounded-full"></div>
+            <p className="text-sm text-gray-600 tracking-wide leading-relaxed">
+              {highlights.length && highlights.length > 0 ? (
+                <span
+                  className="[&>*]:tracking-normal"
+                  dangerouslySetInnerHTML={{
+                    __html: highlights.reduce(
+                      (acc, highlight) =>
+                        acc.replace(
+                          new RegExp(highlight, "gi"),
+                          `<span class="bg-yellow-100 px-1 rounded">${highlight}</span>`
+                        ),
+                      snippet
+                    ),
+                  }}
+                />
+              ) : (
+                snippet
+              )}
+            </p>
+          </div>
         )}
       </div>
     </div>
@@ -128,15 +135,17 @@ function SearchResult({
 
 export default function ResearchFeedUpdateComponent({
   update,
-}: ResearchFeedUpdateProps) {
+}: {
+  update: ResearchFeedUpdate;
+}) {
   switch (update.type) {
-    case "message":
+    case ResearchFeedUpdateType.Message:
       return <MessageUpdate content={update.message} />;
-    case "searching":
+    case ResearchFeedUpdateType.Searching:
       return <SearchingUpdate query={update.query || ""} />;
-    case "search_results":
+    case ResearchFeedUpdateType.SearchResults:
       return <SearchResultsUpdate results={update.results || []} />;
-    case "snippet":
+    case ResearchFeedUpdateType.Snippet:
       return (
         <SnippetUpdate
           content={update.content}

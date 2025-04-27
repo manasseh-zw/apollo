@@ -63,6 +63,9 @@ const SidebarNav = React.forwardRef<HTMLElement, SidebarProps>(
         <>
           {historyItems.map((item) => {
             const isActive = activeResearchId === item.id;
+            console.log(
+              `SidebarNav: Item ${item.title} (${item.id}), Active ID: ${activeResearchId}, IsActive: ${isActive}`
+            );
 
             const historyItemContent = (
               <Link

@@ -128,15 +128,16 @@ public class StateManager : IStateManager
 
     private void SendTimelineUpdate(string researchId, ResearchState state)
     {
+        // Build timeline items in original order
         var timelineItems = state
-            .PendingResearchQuestions.Concat(state.CompletedResearchQuestions)
-            .Select(q => new QuestionTimelineItem
+            .AllQuestionsInOrder.Select(q => new QuestionTimelineItem
             {
                 Id = q.Id,
                 Text = q.Text,
                 Active = q.Id == state.ActiveQuestionId,
                 Status =
-                    q.IsProcessed ? QuestionStatus.Completed
+                    state.CompletedResearchQuestions.Any(cq => cq.Id == q.Id)
+                        ? QuestionStatus.Completed
                     : q.Id == state.ActiveQuestionId ? QuestionStatus.InProgress
                     : QuestionStatus.Pending,
             })
@@ -290,6 +291,7 @@ public class ResearchState
     public ResearchDepth Depth { get; set; }
     public List<ResearchQuestion> PendingResearchQuestions { get; set; } = [];
     public List<ResearchQuestion> CompletedResearchQuestions { get; set; } = [];
+    public List<ResearchQuestion> AllQuestionsInOrder { get; set; } = [];
     public string? ActiveQuestionId { get; set; }
     public List<string> CrawledUrls { get; set; } = [];
     public List<string> TableOfContents { get; set; } = [];

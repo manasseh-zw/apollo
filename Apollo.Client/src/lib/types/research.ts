@@ -1,19 +1,32 @@
-// Research Entity Types (matching backend)
 export enum ResearchStatus {
-  InProgress = "InProgress",
-  Complete = "Complete",
+  InProgress,
+  Complete,
 }
 
 export enum ResearchType {
-  Casual = "Casual",
-  Academic = "Academic",
-  Technical = "Technical",
+  Casual,
+  Academic,
+  Technical,
 }
 
 export enum ResearchDepth {
-  Brief = "Brief",
-  Standard = "Standard",
-  Comprehensive = "Comprehensive",
+  Brief,
+  Standard,
+  Comprehensive,
+}
+
+export enum QuestionStatus {
+  Pending,
+  InProgress,
+  Completed,
+}
+
+export enum ResearchFeedUpdateType {
+  Message,
+  Searching,
+  SearchResults,
+  Snippet,
+  TableOfContents,
 }
 
 export type ResearchPlan = {
@@ -39,8 +52,6 @@ export type ResearchResponse = {
 };
 
 // Timeline Types
-export type QuestionStatus = "pending" | "in_progress" | "completed";
-
 export type QuestionTimelineItem = {
   id: string;
   text: string;
@@ -58,16 +69,16 @@ export type QuestionTimelineUpdate = {
 export type ResearchFeedUpdateBase = {
   researchId: string;
   timestamp: string;
-  type: string;
+  type: ResearchFeedUpdateType;
 };
 
 export type ProgressMessageUpdate = ResearchFeedUpdateBase & {
-  type: "message";
+  type: ResearchFeedUpdateType.Message;
   message: string;
 };
 
 export type WebSearchUpdate = ResearchFeedUpdateBase & {
-  type: "searching";
+  type: ResearchFeedUpdateType.Searching;
   query: string;
 };
 
@@ -81,18 +92,18 @@ export type SearchResultItem = {
 };
 
 export type SearchResultsUpdate = ResearchFeedUpdateBase & {
-  type: "search_results";
+  type: ResearchFeedUpdateType.SearchResults;
   results: SearchResultItem[];
 };
 
 export type SnippetUpdate = ResearchFeedUpdateBase & {
-  type: "snippet";
+  type: ResearchFeedUpdateType.Snippet;
   content: string;
   highlights?: string[];
 };
 
 export type TableOfContentsUpdate = ResearchFeedUpdateBase & {
-  type: "toc";
+  type: ResearchFeedUpdateType.TableOfContents;
   sections: string[];
 };
 

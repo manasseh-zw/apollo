@@ -28,11 +28,7 @@ public record CreateResearchRequest(
     string Depth
 );
 
-public record ResearchHistoryItemResponse(
-    Guid Id,
-    string Title,
-    DateTime StartedAt
-);
+public record ResearchHistoryItemResponse(Guid Id, string Title, DateTime StartedAt);
 
 public record PaginatedResponse<T>(
     List<T> Items,

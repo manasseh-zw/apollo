@@ -9,6 +9,7 @@ import ReactMarkdown from "react-markdown";
 import Thinking from "./Thinking";
 import { LogoLight } from "../../Icons";
 import { useRouter } from "@tanstack/react-router";
+import { researchHistoryActions } from "../../../lib/state/store";
 
 type Message = {
   id: number;
@@ -72,9 +73,17 @@ export default function Chat({ id, initialQuery }: ChatProps) {
       });
     });
 
-    newConnection.on("ResearchSaved", (savedId: string) => {
-      router.navigate({ to: `/research/${savedId}` });
-      console.log("Research saved:", savedId);
+    newConnection.on("ResearchSaved", (researchId: string) => {
+      researchHistoryActions.addResearchItem({
+        id: researchId,
+        title: initialQuery,
+        startedAt: new Date().toISOString(),
+      });
+
+      router.navigate({
+        to: "/research/$id",
+        params: { id: researchId },
+      });
     });
 
     newConnection

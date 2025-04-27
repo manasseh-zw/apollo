@@ -137,7 +137,7 @@ public class ResearchOrchestrator
             new ProgressMessageFeedUpdate
             {
                 ResearchId = researchId,
-                Type = "message",
+                Type = ResearchFeedUpdateType.Message,
                 Message = "Research is now initiating!",
             }
         );
@@ -229,6 +229,16 @@ public class ResearchOrchestrator
             async () =>
             {
                 await Task.CompletedTask;
+                // Create initial questions list with IDs
+                var questionsWithIds = research
+                    .Plan.Questions.Select(q => new ResearchQuestion
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Text = q,
+                        IsProcessed = false,
+                    })
+                    .ToList();
+
                 var state = new ResearchState
                 {
                     ResearchId = researchId.ToString(),
@@ -236,14 +246,8 @@ public class ResearchOrchestrator
                     Description = research.Description,
                     Type = research.Plan.Type,
                     Depth = research.Plan.Depth,
-                    PendingResearchQuestions = research
-                        .Plan.Questions.Select(q => new ResearchQuestion
-                        {
-                            Id = Guid.NewGuid().ToString(),
-                            Text = q,
-                            IsProcessed = false,
-                        })
-                        .ToList(),
+                    PendingResearchQuestions = [.. questionsWithIds], // Copy the list
+                    AllQuestionsInOrder = [.. questionsWithIds], // Store original order
                 };
 
                 // Set the first question as active immediately

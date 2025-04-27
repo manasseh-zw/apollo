@@ -65,7 +65,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
             new ProgressMessageFeedUpdate
             {
                 ResearchId = researchId,
-                Type = "message",
+                Type = ResearchFeedUpdateType.Message,
                 Message = "Starting report generation...",
             }
         );
@@ -99,7 +99,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
                             new ProgressMessageFeedUpdate
                             {
                                 ResearchId = researchId,
-                                Type = "message",
+                                Type = ResearchFeedUpdateType.Message,
                                 Message =
                                     $"Gathering information for section {sectionIndex + 1} of {toc.Count}: {section}",
                             }
@@ -173,7 +173,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
                 new ProgressMessageFeedUpdate
                 {
                     ResearchId = researchId,
-                    Type = "message",
+                    Type = ResearchFeedUpdateType.Message,
                     Message = "Synthesizing final report...",
                 }
             );
@@ -233,7 +233,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
                 new ProgressMessageFeedUpdate
                 {
                     ResearchId = researchId,
-                    Type = "message",
+                    Type = ResearchFeedUpdateType.Message,
                     Message = "Report generation complete!",
                 }
             );

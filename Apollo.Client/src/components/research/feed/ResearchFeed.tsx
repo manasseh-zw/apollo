@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Check } from "lucide-react";
-import { Spinner } from "@heroui/react";
-import type {
-  QuestionTimelineItem,
-  ResearchFeedUpdate,
-  QuestionTimelineUpdate,
-  ResearchResponse,
+import { cn, Spinner } from "@heroui/react";
+import {
+  type QuestionTimelineItem,
+  type ResearchFeedUpdate,
+  type QuestionTimelineUpdate,
+  type ResearchResponse,
+  QuestionStatus,
 } from "../../../lib/types/research";
 import ResearchFeedUpdateComponent from "./FeedUpdate";
 import TriLoader from "./TriLoader";
@@ -34,11 +35,14 @@ export default function ResearchFeed({
       id: i.toString(),
       text: q,
       active: i === 0,
-      status: i === 0 ? "in_progress" : "pending",
+      status: i === 0 ? QuestionStatus.InProgress : QuestionStatus.Pending,
     }))
   );
+  const feedEndRef = useRef<HTMLDivElement>(null);
 
-  const elapsedTime = useResearchTimer(research.startedAt);
+  const scrollToBottom = () => {
+    feedEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
     if (!connection) return;
@@ -60,6 +64,12 @@ export default function ResearchFeed({
     };
   }, [connection]);
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [feedUpdates]);
+
+  const elapsedTime = useResearchTimer(research.startedAt);
+
   if (error) {
     return (
       <div className="flex h-full w-full items-center justify-center">
@@ -71,11 +81,14 @@ export default function ResearchFeed({
   return (
     <div className="flex h-full w-full overflow-hidden bg-white font-geist">
       <div className="w-[317px] border-r border-gray-200 bg-content p-5 flex flex-col h-full">
-        <div className="flex items-center gap-2">
-          <TriLoader />
-          <h2 className="text-xl text-gray-800">{research.title}</h2>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <TriLoader />
+            <h2 className="text-lg text-gray-800">Deep Research</h2>
+          </div>
+          <p className=" text-sm ">{elapsedTime}</p>
         </div>
-        <p className="mt-2 text-sm text-gray-500">{elapsedTime}</p>
+        <small className="mt-3">{research.title}</small>
 
         <div className="mt-6 flex-1 overflow-y-auto">
           <div className="relative">
@@ -91,7 +104,15 @@ export default function ResearchFeed({
       </div>
 
       <div className="flex-1 relative">
-        <div className="absolute inset-0 overflow-y-auto p-5">
+        <div className="absolute top-4 right-4 flex items-center gap-2 bg-content2 bg-opacity-80 backdrop-blur-sm  px-3 py-1.5 rounded-full z-10">
+          <span className="text-sm text-primary">Live Feed</span>
+          <div className="relative flex">
+            <span className="w-2 h-2 rounded-full bg-green-500" />
+            <span className="absolute w-2 h-2 rounded-full bg-green-500 animate-ping" />
+          </div>
+        </div>
+
+        <div className="absolute inset-0 overflow-y-auto overflow-x-hidden p-5">
           <div className="space-y-6">
             {feedUpdates.map((update, index) => (
               <ResearchFeedUpdateComponent
@@ -99,6 +120,7 @@ export default function ResearchFeed({
                 update={update}
               />
             ))}
+            <div ref={feedEndRef} />
           </div>
         </div>
       </div>
@@ -109,17 +131,26 @@ export default function ResearchFeed({
 function TimelineItem({ text, active = false, status }: QuestionTimelineItem) {
   return (
     <div className="relative flex items-start gap-4">
-      {status === "completed" ? (
+      {status === QuestionStatus.Completed ? (
         <div className="rounded-full bg-primary p-1">
           <Check className="h-4 w-4 text-white" />
         </div>
-      ) : status === "in_progress" ? (
-        <Spinner size="sm" className="bg-white" />
+      ) : status === QuestionStatus.InProgress ? (
+        <div className="rounded-full bg-primary/10 p-1">
+          <Spinner size="sm" className="text-primary" />
+        </div>
       ) : (
-        <div className="h-6 w-6 rounded-full border-2 border-gray-300 bg-white" />
+        <div className="rounded-full bg-content3 p-1">
+          <Check className="h-4 w-4 text-white" />
+        </div>
       )}
       <span
-        className={`text-sm ${active ? "text-primary font-medium" : "text-gray-600"}`}
+        className={cn(
+          "text-sm",
+          status === QuestionStatus.Completed && "text-gray-800 font-medium",
+          status === QuestionStatus.InProgress && "text-primary font-medium",
+          status === QuestionStatus.Pending && "text-gray-500"
+        )}
       >
         {text}
       </span>

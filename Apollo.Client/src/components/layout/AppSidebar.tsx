@@ -18,7 +18,7 @@ import {
   Telescope,
 } from "lucide-react";
 import Avatar from "boring-avatars";
-import { store } from "../../lib/state/store";
+import { researchHistoryActions, store } from "../../lib/state/store";
 import SidebarDrawer from "./SidebarDrawer";
 import SidebarNav from "./SidebarNav";
 import { Link, useRouterState } from "@tanstack/react-router";
@@ -33,21 +33,19 @@ const SIDEBAR_COLLAPSED_KEY = "apolllo-sidebar-collapsed";
 
 export default function AppSidebar() {
   const user = store.state.authState.user;
+  const {
+    items: historyItems,
+    isLoading: isLoadingInitial,
+    error,
+    hasMore,
+    currentPage,
+  } = store.state.researchHistory;
   const [isOpen, setIsOpen] = React.useState(false);
   const {
     isOpen: isHistoryOpen,
     onOpen: onHistoryOpen,
     onOpenChange: onHistoryOpenChange,
   } = useDisclosure();
-
-  const [historyItems, setHistoryItems] = React.useState<ResearchHistoryItem[]>(
-    []
-  );
-  const [isLoadingInitial, setIsLoadingInitial] = React.useState(true);
-  const [isLoadingMore, setIsLoadingMore] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
-  const [currentPage, setCurrentPage] = React.useState(1);
-  const [hasMore, setHasMore] = React.useState(false);
 
   const [isCollapsed, setIsCollapsed] = React.useState<boolean>(() => {
     if (typeof window !== "undefined") {
@@ -67,49 +65,14 @@ export default function AppSidebar() {
     ? pathname.split("/")[2]
     : null;
 
-  const fetchHistory = React.useCallback(async (page: number) => {
-    const isInitialFetch = page === 1;
-    try {
-      if (isInitialFetch) {
-        setIsLoadingInitial(true);
-      } else {
-        setIsLoadingMore(true);
-      }
-
-      const response = await apiRequest<PaginatedResponse<ResearchHistoryItem>>(
-        `/api/research/history?page=${page}&pageSize=5`
-      );
-
-      if (response.success && response.data) {
-        if (isInitialFetch) {
-          setHistoryItems(response.data.items);
-        } else {
-          //@ts-ignore
-          setHistoryItems((prev) => [...prev, ...response.data.items]);
-        }
-        setHasMore(response.data.hasMore);
-        setCurrentPage(page);
-      } else {
-        setError("Failed to load research history");
-      }
-    } catch (err) {
-      setError("Failed to load research history");
-    } finally {
-      if (isInitialFetch) {
-        setIsLoadingInitial(false);
-      } else {
-        setIsLoadingMore(false);
-      }
-    }
+  // Load initial history data
+  React.useEffect(() => {
+    researchHistoryActions.fetchHistory(1);
   }, []);
 
-  React.useEffect(() => {
-    fetchHistory(1);
-  }, [fetchHistory]);
-
   const handleLoadMore = () => {
-    if (!isLoadingMore && hasMore) {
-      fetchHistory(currentPage + 1);
+    if (!isLoadingInitial && hasMore) {
+      researchHistoryActions.fetchHistory(currentPage + 1);
     }
   };
 

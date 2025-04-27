@@ -304,7 +304,39 @@
     opacity: 0;
   }
 }
-  
+
 .animate-ping {
   animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes gradient-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.snippet-line {
+  background: linear-gradient(45deg, #a882ff, #e0c8ff, #876be0, #735290);
+  background-size: 400% 400%;
+  animation: gradient-flow 8s ease infinite;
+  box-shadow: 0 0 15px rgba(135, 107, 224, 0.3);
+  transition: all 0.3s ease;
+}
+
+@keyframes gradient-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
