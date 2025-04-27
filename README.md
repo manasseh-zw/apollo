@@ -72,4 +72,6 @@ decided to eliminate the synthesizer agent and have that be a seperate service s
 did a task.await all for searching memory inthe final syntehsis and cut the vector seach time by half for each section whic i thought ...
 
 followed prompt engineering guide from https://cookbook.openai.com/examples/gpt4-1_prompting_guide
-tried to do the synthesis with google gemini but im facing ratelimis which is fvery wiered...  then ust used gpt4.1 its also very good and has similar context window   
+tried to do the synthesis with google gemini but im facing ratelimis which is fvery wiered... then ust used gpt4.1 its also very good and has similar context window
+
+decided to use reflective rag for analysis phase, where the memory context does an internal critic of teh information it has in and of itself, looking internally to find out what signficant knowlege gaps it has, pertaining to the context of the research topic, and description... , this make the resaerch analysis phase much faster because at the moment it was taking ages because we ware asking abritrary questions derived from the title and descriptions and the analyzer agent would do about 5+ queires at times it even times out becuase the agent chat completion is not configured to wait over 100sec for a response ..., we can also ask kernel memory for a table of contents draft given the information it has and the research topic and description at hand..

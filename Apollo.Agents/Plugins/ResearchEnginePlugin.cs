@@ -87,7 +87,7 @@ public class ResearchEnginePlugin
 
                 // Now send individual results with delay
                 foreach (var result in newResults)
-                {
+                {   
                     var searchResultItem = new SearchResultItemContract
                     {
                         Id = Guid.NewGuid().ToString(), // Generate unique ID for the result
@@ -95,7 +95,7 @@ public class ResearchEnginePlugin
                         Title = result.Title,
                         Url = result.Url,
                         Snippet = result.Summary ?? result.Text,
-                        Highlights = result.Highlights,
+                        Highlights = result.Highlights ?? [],
                     };
 
                     _clientUpdate.SendResearchFeedUpdate(
@@ -108,7 +108,7 @@ public class ResearchEnginePlugin
                     );
 
                     // Delay before sending next result
-                    await Task.Delay(3000);
+                    await Task.Delay(5000);
                 }
             }
             else

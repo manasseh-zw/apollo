@@ -52,7 +52,7 @@ export default function ChatLandingPromptForm({
             variant="light"
             size="sm"
           >
-            Gpt 4o
+            Gpt 4.1 
           </Chip>
         </div>
         <Tooltip showArrow content="Start Research">

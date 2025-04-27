@@ -47,10 +47,10 @@ export function SnippetUpdate({
   highlights = [],
 }: {
   content: string;
-  highlights?: string[];
+  highlights?: string[] | undefined;
 }) {
   // If we have highlights, wrap them in highlight spans
-  if (highlights.length > 0) {
+  if (highlights.length && highlights.length > 0) {
     let highlightedContent = content;
     highlights.forEach((highlight) => {
       highlightedContent = highlightedContent.replace(
@@ -103,7 +103,7 @@ function SearchResult({
         <p className="text-sm text-gray-500">{url}</p>
         {snippet && (
           <p className="mt-2 text-sm text-gray-600">
-            {highlights.length > 0 ? (
+            {highlights.length && highlights.length > 0 ? (
               <span
                 dangerouslySetInnerHTML={{
                   __html: highlights.reduce(

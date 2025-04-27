@@ -8,6 +8,7 @@ import { store } from "../../../lib/state/store";
 import ReactMarkdown from "react-markdown";
 import Thinking from "./Thinking";
 import { LogoLight } from "../../Icons";
+import { useRouter } from "@tanstack/react-router";
 
 type Message = {
   id: number;
@@ -22,6 +23,7 @@ interface ChatProps {
 
 export default function Chat({ id, initialQuery }: ChatProps) {
   const user = store.state.authState.user;
+  const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [connection, setConnection] = useState<signalR.HubConnection | null>(
     null
@@ -71,6 +73,7 @@ export default function Chat({ id, initialQuery }: ChatProps) {
     });
 
     newConnection.on("ResearchSaved", (savedId: string) => {
+      router.navigate({ to: `/research/${savedId}` });
       console.log("Research saved:", savedId);
     });
 

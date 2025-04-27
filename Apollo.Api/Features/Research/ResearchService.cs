@@ -63,41 +63,65 @@ public class ResearchService : IResearchService
     public async Task<Result<ResearchResponse>> GetResearch(Guid userId, Guid researchId)
     {
         var research = await _repository
-            .Research.Include(r => r.Plan)
-            .Include(r => r.Report)
-            .FirstOrDefaultAsync(r => r.Id == researchId && r.UserId == userId);
+            .Research.Where(r => r.Id == researchId && r.UserId == userId)
+            .Select(r => new ResearchResponse(
+                r.Id,
+                r.Title,
+                r.Description,
+                new ResearchPlan
+                {
+                    Id = r.Plan.Id,
+                    Questions = r.Plan.Questions,
+                    Type = r.Plan.Type,
+                    Depth = r.Plan.Depth,
+                    ResearchId = r.Plan.ResearchId,
+                },
+                r.Report == null
+                    ? null
+                    : new ResearchReport
+                    {
+                        Id = r.Report.Id,
+                        Content = r.Report.Content,
+                        ResearchId = r.Report.ResearchId,
+                    },
+                r.StartedAt,
+                r.Status
+            ))
+            .FirstOrDefaultAsync();
 
         if (research == null)
         {
             return Result.Fail("Research not found");
         }
 
-        var response = new ResearchResponse(
-            research.Id,
-            research.Title,
-            research.Description,
-            research.Plan,
-            research.Report,
-            research.StartedAt,
-            research.Status
-        );
-
-        return Result.Ok(response);
+        return Result.Ok(research);
     }
 
     public async Task<Result<List<ResearchResponse>>> GetAllResearch(Guid userId)
     {
         var research = await _repository
-            .Research.Include(r => r.Plan)
-            .Include(r => r.Report)
-            .Where(r => r.UserId == userId)
+            .Research.Where(r => r.UserId == userId)
             .OrderByDescending(r => r.StartedAt)
             .Select(r => new ResearchResponse(
                 r.Id,
                 r.Title,
                 r.Description,
-                r.Plan,
-                r.Report,
+                new ResearchPlan
+                {
+                    Id = r.Plan.Id,
+                    Questions = r.Plan.Questions,
+                    Type = r.Plan.Type,
+                    Depth = r.Plan.Depth,
+                    ResearchId = r.Plan.ResearchId,
+                },
+                r.Report == null
+                    ? null
+                    : new ResearchReport
+                    {
+                        Id = r.Report.Id,
+                        Content = r.Report.Content,
+                        ResearchId = r.Report.ResearchId,
+                    },
                 r.StartedAt,
                 r.Status
             ))
