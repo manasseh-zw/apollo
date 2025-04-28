@@ -11,6 +11,7 @@ import { ChevronDownIcon } from "lucide-react";
 import { MSWord, MSPowerPoint, PDFIcon } from "../../Icons";
 import FontSizeController from "./FontSizeController";
 import type { ResearchReport as ResearchReportType } from "../../../lib/types/research";
+import ReactMarkdown from "react-markdown";
 
 interface ResearchReportProps {
   report: ResearchReportType | null;
@@ -95,10 +96,10 @@ export default function ResearchReport({ report }: ResearchReportProps) {
       {/* Main Content */}
       <main className="flex-1 overflow-auto p-8 md:px-16 lg:px-24 pb-24 font-geist">
         <div
-          className="max-w-3xl mx-auto prose prose-slate"
+          className="max-w-3xl mx-auto prose prose-slate text-primary prose-li:text-primary prose-p:text-primary prose-headings:text-primary prose-strong:text-foreground prose-code:text-foreground prose-pre:bg-content2 prose-pre:text-foreground prose-pre:border prose-pre:border-content4 prose-pre:rounded-lg prose-a:text-primary prose-p:leading-relaxed prose-li:leading-relaxed [&>*]:leading-relaxed [&>ul]:list-none [&>ul>li]:relative [&>ul>li]:before:absolute [&>ul>li]:before:left-0 [&>ul>li]:before:content-['•'] [&>ul>li]:before:text-primary-400 prose-hr:border-content4 prose-hr:my-5"
           style={{ fontSize: `${fontSize}px` }}
         >
-          <div dangerouslySetInnerHTML={{ __html: report.content }} />
+          <ReactMarkdown>{report.content}</ReactMarkdown>
         </div>
       </main>
 

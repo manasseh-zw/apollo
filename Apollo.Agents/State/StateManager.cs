@@ -197,22 +197,36 @@ public class StateManager : IStateManager
         if (_cache.TryGetValue(researchId, out ResearchState? state))
         {
             _ = state ?? throw new Exception($"Research state not found for ID: {researchId}");
-            foreach (var q in newQuestions)
+
+            // Create new question objects with IDs
+            var newQuestionObjects = newQuestions
+                .Select(q => new ResearchQuestion
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Text = q,
+                    IsProcessed = false,
+                })
+                .ToList();
+
+            // Add the new questions to pending list
+            state.PendingResearchQuestions.AddRange(newQuestionObjects);
+            _logger.LogInformation(
+                "Added {Count} new pending questions to {ResearchId}",
+                newQuestionObjects.Count,
+                researchId
+            );
+
+            // If there's no active question, set the first new question as active
+            if (string.IsNullOrEmpty(state.ActiveQuestionId) && newQuestionObjects.Any())
             {
-                state.PendingResearchQuestions.Add(
-                    new()
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        Text = q,
-                        IsProcessed = false,
-                    }
-                );
+                state.ActiveQuestionId = newQuestionObjects[0].Id;
                 _logger.LogInformation(
-                    "Added new pending question to {ResearchId}: '{QuestionText}'",
+                    "Set first gap question as active for {ResearchId}: '{QuestionText}'",
                     researchId,
-                    q
+                    newQuestionObjects[0].Text
                 );
             }
+
             state.NeedsAnalysis = false;
             _cache.Set(researchId, state, _cacheTimeout);
 

@@ -130,13 +130,13 @@ export default function ResearchFeed({
 
 function TimelineItem({ text, active = false, status }: QuestionTimelineItem) {
   return (
-    <div className="relative flex items-start gap-4">
+    <div className="relative flex items-start gap-4 z-5">
       {status === QuestionStatus.Completed ? (
         <div className="rounded-full bg-primary p-1">
           <Check className="h-4 w-4 text-white" />
         </div>
       ) : status === QuestionStatus.InProgress ? (
-        <div className="rounded-full bg-primary/10 p-1">
+        <div className="rounded-full bg-white ">
           <Spinner size="sm" className="text-primary" />
         </div>
       ) : (

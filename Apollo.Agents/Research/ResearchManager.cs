@@ -82,14 +82,21 @@ public class ResearchManager : IResearchManager
             return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchCoordinatorAgentName);
         }
 
-        // Handle initial state or after Coordinator
-        if (
-            string.IsNullOrEmpty(lastAgentName)
-            || lastAgentName.Equals(
-                AgentFactory.ResearchCoordinatorAgentName,
-                StringComparison.OrdinalIgnoreCase
-            )
-        )
+        // Handle initial state (no previous agent)
+        if (string.IsNullOrEmpty(lastAgentName))
+        {
+            // This is the very first turn. Always start with the Coordinator.
+            _logger.LogInformation(
+                "[{ResearchId}] Selection: Initial turn. Selecting Coordinator.",
+                _researchId
+            );
+            return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchCoordinatorAgentName);
+        }
+        // Handle state after Coordinator has run
+        else if (lastAgentName.Equals(
+                    AgentFactory.ResearchCoordinatorAgentName,
+                    StringComparison.OrdinalIgnoreCase
+                ))
         {
             // If analysis is needed, prioritize it
             if (state.NeedsAnalysis)
@@ -104,7 +111,7 @@ public class ResearchManager : IResearchManager
             // If we have an active question or pending questions, use ResearchEngine
             if (
                 !string.IsNullOrEmpty(state.ActiveQuestionId)
-                || state.PendingResearchQuestions.Any()
+                || state.PendingResearchQuestions.Count > 0
             )
             {
                 _logger.LogInformation(
@@ -125,6 +132,14 @@ public class ResearchManager : IResearchManager
                     a.Id == AgentFactory.ResearchCoordinatorAgentName
                 );
             }
+
+            // If no questions, no analysis needed, and not ready for synthesis (or synthesis done),
+            // something might be wrong, or the process is ending. Let Coordinator handle it or termination strategy will catch it.
+            _logger.LogInformation(
+                "[{ResearchId}] Selection: After Coordinator, no specific action identified (no pending Qs, no analysis needed, not ready/done synthesis). Returning to Coordinator.",
+                _researchId
+            );
+            return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchCoordinatorAgentName);
         }
         // After ResearchEngine completes a question
         else if (
