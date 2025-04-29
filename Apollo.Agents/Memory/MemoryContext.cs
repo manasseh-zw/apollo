@@ -30,6 +30,9 @@ public class MemoryContext : IMemoryContext
     {
         _memory = new KernelMemoryBuilder()
             .WithPostgresMemoryDb(AppConfig.DatabaseOptions.VectorConnectionString)
+            // .WithQdrantMemoryDb(
+            //     new() { APIKey = AppConfig.Quadrant.ApiKey, Endpoint = AppConfig.Quadrant.Endpoint }
+            // )
             .WithAzureOpenAITextEmbeddingGeneration(
                 new()
                 {
@@ -53,7 +56,7 @@ public class MemoryContext : IMemoryContext
                 }
             )
             .WithSearchClientConfig(new() { AnswerTokens = 32768 })
-            .WithStructRagSearchClient()
+            // .WithStructRagSearchClient()
             .Build<MemoryServerless>(
                 //this is fine because i am not storing any documents at the moment
                 new() { AllowMixingVolatileAndPersistentData = true }
@@ -62,7 +65,7 @@ public class MemoryContext : IMemoryContext
 
     public async Task Ingest(string content, TagCollection tags)
     {
-        await _memory.ImportTextAsync(content, tags: tags);
+        await _memory.ImportTextAsync(content, tags: tags, index: "apollo");
     }
 
     public async Task<SearchResult> SearchAsync(
@@ -74,6 +77,7 @@ public class MemoryContext : IMemoryContext
         return await _memory.SearchAsync(
             query,
             filter: MemoryFilters.ByTag("researchId", researchId),
+            index: "apollo",
             cancellationToken: cancellationToken
         );
     }
@@ -87,6 +91,7 @@ public class MemoryContext : IMemoryContext
         return await _memory.AskAsync(
             question,
             filter: MemoryFilters.ByTag("researchId", researchId),
+            index: "apollo",
             cancellationToken: cancellationToken
         );
     }

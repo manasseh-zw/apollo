@@ -19,17 +19,18 @@ public class KernelMemoryPlugin
 
     [KernelFunction]
     [Description(
-        "Asks a question to the knowledge base (Kernel Memory) and gets a synthesized answer. Use this to get brief summaries or key findings about specific aspects of the research."
+        "Asks a question to the knowledge base (Kernel Memory) and gets a synthesized answer. Use this to get an internal critic of any significant knowledge gaps and a possible table of contents."
     )]
-    public async Task<MemoryAnswer> AskMemoryAsync(
+    public async Task<string> AskMemoryAsync(
         [Description("The researchId")] string researchId,
         [Description(
-            "The question to ask the memory. Frame questions to request brief summaries or key findings."
+            "The SINGLE self reflective question to ask the knowledge base to get knowledge gap analysis results and a draft toc."
         )]
             string question,
         CancellationToken cancellationToken = default
     )
     {
-        return await _memory.AskAsync(researchId, question, cancellationToken);
+        var response = await _memory.AskAsync(researchId, question, cancellationToken);
+        return response.Result.ToLower();
     }
 }

@@ -24,17 +24,10 @@ public class StartResearchPlugin
         [Description("The userId ")] string userId,
         [Description("The title of the research project.")] string title,
         [Description("A brief description of the research project.")] string description,
-        [Description("A list of 3-5 focused research questions.")] List<string> questions,
-        [Description("The type of research : Casual | Analytical | Academic).")] string type,
-        [Description("The depth of the research : Brief | Standard | Comprehensive.")] string depth
+        [Description("A list of 3-5 focused research questions.")] List<string> questions
     )
     {
-        var researchPlan = new ResearchPlan()
-        {
-            Questions = questions,
-            Type = Enum.Parse<ResearchType>(type),
-            Depth = Enum.Parse<ResearchDepth>(depth),
-        };
+        var researchPlan = new ResearchPlan() { Questions = questions };
 
         var research = new Data.Models.Research()
         {

@@ -182,4 +182,18 @@ public class StatePlugin
         );
         return $"Title: {state.Title}\nDescription: {state.Description}";
     }
+
+    [KernelFunction]
+    [Description("Checks if the initial analysis phase has been performed.")]
+    [return: Description("True if initial analysis has been performed, false otherwise.")]
+    public bool HasInitialAnalysisBeenPerformed()
+    {
+        var hasPerformed = _state.HasInitialAnalysisBeenPerformed(_researchId);
+        _logger.LogDebug(
+            "[{ResearchId}] Checking if initial analysis has been performed: {HasPerformed}",
+            _researchId,
+            hasPerformed
+        );
+        return hasPerformed;
+    }
 }

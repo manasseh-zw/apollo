@@ -30,8 +30,6 @@ export type CreateResearchRequest = {
   title: string;
   description: string;
   questions: string[];
-  type: string;
-  depth: string;
 };
 
 export type CreateResearchResponse = {

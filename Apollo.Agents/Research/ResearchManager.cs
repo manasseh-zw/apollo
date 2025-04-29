@@ -93,10 +93,12 @@ public class ResearchManager : IResearchManager
             return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchCoordinatorAgentName);
         }
         // Handle state after Coordinator has run
-        else if (lastAgentName.Equals(
-                    AgentFactory.ResearchCoordinatorAgentName,
-                    StringComparison.OrdinalIgnoreCase
-                ))
+        else if (
+            lastAgentName.Equals(
+                AgentFactory.ResearchCoordinatorAgentName,
+                StringComparison.OrdinalIgnoreCase
+            )
+        )
         {
             // If analysis is needed, prioritize it
             if (state.NeedsAnalysis)

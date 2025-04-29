@@ -4,7 +4,11 @@ using Apollo.Agents.Helpers;
 using Apollo.Agents.Plugins;
 using Apollo.Agents.State;
 using Apollo.Config;
+using Apollo.Data.Models;
 using Apollo.Data.Repository;
+using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -220,10 +224,17 @@ public class ResearchOrchestrator
     private async Task InitializeResearch(Guid researchId)
     {
         var research =
-            await _repository.Research.Include(x => x.Plan).FirstOrDefaultAsync()
-            ?? throw new Exception("Research instance does not exist");
+            await _repository
+                .Research.Where(x => x.Id == researchId)
+                .Select(x => new Data.Models.Research
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    Description = x.Description,
+                    Plan = new ResearchPlan { Questions = x.Plan.Questions },
+                })
+                .FirstOrDefaultAsync() ?? throw new Exception("Research instance does not exist");
 
-        var firstQuestion = research.Plan.Questions.First();
         await _state.GetOrCreateState(
             researchId.ToString(),
             async () =>
@@ -244,8 +255,6 @@ public class ResearchOrchestrator
                     ResearchId = researchId.ToString(),
                     Title = research.Title,
                     Description = research.Description,
-                    Type = research.Plan.Type,
-                    Depth = research.Plan.Depth,
                     PendingResearchQuestions = [.. questionsWithIds], // Copy the list
                     AllQuestionsInOrder = [.. questionsWithIds], // Store original order
                 };

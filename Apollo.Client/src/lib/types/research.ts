@@ -32,8 +32,6 @@ export enum ResearchFeedUpdateType {
 export type ResearchPlan = {
   id: string;
   questions: string[];
-  type: ResearchType;
-  depth: ResearchDepth;
 };
 
 export type ResearchReport = {

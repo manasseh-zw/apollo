@@ -22,11 +22,6 @@ import { researchHistoryActions, store } from "../../lib/state/store";
 import SidebarDrawer from "./SidebarDrawer";
 import SidebarNav from "./SidebarNav";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { apiRequest } from "../../lib/utils/api";
-import type {
-  ResearchHistoryItem,
-  PaginatedResponse,
-} from "../../lib/types/research";
 import HistoryModalTrigger from "./HistoryModal";
 
 const SIDEBAR_COLLAPSED_KEY = "apolllo-sidebar-collapsed";

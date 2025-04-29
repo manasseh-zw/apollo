@@ -11,7 +11,7 @@ export const Route = createRootRoute({
     if (isLoading) {
       try {
         const response = await getSignedInUser();
-
+        
         if (response.success && response.data) {
           authActions.setUser(response.data);
         } else {

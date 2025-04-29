@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.KernelMemory.AI.AzureOpenAI" Version="0.98.250324.1" />
     <PackageReference Include="Microsoft.KernelMemory.Core" Version="0.98.250324.1" />
     <PackageReference Include="Microsoft.KernelMemory.MemoryDb.Postgres" Version="0.98.250324.1" />
+    <PackageReference Include="Microsoft.KernelMemory.MemoryDb.Qdrant" Version="0.98.250324.1" />
     <PackageReference Include="Microsoft.SemanticKernel" Version="1.44.0" />
     <PackageReference Include="Microsoft.SemanticKernel.Agents.Core" Version="1.45.0" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.Postgres" Version="1.45.0-preview" />

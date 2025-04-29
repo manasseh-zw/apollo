@@ -72,8 +72,6 @@ public class ResearchService : IResearchService
                 {
                     Id = r.Plan.Id,
                     Questions = r.Plan.Questions,
-                    Type = r.Plan.Type,
-                    Depth = r.Plan.Depth,
                     ResearchId = r.Plan.ResearchId,
                 },
                 r.Report == null
@@ -110,8 +108,6 @@ public class ResearchService : IResearchService
                 {
                     Id = r.Plan.Id,
                     Questions = r.Plan.Questions,
-                    Type = r.Plan.Type,
-                    Depth = r.Plan.Depth,
                     ResearchId = r.Plan.ResearchId,
                 },
                 r.Report == null
@@ -135,12 +131,7 @@ public class ResearchService : IResearchService
         CreateResearchRequest request
     )
     {
-        var researchPlan = new ResearchPlan()
-        {
-            Questions = request.Questions,
-            Type = Enum.Parse<ResearchType>(request.Type),
-            Depth = Enum.Parse<ResearchDepth>(request.Depth),
-        };
+        var researchPlan = new ResearchPlan() { Questions = request.Questions };
 
         var research = new Data.Models.Research()
         {

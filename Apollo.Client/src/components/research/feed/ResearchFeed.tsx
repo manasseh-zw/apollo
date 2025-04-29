@@ -135,7 +135,7 @@ function TimelineItem({ text, active = false, status }: QuestionTimelineItem) {
         <div className="rounded-full bg-primary p-1">
           <Check className="h-4 w-4 text-white" />
         </div>
-      ) : status === QuestionStatus.InProgress ? (
+      ) : status === QuestionStatus.InProgress || active === true ? (
         <div className="rounded-full bg-white ">
           <Spinner size="sm" className="text-primary" />
         </div>

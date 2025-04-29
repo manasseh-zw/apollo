@@ -2,7 +2,7 @@ namespace Apollo.Search.Models;
 
 public class CommonRequest
 {
-    public int NumResults { get; set; } = 3;
+    public int NumResults { get; set; } = 5;
     public List<string>? IncludeDomains { get; set; }
     public List<string>? ExcludeDomains { get; set; }
     public DateTime? StartCrawlDate { get; set; }

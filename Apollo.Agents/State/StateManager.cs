@@ -17,6 +17,7 @@ public interface IStateManager
     void UpdateTableOfContents(string researchId, List<string> sections);
     void MarkAnalysisStarted(string researchId);
     void MarkAnalysisComplete(string researchId);
+    bool HasInitialAnalysisBeenPerformed(string researchId);
 }
 
 public class StateManager : IStateManager
@@ -290,9 +291,23 @@ public class StateManager : IStateManager
             state =>
             {
                 state.IsAnalyzing = false;
+                if (!state.HasPerformedInitialAnalysis)
+                {
+                    state.HasPerformedInitialAnalysis = true;
+                    _logger.LogInformation(
+                        "[{ResearchId}] First analysis phase completed, marking initial analysis as performed.",
+                        researchId
+                    );
+                }
                 _logger.LogInformation("[{ResearchId}] Analysis phase completed.", researchId);
             }
         );
+    }
+
+    public bool HasInitialAnalysisBeenPerformed(string researchId)
+    {
+        var state = GetState(researchId);
+        return state.HasPerformedInitialAnalysis;
     }
 }
 
@@ -301,8 +316,6 @@ public class ResearchState
     public required string ResearchId { get; set; }
     public required string Title { get; set; }
     public required string Description { get; set; }
-    public ResearchType Type { get; set; }
-    public ResearchDepth Depth { get; set; }
     public List<ResearchQuestion> PendingResearchQuestions { get; set; } = [];
     public List<ResearchQuestion> CompletedResearchQuestions { get; set; } = [];
     public List<ResearchQuestion> AllQuestionsInOrder { get; set; } = [];
@@ -313,6 +326,7 @@ public class ResearchState
     public bool NeedsAnalysis { get; set; } = false;
     public bool IsAnalyzing { get; set; } = false;
     public bool SynthesisComplete { get; set; } = false;
+    public bool HasPerformedInitialAnalysis { get; set; } = false;
 
     public ResearchQuestion? GetActiveQuestion()
     {
