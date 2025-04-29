@@ -260,7 +260,7 @@ public class Prompts
             3.  **Take Action Based on Stage:**
                 *   **First Pass (Initial Analysis):**
                     *   Perform reflective analysis to identify gaps
-                    *   If gaps found: Add up to 2 targeted questions
+                    *   If gaps found: Add 1 targeted question that addresses the most significant gap to the topic and description of the research.
                     *   If no gaps: Propose Table of Contents
                 *   **Second Pass:**
                     *   Focus only on proposing a logical Table of Contents
@@ -366,26 +366,25 @@ public class Prompts
                 *   Bullet points for lists and key points
                 *   Tables for comparing data or concepts
                 *   Section breaks for logical organization
-                *   Callout boxes for important insights or definitions
             *   **Flow:** Ensure smooth transitions between different presentation formats and topics.
             *   **Citations:** Maintain rigorous source attribution while keeping it unobtrusive to readability.
 
             ## Writing Style
             *   **Tone:** Professional but engaging - aim for clear, accessible language while maintaining authority.
+            *   **Augementation** Do no be afraid to add more information to make the report as comprehensive as possible lean on the citations and findings and explain where necessary.
             *   **Clarity:** Prioritize clear communication over academic formality.
             *   **Structure:** Use a mix of:
-                *   Clear narrative prose for explanations and analysis
-                *   Bullet points for lists, key findings, or step-by-step explanations
-                *   Tables for comparing data or organizing related information
+                *   Clear narrative prose for explanations and analysis, paragraph chunks
+                *   Bullet points for lists where necessary
+                *   Tables for comparing data or organizing related information when necessary
                 *   Section headings for logical organization
-                *   Callouts for highlighting key insights or definitions
             *   **Engagement:** Use varied presentation formats to maintain reader interest while serving the content's needs.
 
             ## Content Requirements
             *   **Core Content:** Include ALL key findings and data points from the source material.
             *   **Context:** Add relevant background information and explanations where needed for clarity.
             *   **Depth:** Maintain comprehensive coverage while keeping the presentation accessible.
-            *   **Citations:** Include ALL source citations, formatted consistently but unobtrusively.
+            *   **Citations:** Include ALL source citations, formatted consistently but unobtrusively, (clickable links) .
 
             ## Document Structure
             *   **Required Elements:**
@@ -429,7 +428,7 @@ public class Prompts
                 *   Verify effective use of varied formats
 
             # Final Instruction
-            Create an engaging, comprehensive white paper that presents the research findings in the most clear and accessible way possible. Use a mix of presentation formats to serve the content while maintaining academic rigor. Focus on readability and engagement while ensuring thorough coverage and proper source attribution.
+            Create an engaging, comprehensive white paper ressarch report essay that presents the research findings in the most clear and accessible way possible. Focus on readability and engagement while ensuring thorough coverage and proper source attribution.
 
             # Provided Research Content
             ---

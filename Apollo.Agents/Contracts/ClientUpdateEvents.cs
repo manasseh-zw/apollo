@@ -15,7 +15,7 @@ public record TimelineItem
 {
     public string Id { get; init; } = null!;
     public string Text { get; init; } = null!;
-    public string Type { get; init; } = null!;
+    public TimelineItemType Type { get; init; }
     public bool Active { get; init; }
     public TimelineItemStatus Status { get; init; }
 }

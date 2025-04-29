@@ -138,7 +138,7 @@ public class StateManager : IStateManager
             {
                 Id = q.Id,
                 Text = q.Text,
-                Type = TimelineItemType.Question.ToString(),
+                Type = TimelineItemType.Question,
                 Active = q.Id == state.ActiveQuestionId,
                 Status =
                     state.CompletedResearchQuestions.Any(cq => cq.Id == q.Id)
@@ -156,7 +156,7 @@ public class StateManager : IStateManager
                 {
                     Id = $"{researchId}-analysis",
                     Text = "Analyzing Research Findings",
-                    Type = TimelineItemType.Analysis.ToString(),
+                    Type = TimelineItemType.Analysis,
                     Active = state.IsAnalyzing,
                     Status =
                         state.HasPerformedInitialAnalysis ? TimelineItemStatus.Completed
@@ -179,7 +179,7 @@ public class StateManager : IStateManager
                 {
                     Id = $"{researchId}-synthesis",
                     Text = "Synthesizing Final Report",
-                    Type = TimelineItemType.Synthesis.ToString(),
+                    Type = TimelineItemType.Synthesis,
                     Active = readyForSynthesis && !state.SynthesisComplete,
                     Status =
                         state.SynthesisComplete ? TimelineItemStatus.Completed

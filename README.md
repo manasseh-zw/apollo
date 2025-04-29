@@ -78,4 +78,6 @@ decided to use reflective rag for analysis phase, where the memory context does 
 
 found a way to do gap analysis but getting rate limited, by open ai! need to bump that up!
 
-okay lets face it the biggest bottle neck right now is the vector db postgres is too slow the ask memroyasync is 
+okay lets face it the biggest bottle neck right now is the vector db postgres is too slow the ask memroyasync, switched to neon db now its much faster,
+
+decided to limit gap questions added to 1 so that we dont react the rate limit.

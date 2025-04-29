@@ -53,22 +53,20 @@ public class StatePlugin
         _state.CompleteActiveQuestion(_researchId);
     }
 
+    //made this accept one gap question inorder to stop hitting the rate limit
     [KernelFunction]
     [Description(
-        "Adds newly identified research questions to the list of pending questions to address any identified knowledge gaps. Called by ResearchAnalyzer."
+        "Adds newly identified research question to the list of pending questions to address any identified knowledge gaps. Called by ResearchAnalyzer."
     )]
     public void AddGapAnalysisQuestions(
-        [Description("The text of the new research question.")] List<string> newQuestions
+        [Description("The text of the new research question.")] string newQuestion
     )
     {
-        if (!newQuestions.Any())
+        if (string.IsNullOrEmpty(newQuestion))
             return;
 
-        _logger.LogInformation($"for {_researchId} Adding gap {newQuestions.Count} questions  ");
-        newQuestions.ForEach(q =>
-        {
-            _state.AddPendingQuestions(_researchId, newQuestions);
-        });
+        _logger.LogInformation($"for {_researchId} Adding new gap  question : {newQuestion}  ");
+        _state.AddPendingQuestions(_researchId, [newQuestion]);
     }
 
     [KernelFunction]

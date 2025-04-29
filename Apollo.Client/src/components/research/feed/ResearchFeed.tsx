@@ -37,7 +37,8 @@ export default function ResearchFeed({
       text: q,
       type: TimelineItemType.Question,
       active: i === 0,
-      status: i === 0 ? TimelineItemStatus.InProgress : TimelineItemStatus.Pending,
+      status:
+        i === 0 ? TimelineItemStatus.InProgress : TimelineItemStatus.Pending,
     }))
   );
   const feedEndRef = useRef<HTMLDivElement>(null);
@@ -91,10 +92,10 @@ export default function ResearchFeed({
 
         <div className="mt-6 flex-1 overflow-y-auto">
           <div className="relative">
-            <div 
+            <div
               className="absolute mt-1 left-[10px] top-0 h-full w-[2px] bg-gray-300"
               style={{
-                height: `${timelineItems.length * 40}px`, // Adjust based on your item height
+                height: `${timelineItems.length * 75}px`, // Adjust based on your item height
               }}
             ></div>
 
@@ -132,12 +133,17 @@ export default function ResearchFeed({
   );
 }
 
-function TimelineItemComponent({ text, active = false, status, type }: TimelineItem) {
+function TimelineItemComponent({
+  text,
+  active = false,
+  status,
+  type,
+}: TimelineItem) {
   const getIcon = () => {
     if (status === TimelineItemStatus.Completed) {
       return <Check className="h-4 w-4 text-white" />;
     }
-    
+
     if (status === TimelineItemStatus.InProgress || active === true) {
       return <Spinner size="sm" className="text-primary" />;
     }
@@ -155,12 +161,12 @@ function TimelineItemComponent({ text, active = false, status, type }: TimelineI
   };
 
   return (
-    <div className="relative flex items-start gap-4 z-5">
+    <div className="relative flex items-start gap-4 z-5 ">
       <div
         className={cn(
           "rounded-full p-1",
           status === TimelineItemStatus.Completed && "bg-primary",
-          status === TimelineItemStatus.InProgress && "bg-white",
+          status === TimelineItemStatus.InProgress && "bg-white pb-0  ",
           status === TimelineItemStatus.Pending && "bg-content3"
         )}
       >
@@ -169,8 +175,9 @@ function TimelineItemComponent({ text, active = false, status, type }: TimelineI
       <span
         className={cn(
           "text-sm",
-          status === TimelineItemStatus.Completed && "text-gray-800 font-medium",
-          status === TimelineItemStatus.InProgress && "text-primary font-medium",
+          status === TimelineItemStatus.Completed && " font-medium",
+          status === TimelineItemStatus.InProgress &&
+            "text-primary font-medium",
           status === TimelineItemStatus.Pending && "text-gray-500"
         )}
       >

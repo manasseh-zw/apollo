@@ -16,15 +16,15 @@ export enum ResearchDepth {
 }
 
 export enum TimelineItemType {
-  Question = "question",
-  Analysis = "analysis",
-  Synthesis = "synthesis",
+  Question,
+  Analysis,
+  Synthesis,
 }
 
 export enum TimelineItemStatus {
-  Pending = "pending",
-  InProgress = "inProgress",
-  Completed = "completed",
+  Pending,
+  InProgress,
+  Completed,
 }
 
 export enum ResearchFeedUpdateType {

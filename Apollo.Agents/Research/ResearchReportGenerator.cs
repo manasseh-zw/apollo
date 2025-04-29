@@ -107,7 +107,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
 
                         var memoryResults = await _memory.AskAsync(
                             researchId,
-                            $"Provide a comprehensive analysis of '{section}', including all relevant facts, data, and findings. Include specific details and ensure all information is properly attributed to sources.",
+                            $"Hie do a comprehensive report essay analysis of the '{section}' for {state.Title} , {state.Description}, including all relevant facts, data, and findings. Include specific details and ensure all information is properly attributed to sources.",
                             cancellationToken
                         );
 
@@ -213,7 +213,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
 
             var finalReport = await _chat.GetChatMessageContentAsync(
                 chatHistory,
-                executionSettings: new OpenAIPromptExecutionSettings() { MaxTokens = 32768 },
+                executionSettings: new OpenAIPromptExecutionSettings() { MaxTokens = 1047576 },
                 cancellationToken: cancellationToken
             );
 
