@@ -115,6 +115,7 @@ public class StateManager : IStateManager
                 );
             }
             _cache.Set(researchId, state, _cacheTimeout); // Update cache with new timeout
+            SendTimelineUpdate(researchId, state);
         }
         else
         {
@@ -129,23 +130,67 @@ public class StateManager : IStateManager
 
     private void SendTimelineUpdate(string researchId, ResearchState state)
     {
-        // Build timeline items in original order
-        var timelineItems = state
-            .AllQuestionsInOrder.Select(q => new QuestionTimelineItem
+        var timelineItems = new List<TimelineItem>();
+
+        // Add all questions in their original order
+        timelineItems.AddRange(
+            state.AllQuestionsInOrder.Select(q => new TimelineItem
             {
                 Id = q.Id,
                 Text = q.Text,
+                Type = TimelineItemType.Question.ToString(),
                 Active = q.Id == state.ActiveQuestionId,
                 Status =
                     state.CompletedResearchQuestions.Any(cq => cq.Id == q.Id)
-                        ? QuestionStatus.Completed
-                    : q.Id == state.ActiveQuestionId ? QuestionStatus.InProgress
-                    : QuestionStatus.Pending,
+                        ? TimelineItemStatus.Completed
+                    : q.Id == state.ActiveQuestionId ? TimelineItemStatus.InProgress
+                    : TimelineItemStatus.Pending,
             })
-            .ToList();
+        );
 
-        _clientUpdate.SendQuestionTimelineUpdate(
-            new QuestionTimelineUpdateEvent { ResearchId = researchId, Questions = timelineItems }
+        // Add Analysis phase if it's in progress or has been completed
+        if (state.IsAnalyzing || state.HasPerformedInitialAnalysis)
+        {
+            timelineItems.Add(
+                new TimelineItem
+                {
+                    Id = $"{researchId}-analysis",
+                    Text = "Analyzing Research Findings",
+                    Type = TimelineItemType.Analysis.ToString(),
+                    Active = state.IsAnalyzing,
+                    Status =
+                        state.HasPerformedInitialAnalysis ? TimelineItemStatus.Completed
+                        : state.IsAnalyzing ? TimelineItemStatus.InProgress
+                        : TimelineItemStatus.Pending,
+                }
+            );
+        }
+
+        // Add Synthesis phase if it's ready to start or has been completed
+        bool readyForSynthesis =
+            state.TableOfContents?.Any() == true
+            && !state.NeedsAnalysis
+            && !state.IsAnalyzing
+            && state.HasPerformedInitialAnalysis;
+        if (readyForSynthesis || state.SynthesisComplete)
+        {
+            timelineItems.Add(
+                new TimelineItem
+                {
+                    Id = $"{researchId}-synthesis",
+                    Text = "Synthesizing Final Report",
+                    Type = TimelineItemType.Synthesis.ToString(),
+                    Active = readyForSynthesis && !state.SynthesisComplete,
+                    Status =
+                        state.SynthesisComplete ? TimelineItemStatus.Completed
+                        : readyForSynthesis ? TimelineItemStatus.InProgress
+                        : TimelineItemStatus.Pending,
+                }
+            );
+        }
+
+        _clientUpdate.SendTimelineUpdate(
+            new TimelineUpdateEvent { ResearchId = researchId, Items = timelineItems }
         );
     }
 
@@ -209,8 +254,9 @@ public class StateManager : IStateManager
                 })
                 .ToList();
 
-            // Add the new questions to pending list
+            // Add the new questions to pending list and all questions list
             state.PendingResearchQuestions.AddRange(newQuestionObjects);
+            state.AllQuestionsInOrder.AddRange(newQuestionObjects);
             _logger.LogInformation(
                 "Added {Count} new pending questions to {ResearchId}",
                 newQuestionObjects.Count,
@@ -255,6 +301,7 @@ public class StateManager : IStateManager
                     researchId,
                     sections.Count
                 );
+                SendTimelineUpdate(researchId, state);
             }
         );
     }
@@ -268,6 +315,7 @@ public class StateManager : IStateManager
                 state.IsComplete = true;
                 state.SynthesisComplete = true;
                 _logger.LogInformation("Marking research {ResearchId} as complete.", researchId);
+                SendTimelineUpdate(researchId, state);
             }
         );
     }
@@ -280,6 +328,7 @@ public class StateManager : IStateManager
             {
                 state.IsAnalyzing = true;
                 _logger.LogInformation("[{ResearchId}] Analysis phase started.", researchId);
+                SendTimelineUpdate(researchId, state);
             }
         );
     }
@@ -300,6 +349,7 @@ public class StateManager : IStateManager
                     );
                 }
                 _logger.LogInformation("[{ResearchId}] Analysis phase completed.", researchId);
+                SendTimelineUpdate(researchId, state);
             }
         );
     }

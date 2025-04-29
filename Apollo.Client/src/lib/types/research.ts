@@ -15,10 +15,16 @@ export enum ResearchDepth {
   Comprehensive,
 }
 
-export enum QuestionStatus {
-  Pending,
-  InProgress,
-  Completed,
+export enum TimelineItemType {
+  Question = "question",
+  Analysis = "analysis",
+  Synthesis = "synthesis",
+}
+
+export enum TimelineItemStatus {
+  Pending = "pending",
+  InProgress = "inProgress",
+  Completed = "completed",
 }
 
 export enum ResearchFeedUpdateType {
@@ -50,17 +56,18 @@ export type ResearchResponse = {
 };
 
 // Timeline Types
-export type QuestionTimelineItem = {
+export type TimelineItem = {
   id: string;
   text: string;
+  type: TimelineItemType;
   active: boolean;
-  status: QuestionStatus;
+  status: TimelineItemStatus;
 };
 
-export type QuestionTimelineUpdate = {
+export type TimelineUpdate = {
   researchId: string;
   timestamp: string;
-  questions: QuestionTimelineItem[];
+  items: TimelineItem[];
 };
 
 // Research Feed Types

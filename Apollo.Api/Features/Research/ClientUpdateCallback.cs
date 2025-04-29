@@ -16,9 +16,9 @@ public class ClientUpdateCallback : IClientUpdateCallback
         _hubContext.Clients.Client(connectionId).ReceiveResponse(message ?? string.Empty);
     }
 
-    public void SendQuestionTimelineUpdate(QuestionTimelineUpdateEvent update)
+    public void SendTimelineUpdate(TimelineUpdateEvent update)
     {
-        _hubContext.Clients.Group(update.ResearchId).ReceiveQuestionTimelineUpdate(update);
+        _hubContext.Clients.Group(update.ResearchId).ReceiveTimelineUpdate(update);
     }
 
     public void SendResearchFeedUpdate(ResearchFeedUpdateEvent update)

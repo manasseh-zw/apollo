@@ -6,24 +6,32 @@ public abstract record ClientUpdateEvent
     public DateTime Timestamp { get; init; } = DateTime.UtcNow;
 }
 
-public record QuestionTimelineUpdateEvent : ClientUpdateEvent
+public record TimelineUpdateEvent : ClientUpdateEvent
 {
-    public List<QuestionTimelineItem> Questions { get; init; } = new();
+    public List<TimelineItem> Items { get; init; } = new();
 }
 
-public record QuestionTimelineItem
+public record TimelineItem
 {
     public string Id { get; init; } = null!;
     public string Text { get; init; } = null!;
+    public string Type { get; init; } = null!;
     public bool Active { get; init; }
-    public QuestionStatus Status { get; init; }
+    public TimelineItemStatus Status { get; init; }
 }
 
-public enum QuestionStatus
+public enum TimelineItemStatus
 {
     Pending,
     InProgress,
     Completed,
+}
+
+public enum TimelineItemType
+{
+    Question,
+    Analysis,
+    Synthesis,
 }
 
 public abstract record ResearchFeedUpdateEvent : ClientUpdateEvent

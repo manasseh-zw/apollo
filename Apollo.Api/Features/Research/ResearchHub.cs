@@ -9,7 +9,7 @@ public interface IResearchHubClient
     Task ResearchCompleted(Guid researchId);
 
     // New methods for research updates
-    Task ReceiveQuestionTimelineUpdate(QuestionTimelineUpdateEvent update);
+    Task ReceiveTimelineUpdate(TimelineUpdateEvent update);
     Task ReceiveResearchFeedUpdate(ResearchFeedUpdateEvent update);
     Task ReceiveAgentChatMessage(AgentChatMessageEvent message);
 }

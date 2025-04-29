@@ -5,7 +5,7 @@ namespace Apollo.Agents.Helpers;
 public interface IClientUpdateCallback
 {
     void StreamPlannerResponse(string connectionId, string message);
-    void SendQuestionTimelineUpdate(QuestionTimelineUpdateEvent update);
+    void SendTimelineUpdate(TimelineUpdateEvent update);
     void SendResearchFeedUpdate(ResearchFeedUpdateEvent update);
     void SendAgentChatMessage(AgentChatMessageEvent message);
 }

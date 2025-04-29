@@ -63,7 +63,7 @@ function HistoryModalContent({
         onClick={onClose}
         className="flex justify-between items-center w-full"
       >
-        <span className="text-medium">{item.title}</span>
+        <span className="text-small">{item.title}</span>
         <span className="text-small text-foreground">
           {new Date(item.startedAt).toLocaleDateString()}
         </span>

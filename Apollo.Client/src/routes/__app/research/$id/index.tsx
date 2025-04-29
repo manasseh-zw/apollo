@@ -57,8 +57,8 @@ function RouteComponent() {
 
     // Set up event handlers
     newConnection.on(
-      "ReceiveQuestionTimelineUpdate",
-      (update: QuestionTimelineUpdate) => {
+      "ReceiveTimelineUpdate",
+      (update: TimelineUpdate) => {
         console.log("Timeline update:", update);
       }
     );
