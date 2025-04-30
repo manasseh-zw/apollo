@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Check, FileSearch, FileText } from "lucide-react";
-import { cn, Spinner, Avatar, AvatarGroup } from "@heroui/react";
+import { Avatar, AvatarGroup } from "@heroui/react";
 import {
   type TimelineItem,
   type ResearchFeedUpdate,
@@ -185,60 +184,6 @@ export default function ResearchFeed({
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function TimelineItemComponent({
-  text,
-  active = false,
-  status,
-  type,
-}: TimelineItem) {
-  const getIcon = () => {
-    if (status === TimelineItemStatus.Completed) {
-      return <Check className="h-4 w-4 text-white" />;
-    }
-
-    if (status === TimelineItemStatus.InProgress || active === true) {
-      return <Spinner size="sm" className="text-primary" />;
-    }
-
-    switch (type) {
-      case TimelineItemType.Question:
-        return <Check className="h-4 w-4 text-white" />;
-      case TimelineItemType.Analysis:
-        return <FileSearch className="h-4 w-4 text-white" />;
-      case TimelineItemType.Synthesis:
-        return <FileText className="h-4 w-4 text-white" />;
-      default:
-        return <Check className="h-4 w-4 text-white" />;
-    }
-  };
-
-  return (
-    <div className="relative flex items-start gap-4 z-5 ">
-      <div
-        className={cn(
-          "rounded-full p-1",
-          status === TimelineItemStatus.Completed && "bg-primary",
-          status === TimelineItemStatus.InProgress && "bg-white pb-0  ",
-          status === TimelineItemStatus.Pending && "bg-content3"
-        )}
-      >
-        {getIcon()}
-      </div>
-      <span
-        className={cn(
-          "text-sm",
-          status === TimelineItemStatus.Completed && " font-medium",
-          status === TimelineItemStatus.InProgress &&
-            "text-primary font-medium",
-          status === TimelineItemStatus.Pending && "text-gray-500"
-        )}
-      >
-        {text}
-      </span>
     </div>
   );
 }

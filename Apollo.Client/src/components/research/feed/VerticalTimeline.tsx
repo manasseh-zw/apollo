@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import { cn, Spinner, type ButtonProps } from "@heroui/react";
+import { cn, Spinner } from "@heroui/react";
 import React from "react";
 import { m, LazyMotion, domAnimation } from "framer-motion";
 import { Check, FileSearch, FileText } from "lucide-react";
