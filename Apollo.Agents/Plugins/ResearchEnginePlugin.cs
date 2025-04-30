@@ -104,6 +104,7 @@ public class ResearchEnginePlugin
                     };
                     _state.AddFeedUpdate(researchId, searchResultsUpdate);
                     _clientUpdate.SendResearchFeedUpdate(searchResultsUpdate);
+                    await Task.Delay(1000);
                 }
             }
             else
