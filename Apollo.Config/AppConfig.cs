@@ -85,17 +85,6 @@ public static class AppConfig
             TextEmbeddingSmall = "text-embedding-3-small",
             GeminiPro25 = "gemini-2.5-pro-preview-03-25",
         };
-
-    public static Quadrant Quadrant { get; } =
-        new()
-        {
-            ApiKey =
-                Environment.GetEnvironmentVariable("QUADRANT_API_KEY")
-                ?? throw new Exception("Quadrant api key not set"),
-            Endpoint =
-                Environment.GetEnvironmentVariable("QUADRANT_ENDPOINT")
-                ?? throw new Exception("Quadrant endpoint not set"),
-        };
 }
 
 public class DatabaseOptions
@@ -140,10 +129,4 @@ public class Models
 public class ExaAI
 {
     public string ApiKey { get; init; } = string.Empty;
-}
-
-public class Quadrant
-{
-    public string ApiKey { get; init; } = string.Empty;
-    public string Endpoint { get; set; } = string.Empty;
 }
