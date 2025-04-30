@@ -16,6 +16,7 @@ import TriLoader from "./TriLoader";
 import { useResearchTimer } from "../../../lib/hooks/useResearchTimer";
 import type { HubConnection } from "@microsoft/signalr";
 import React from "react";
+import VerticalTimeline from "./VerticalTimeline";
 
 interface ResearchFeedProps {
   connection: HubConnection | null;
@@ -116,17 +117,14 @@ export default function ResearchFeed({
         <div className="mt-6 flex-1 flex flex-col overflow-hidden ">
           <div className="flex-1 overflow-y-auto">
             <div className="relative">
-              <div
-                className="absolute mt-1 left-[10px] top-0 h-full w-[2px] bg-gray-300"
-                style={{
-                  height: `${timelineItems.length * 75}px`,
-                }}
-              ></div>
-
               <div className="mb-8 flex flex-col gap-6">
-                {timelineItems.map((item) => (
-                  <TimelineItemComponent key={item.id} {...item} />
-                ))}
+                <VerticalTimeline
+                  items={timelineItems}
+                  color="primary" // Or "secondary", "success", etc.
+                  // Optional: uncomment to hide lines
+                  // className="my-custom-timeline-styles" // Optional: for wrapper styles
+                  // itemClassName="my-custom-item-styles" // Optional: for individual item styles
+                />
               </div>
             </div>
           </div>

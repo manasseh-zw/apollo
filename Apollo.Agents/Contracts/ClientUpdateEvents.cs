@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Apollo.Agents.Contracts;
 
 public abstract record ClientUpdateEvent
@@ -34,6 +36,12 @@ public enum TimelineItemType
     Synthesis,
 }
 
+[JsonPolymorphic]
+[JsonDerivedType(typeof(ProgressMessageFeedUpdate), nameof(ProgressMessageFeedUpdate))]
+[JsonDerivedType(typeof(WebSearchFeedUpdate), nameof(WebSearchFeedUpdate))]
+[JsonDerivedType(typeof(SearchResultsFeedUpdate), nameof(SearchResultsFeedUpdate))]
+[JsonDerivedType(typeof(SnippetFeedUpdate), nameof(SnippetFeedUpdate))]
+[JsonDerivedType(typeof(TableOfContentsFeedUpdate), nameof(TableOfContentsFeedUpdate))]
 public abstract record ResearchFeedUpdateEvent : ClientUpdateEvent
 {
     public ResearchFeedUpdateType Type { get; init; }
