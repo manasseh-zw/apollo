@@ -3,340 +3,340 @@
 @tailwind utilities;
 
 @layer base {
-  @font-face {
-    font-family: "Geist";
-    src: url("/fonts/geist/Geist-Thin.ttf") format("truetype");
-    font-weight: 100;
-    font-style: normal;
-  }
+	@font-face {
+		font-family: "Geist";
+		src: url("/fonts/geist/Geist-Thin.ttf") format("truetype");
+		font-weight: 100;
+		font-style: normal;
+	}
 
-  @font-face {
-    font-family: "Geist";
-    src: url("/fonts/geist/Geist-Light.ttf") format("truetype");
-    font-weight: 300;
-    font-style: normal;
-  }
+	@font-face {
+		font-family: "Geist";
+		src: url("/fonts/geist/Geist-Light.ttf") format("truetype");
+		font-weight: 300;
+		font-style: normal;
+	}
 
-  @font-face {
-    font-family: "Geist";
-    src: url("/fonts/geist/Geist-Regular.ttf") format("truetype");
-    font-weight: 400;
-    font-style: normal;
-  }
+	@font-face {
+		font-family: "Geist";
+		src: url("/fonts/geist/Geist-Regular.ttf") format("truetype");
+		font-weight: 400;
+		font-style: normal;
+	}
 
-  @font-face {
-    font-family: "Geist";
-    src: url("/fonts/geist/Geist-Medium.ttf") format("truetype");
-    font-weight: 500;
-    font-style: normal;
-  }
+	@font-face {
+		font-family: "Geist";
+		src: url("/fonts/geist/Geist-Medium.ttf") format("truetype");
+		font-weight: 500;
+		font-style: normal;
+	}
 
-  @font-face {
-    font-family: "Geist";
-    src: url("/fonts/geist/Geist-SemiBold.ttf") format("truetype");
-    font-weight: 600;
-    font-style: normal;
-  }
+	@font-face {
+		font-family: "Geist";
+		src: url("/fonts/geist/Geist-SemiBold.ttf") format("truetype");
+		font-weight: 600;
+		font-style: normal;
+	}
 
-  @font-face {
-    font-family: "Geist";
-    src: url("/fonts/geist/Geist-Bold.ttf") format("truetype");
-    font-weight: 700;
-    font-style: normal;
-  }
+	@font-face {
+		font-family: "Geist";
+		src: url("/fonts/geist/Geist-Bold.ttf") format("truetype");
+		font-weight: 700;
+		font-style: normal;
+	}
 
-  @font-face {
-    font-family: "Geist";
-    src: url("/fonts/geist/Geist-Black.ttf") format("truetype");
-    font-weight: 900;
-    font-style: normal;
-  }
+	@font-face {
+		font-family: "Geist";
+		src: url("/fonts/geist/Geist-Black.ttf") format("truetype");
+		font-weight: 900;
+		font-style: normal;
+	}
 
-  @font-face {
-    font-family: "Geist";
-    src: url("/fonts/geist/Geist-ExtraLight.ttf") format("truetype");
-    font-weight: 200;
-    font-style: normal;
-  }
+	@font-face {
+		font-family: "Geist";
+		src: url("/fonts/geist/Geist-ExtraLight.ttf") format("truetype");
+		font-weight: 200;
+		font-style: normal;
+	}
 
-  @font-face {
-    font-family: "Geist";
-    src: url("/fonts/geist/Geist-ExtraBold.ttf") format("truetype");
-    font-weight: 800;
-    font-style: normal;
-  }
+	@font-face {
+		font-family: "Geist";
+		src: url("/fonts/geist/Geist-ExtraBold.ttf") format("truetype");
+		font-weight: 800;
+		font-style: normal;
+	}
 
-  @font-face {
-    font-family: "Geist";
-    src: url("/fonts/geist/Geist-ExtraBoldItalic.ttf") format("truetype");
-    font-weight: 800;
-    font-style: italic;
-  }
+	@font-face {
+		font-family: "Geist";
+		src: url("/fonts/geist/Geist-ExtraBoldItalic.ttf") format("truetype");
+		font-weight: 800;
+		font-style: italic;
+	}
 
-  @font-face {
-    font-family: "Geist";
-    src: url("/fonts/geist/Geist-BlackItalic.ttf") format("truetype");
-    font-weight: 900;
-    font-style: italic;
-  }
+	@font-face {
+		font-family: "Geist";
+		src: url("/fonts/geist/Geist-BlackItalic.ttf") format("truetype");
+		font-weight: 900;
+		font-style: italic;
+	}
 
-  @font-face {
-    font-family: "Rubik";
-    src: url("/fonts/rubik/Rubik-Light.ttf") format("truetype");
-    font-weight: 300;
-    font-style: normal;
-  }
+	@font-face {
+		font-family: "Rubik";
+		src: url("/fonts/rubik/Rubik-Light.ttf") format("truetype");
+		font-weight: 300;
+		font-style: normal;
+	}
 
-  @font-face {
-    font-family: "Rubik";
-    src: url("/fonts/rubik/Rubik-LightItalic.ttf") format("truetype");
-    font-weight: 300;
-    font-style: italic;
-  }
+	@font-face {
+		font-family: "Rubik";
+		src: url("/fonts/rubik/Rubik-LightItalic.ttf") format("truetype");
+		font-weight: 300;
+		font-style: italic;
+	}
 
-  @font-face {
-    font-family: "Rubik";
-    src: url("/fonts/rubik/Rubik-Regular.ttf") format("truetype");
-    font-weight: 400;
-    font-style: normal;
-  }
+	@font-face {
+		font-family: "Rubik";
+		src: url("/fonts/rubik/Rubik-Regular.ttf") format("truetype");
+		font-weight: 400;
+		font-style: normal;
+	}
 
-  @font-face {
-    font-family: "Rubik";
-    src: url("/fonts/rubik/Rubik-Italic.ttf") format("truetype");
-    font-weight: 400;
-    font-style: italic;
-  }
+	@font-face {
+		font-family: "Rubik";
+		src: url("/fonts/rubik/Rubik-Italic.ttf") format("truetype");
+		font-weight: 400;
+		font-style: italic;
+	}
 
-  @font-face {
-    font-family: "Rubik";
-    src: url("/fonts/rubik/Rubik-Medium.ttf") format("truetype");
-    font-weight: 500;
-    font-style: normal;
-  }
+	@font-face {
+		font-family: "Rubik";
+		src: url("/fonts/rubik/Rubik-Medium.ttf") format("truetype");
+		font-weight: 500;
+		font-style: normal;
+	}
 
-  @font-face {
-    font-family: "Rubik";
-    src: url("/fonts/rubik/Rubik-MediumItalic.ttf") format("truetype");
-    font-weight: 500;
-    font-style: italic;
-  }
+	@font-face {
+		font-family: "Rubik";
+		src: url("/fonts/rubik/Rubik-MediumItalic.ttf") format("truetype");
+		font-weight: 500;
+		font-style: italic;
+	}
 
-  @font-face {
-    font-family: "Rubik";
-    src: url("/fonts/rubik/Rubik-SemiBold.ttf") format("truetype");
-    font-weight: 600;
-    font-style: normal;
-  }
+	@font-face {
+		font-family: "Rubik";
+		src: url("/fonts/rubik/Rubik-SemiBold.ttf") format("truetype");
+		font-weight: 600;
+		font-style: normal;
+	}
 
-  @font-face {
-    font-family: "Rubik";
-    src: url("/fonts/rubik/Rubik-SemiBoldItalic.ttf") format("truetype");
-    font-weight: 600;
-    font-style: italic;
-  }
+	@font-face {
+		font-family: "Rubik";
+		src: url("/fonts/rubik/Rubik-SemiBoldItalic.ttf") format("truetype");
+		font-weight: 600;
+		font-style: italic;
+	}
 
-  @font-face {
-    font-family: "Rubik";
-    src: url("/fonts/rubik/Rubik-Bold.ttf") format("truetype");
-    font-weight: 700;
-    font-style: normal;
-  }
+	@font-face {
+		font-family: "Rubik";
+		src: url("/fonts/rubik/Rubik-Bold.ttf") format("truetype");
+		font-weight: 700;
+		font-style: normal;
+	}
 
-  @font-face {
-    font-family: "Rubik";
-    src: url("/fonts/rubik/Rubik-BoldItalic.ttf") format("truetype");
-    font-weight: 700;
-    font-style: italic;
-  }
+	@font-face {
+		font-family: "Rubik";
+		src: url("/fonts/rubik/Rubik-BoldItalic.ttf") format("truetype");
+		font-weight: 700;
+		font-style: italic;
+	}
 
-  @font-face {
-    font-family: "Rubik";
-    src: url("/fonts/rubik/Rubik-ExtraBold.ttf") format("truetype");
-    font-weight: 800;
-    font-style: normal;
-  }
+	@font-face {
+		font-family: "Rubik";
+		src: url("/fonts/rubik/Rubik-ExtraBold.ttf") format("truetype");
+		font-weight: 800;
+		font-style: normal;
+	}
 
-  @font-face {
-    font-family: "Rubik";
-    src: url("/fonts/rubik/Rubik-ExtraBoldItalic.ttf") format("truetype");
-    font-weight: 800;
-    font-style: italic;
-  }
+	@font-face {
+		font-family: "Rubik";
+		src: url("/fonts/rubik/Rubik-ExtraBoldItalic.ttf") format("truetype");
+		font-weight: 800;
+		font-style: italic;
+	}
 
-  @font-face {
-    font-family: "Rubik";
-    src: url("/fonts/rubik/Rubik-Black.ttf") format("truetype");
-    font-weight: 900;
-    font-style: normal;
-  }
+	@font-face {
+		font-family: "Rubik";
+		src: url("/fonts/rubik/Rubik-Black.ttf") format("truetype");
+		font-weight: 900;
+		font-style: normal;
+	}
 
-  @font-face {
-    font-family: "Rubik";
-    src: url("/fonts/rubik/Rubik-BlackItalic.ttf") format("truetype");
-    font-weight: 900;
-    font-style: italic;
-  }
+	@font-face {
+		font-family: "Rubik";
+		src: url("/fonts/rubik/Rubik-BlackItalic.ttf") format("truetype");
+		font-weight: 900;
+		font-style: italic;
+	}
 }
 
 /* Custom scrollbar styling */
 ::-webkit-scrollbar {
-  width: 6px; /* Make the scrollbar thinner */
+	width: 6px; /* Make the scrollbar thinner */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cccccc; /* Lighter gray thumb */
-  border-radius: 4px; /* Rounded corners on the thumb */
+	background: #cccccc; /* Lighter gray thumb */
+	border-radius: 4px; /* Rounded corners on the thumb */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #b3b3b3; /* Slightly darker on hover for better UX */
+	background: #b3b3b3; /* Slightly darker on hover for better UX */
 }
 
 .three-body {
-  --uib-size: 17px;
-  --uib-speed: 0.8s;
-  --uib-color: #030303;
-  position: relative;
-  display: inline-block;
-  height: var(--uib-size);
-  width: var(--uib-size);
-  animation: spin78236 calc(var(--uib-speed) * 2.5) infinite linear;
+	--uib-size: 17px;
+	--uib-speed: 0.8s;
+	--uib-color: #030303;
+	position: relative;
+	display: inline-block;
+	height: var(--uib-size);
+	width: var(--uib-size);
+	animation: spin78236 calc(var(--uib-speed) * 2.5) infinite linear;
 }
 
 .three-body__dot {
-  position: absolute;
-  height: 100%;
-  width: 30%;
+	position: absolute;
+	height: 100%;
+	width: 30%;
 }
 
 .three-body__dot:after {
-  content: "";
-  position: absolute;
-  height: 0%;
-  width: 100%;
-  padding-bottom: 100%;
-  background-color: var(--uib-color);
-  border-radius: 50%;
+	content: "";
+	position: absolute;
+	height: 0%;
+	width: 100%;
+	padding-bottom: 100%;
+	background-color: var(--uib-color);
+	border-radius: 50%;
 }
 
 .three-body__dot:nth-child(1) {
-  bottom: 5%;
-  left: 0;
-  transform: rotate(60deg);
-  transform-origin: 50% 85%;
+	bottom: 5%;
+	left: 0;
+	transform: rotate(60deg);
+	transform-origin: 50% 85%;
 }
 
 .three-body__dot:nth-child(1)::after {
-  bottom: 0;
-  left: 0;
-  animation: wobble1 var(--uib-speed) infinite ease-in-out;
-  animation-delay: calc(var(--uib-speed) * -0.3);
+	bottom: 0;
+	left: 0;
+	animation: wobble1 var(--uib-speed) infinite ease-in-out;
+	animation-delay: calc(var(--uib-speed) * -0.3);
 }
 
 .three-body__dot:nth-child(2) {
-  bottom: 5%;
-  right: 0;
-  transform: rotate(-60deg);
-  transform-origin: 50% 85%;
+	bottom: 5%;
+	right: 0;
+	transform: rotate(-60deg);
+	transform-origin: 50% 85%;
 }
 
 .three-body__dot:nth-child(2)::after {
-  bottom: 0;
-  left: 0;
-  animation: wobble1 var(--uib-speed) infinite calc(var(--uib-speed) * -0.15)
-    ease-in-out;
+	bottom: 0;
+	left: 0;
+	animation: wobble1 var(--uib-speed) infinite calc(var(--uib-speed) * -0.15)
+		ease-in-out;
 }
 
 .three-body__dot:nth-child(3) {
-  bottom: -5%;
-  left: 0;
-  transform: translateX(116.666%);
+	bottom: -5%;
+	left: 0;
+	transform: translateX(116.666%);
 }
 
 .three-body__dot:nth-child(3)::after {
-  top: 0;
-  left: 0;
-  animation: wobble2 var(--uib-speed) infinite ease-in-out;
+	top: 0;
+	left: 0;
+	animation: wobble2 var(--uib-speed) infinite ease-in-out;
 }
 
 @keyframes spin78236 {
-  0% {
-    transform: rotate(0deg);
-  }
+	0% {
+		transform: rotate(0deg);
+	}
 
-  100% {
-    transform: rotate(360deg);
-  }
+	100% {
+		transform: rotate(360deg);
+	}
 }
 
 @keyframes wobble1 {
-  0%,
-  100% {
-    transform: translateY(0%) scale(1);
-    opacity: 1;
-  }
+	0%,
+	100% {
+		transform: translateY(0%) scale(1);
+		opacity: 1;
+	}
 
-  50% {
-    transform: translateY(-66%) scale(0.65);
-    opacity: 0.8;
-  }
+	50% {
+		transform: translateY(-66%) scale(0.65);
+		opacity: 0.8;
+	}
 }
 
 @keyframes wobble2 {
-  0%,
-  100% {
-    transform: translateY(0%) scale(1);
-    opacity: 1;
-  }
+	0%,
+	100% {
+		transform: translateY(0%) scale(1);
+		opacity: 1;
+	}
 
-  50% {
-    transform: translateY(66%) scale(0.65);
-    opacity: 0.8;
-  }
+	50% {
+		transform: translateY(66%) scale(0.65);
+		opacity: 0.8;
+	}
 }
 
 /* Add ping animation for active research status */
 @keyframes ping {
-  75%,
-  100% {
-    transform: scale(2);
-    opacity: 0;
-  }
+	75%,
+	100% {
+		transform: scale(2);
+		opacity: 0;
+	}
 }
 
 .animate-ping {
-  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+	animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
 @keyframes gradient-flow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
 }
 
 .snippet-line {
-  background: linear-gradient(45deg, #a882ff, #e0c8ff, #876be0, #735290);
-  background-size: 400% 400%;
-  animation: gradient-flow 8s ease infinite;
-  box-shadow: 0 0 15px rgba(135, 107, 224, 0.3);
-  transition: all 0.3s ease;
+	background: linear-gradient(45deg, #a882ff, #e0c8ff, #876be0, #735290);
+	background-size: 400% 400%;
+	animation: gradient-flow 8s ease infinite;
+	box-shadow: 0 0 15px rgba(135, 107, 224, 0.3);
+	transition: all 0.3s ease;
 }
 
 @keyframes gradient-flow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
 }

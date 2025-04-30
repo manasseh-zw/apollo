@@ -6,31 +6,31 @@ import "./app.css";
 import Providers from "./providers";
 
 const router = createRouter({
-  routeTree,
-  context: {},
-  defaultPreload: "intent",
-  defaultViewTransition: true,
-  scrollRestoration: true,
-  defaultStructuralSharing: true,
-  defaultPreloadStaleTime: 0,
+	routeTree,
+	context: {},
+	defaultPreload: "intent",
+	defaultViewTransition: true,
+	scrollRestoration: true,
+	defaultStructuralSharing: true,
+	defaultPreloadStaleTime: 0,
 });
 
 declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
+	interface Register {
+		router: typeof router;
+	}
 }
 
 const rootElement = document.getElementById("app");
 if (rootElement && !rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
-    <StrictMode>
-      <Providers>
-        <main className="">
-          <RouterProvider router={router} />
-        </main>
-      </Providers>
-    </StrictMode>
-  );
+	const root = ReactDOM.createRoot(rootElement);
+	root.render(
+		<StrictMode>
+			<Providers>
+				<main className="">
+					<RouterProvider router={router} />
+				</main>
+			</Providers>
+		</StrictMode>,
+	);
 }

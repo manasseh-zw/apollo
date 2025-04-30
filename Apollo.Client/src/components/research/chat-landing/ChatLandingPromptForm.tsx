@@ -3,7 +3,6 @@
 import React from "react";
 import { Button, Chip, cn, Tooltip } from "@heroui/react";
 import ChatLandingPromptInput from "./ChatLandingPromptInput";
-import { apiRequest } from "../../../lib/utils/api";
 import { ArrowUp } from "lucide-react";
 import { OpenAI } from "../../Icons";
 
@@ -52,7 +51,7 @@ export default function ChatLandingPromptForm({
             variant="light"
             size="sm"
           >
-            Gpt 4.1 
+            Gpt 4.1
           </Chip>
         </div>
         <Tooltip showArrow content="Start Research">

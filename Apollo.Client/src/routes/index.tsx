@@ -1,6 +1,6 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { Logo, LogoLight } from "../components/Icons";
+import { LogoLight } from "../components/Icons";
 import { store } from "../lib/state/store";
 
 export const Route = createFileRoute("/")({

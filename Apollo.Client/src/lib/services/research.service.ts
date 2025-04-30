@@ -3,8 +3,6 @@ import type {
   ResearchResponse,
   ResearchHistoryItem,
   PaginatedResponse,
-  ResearchFeedUpdate,
-  AgentChatMessage,
   ResearchUpdatesResponse,
 } from "../types/research";
 
@@ -15,8 +13,8 @@ export async function getResearchById(
 }
 
 export async function getResearchHistory(
-  page: number = 1,
-  pageSize: number = 5
+  page = 1,
+  pageSize = 5
 ): Promise<ApiResponse<PaginatedResponse<ResearchHistoryItem>>> {
   return apiRequest<PaginatedResponse<ResearchHistoryItem>>(
     `/api/research/history?page=${page}&pageSize=${pageSize}`

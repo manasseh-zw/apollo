@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { Tooltip, Skeleton, Button } from "@heroui/react";
 import { DynamicIcon, type IconName } from "lucide-react/dynamic";
 import type { ResearchHistoryItem } from "../../lib/types/research";
-import { ArrowDown, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 export type SidebarItem = {
   key: string;

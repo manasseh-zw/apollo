@@ -5,10 +5,6 @@ import {
   ResearchFeedUpdateType,
 } from "../../../lib/types/research";
 
-interface ResearchFeedUpdateProps {
-  update: ResearchFeedUpdate;
-}
-
 export function MessageUpdate({ content }: { content: string }) {
   return (
     <div className="flex items-start">
@@ -83,7 +79,7 @@ function SearchResult({
   highlights = [],
 }: SearchResultItem) {
   // Extract domain from URL
-  const domain = url.replace(/^https?:\/\//, '').split('/')[0];
+  const domain = url.replace(/^https?:\/\//, "").split("/")[0];
 
   return (
     <div className="flex items-start gap-3 group cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors">
@@ -103,7 +99,9 @@ function SearchResult({
             {title}
           </p>
         </div>
-        <a className="text-sm text-blue-500" href={url}>{domain}</a>
+        <a className="text-sm text-blue-500" href={url}>
+          {domain}
+        </a>
         {snippet && (
           <div className="relative mt-3 pl-4 prose">
             <div className="absolute left-0 top-0 w-[1px] h-full bg-content2 rounded-full"></div>

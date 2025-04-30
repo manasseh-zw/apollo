@@ -15,9 +15,11 @@ export default function ChatLanding() {
       </div>
 
       <div className="w-full">
-        <ChatLandingPromptForm onStartConversation={function (id: string, query: string): void {
-          throw new Error("Function not implemented.");
-        } } />
+        <ChatLandingPromptForm
+          onStartConversation={(): void => {
+            throw new Error("Function not implemented.");
+          }}
+        />
       </div>
     </div>
   );

@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, useRef } from "react";
 import { Check, FileSearch, FileText } from "lucide-react";
 import { cn, Spinner, Avatar, AvatarGroup } from "@heroui/react";
@@ -16,7 +14,7 @@ import {
 import ResearchFeedUpdateComponent from "./FeedUpdate";
 import TriLoader from "./TriLoader";
 import { useResearchTimer } from "../../../lib/hooks/useResearchTimer";
-import { HubConnection } from "@microsoft/signalr";
+import type { HubConnection } from "@microsoft/signalr";
 import React from "react";
 
 interface ResearchFeedProps {
@@ -28,13 +26,12 @@ interface ResearchFeedProps {
 
 export default function ResearchFeed({
   connection,
-  researchId,
   research,
   initialFeedUpdates,
 }: ResearchFeedProps) {
-  const [expanded, setExpanded] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  //   const [expanded, setExpanded] = useState(false);
+  //   const [isLoading, setIsLoading] = useState(false);
+  const [error] = useState<string | null>(null);
   const [feedUpdates, setFeedUpdates] = useState<ResearchFeedUpdate[]>(
     initialFeedUpdates ?? []
   );
@@ -123,7 +120,7 @@ export default function ResearchFeed({
                 className="absolute mt-1 left-[10px] top-0 h-full w-[2px] bg-gray-300"
                 style={{
                   height: `${timelineItems.length * 75}px`,
-                }}  
+                }}
               ></div>
 
               <div className="mb-8 flex flex-col gap-6">
@@ -138,7 +135,7 @@ export default function ResearchFeed({
           <div className="mt-4 pt-4 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Sources</span>
-              <AvatarGroup    
+              <AvatarGroup
                 size="sm"
                 max={4}
                 total={searchResultIcons.length}

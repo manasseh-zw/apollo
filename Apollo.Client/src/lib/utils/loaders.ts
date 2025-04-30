@@ -4,32 +4,31 @@ import { store } from "../state/store";
 const AUTH_CHECK_TIMEOUT = 5000; // 5 seconds timeout
 
 async function waitForAuthState(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      reject(new Error("Auth state check timed out"));
-    }, AUTH_CHECK_TIMEOUT);
+	return new Promise((resolve, reject) => {
+		const timeout = setTimeout(() => {
+			reject(new Error("Auth state check timed out"));
+		}, AUTH_CHECK_TIMEOUT);
 
-    // Check immediately first
-    if (!store.state.authState.isLoading) {
-      clearTimeout(timeout);
-      resolve();
-      return;
-    }
+		// Check immediately first
+		if (!store.state.authState.isLoading) {
+			clearTimeout(timeout);
+			resolve();
+			return;
+		}
 
-    const unsubscribe = store.subscribe((state) => {
-      if (!state.currentVal.authState.isLoading) {
-        clearTimeout(timeout);
-        unsubscribe();
-        resolve();
-      }
-    });
+		const unsubscribe = store.subscribe((state) => {
+			if (!state.currentVal.authState.isLoading) {
+				clearTimeout(timeout);
+				unsubscribe();
+				resolve();
+			}
+		});
 
-    return () => {
-      clearTimeout(timeout);
-      unsubscribe();
-    };
-    
-  });
+		return () => {
+			clearTimeout(timeout);
+			unsubscribe();
+		};
+	});
 }
 
 /**
@@ -37,29 +36,29 @@ async function waitForAuthState(): Promise<void> {
  * and redirects to the sign-in page if not
  */
 export async function protectedLoader() {
-  try {
-    await waitForAuthState();
-    
-    const { isAuthenticated } = store.state.authState;
-    if (!isAuthenticated) {
-      throw redirect({
-        to: "/auth/sign-in",
-        search: {
-          redirect: window.location.pathname,
-        },
-      });
-    }
+	try {
+		await waitForAuthState();
 
-    return null;
-  } catch (error) {
-    // If timeout or other error, redirect to sign-in as a fallback
-    throw redirect({
-      to: "/auth/sign-in",
-      search: {
-        redirect: window.location.pathname,
-      },
-    });
-  }
+		const { isAuthenticated } = store.state.authState;
+		if (!isAuthenticated) {
+			throw redirect({
+				to: "/auth/sign-in",
+				search: {
+					redirect: window.location.pathname,
+				},
+			});
+		}
+
+		return null;
+	} catch (error) {
+		// If timeout or other error, redirect to sign-in as a fallback
+		throw redirect({
+			to: "/auth/sign-in",
+			search: {
+				redirect: window.location.pathname,
+			},
+		});
+	}
 }
 
 /**
@@ -67,19 +66,19 @@ export async function protectedLoader() {
  * and redirects to the dashboard if they are
  */
 export async function publicOnlyLoader() {
-  try {
-    await waitForAuthState();
-    
-    const { isAuthenticated } = store.state.authState;
-    if (isAuthenticated) {
-      throw redirect({
-        to: "/research",
-      });
-    }
+	try {
+		await waitForAuthState();
 
-    return null;
-  } catch (error) {
-    // If timeout or other error, allow access to public route
-    return null;
-  }
+		const { isAuthenticated } = store.state.authState;
+		if (isAuthenticated) {
+			throw redirect({
+				to: "/research",
+			});
+		}
+
+		return null;
+	} catch (error) {
+		// If timeout or other error, allow access to public route
+		return null;
+	}
 }

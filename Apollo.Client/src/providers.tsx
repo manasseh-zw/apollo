@@ -7,13 +7,13 @@ import { config } from "../config";
 const queryClient = new QueryClient();
 
 export default function Providers({ children }: { children: ReactNode }) {
-  return (
-    <HeroUIProvider>
-      <QueryClientProvider client={queryClient}>
-        <GoogleOAuthProvider clientId={config.googleClientId}>
-          {children}
-        </GoogleOAuthProvider>
-      </QueryClientProvider>
-    </HeroUIProvider>
-  );
+	return (
+		<HeroUIProvider>
+			<QueryClientProvider client={queryClient}>
+				<GoogleOAuthProvider clientId={config.googleClientId}>
+					{children}
+				</GoogleOAuthProvider>
+			</QueryClientProvider>
+		</HeroUIProvider>
+	);
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Avatar, AvatarGroup } from "@heroui/react";
-import { HubConnection } from "@microsoft/signalr";
+import type { HubConnection } from "@microsoft/signalr";
 import type { AgentChatMessage } from "../../lib/types/research";
 import ReactMarkdown from "react-markdown";
 
@@ -11,16 +11,15 @@ interface AgentChatProps {
 }
 
 const agentPersonas: Record<string, { name: string; avatar: string }> = {
-  "ResearchCoordinator": { name: "Apollo", avatar: "/agents/agent1.jpg" },
-  "ResearchEngine": { name: "Athena", avatar: "/agents/agent2.jpg" },
-  "ResearchAnalyzer": { name: "Hermes", avatar: "/agents/agent3.jpg" },
+  ResearchCoordinator: { name: "Apollo", avatar: "/agents/agent1.jpg" },
+  ResearchEngine: { name: "Athena", avatar: "/agents/agent2.jpg" },
+  ResearchAnalyzer: { name: "Hermes", avatar: "/agents/agent3.jpg" },
 };
 
 const activeAgents = Object.values(agentPersonas);
 
 export default function AgentChat({
   connection,
-  researchId,
   initialChatMessages,
 }: AgentChatProps) {
   const [messages, setMessages] = useState<AgentChatMessage[]>(
@@ -53,7 +52,7 @@ export default function AgentChat({
       <div className="sticky top-0 bg-white border-b border-gray-200 py-3 px-2">
         <div className="flex items-center justify-between">
           <h2 className="text-md  text-primary">Agent Group Chat</h2>
-          <AvatarGroup  max={3} size="sm">
+          <AvatarGroup max={3} size="sm">
             {activeAgents.map((agent) => (
               <Avatar
                 key={agent.name}
