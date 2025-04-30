@@ -85,6 +85,14 @@ public static class AppConfig
             TextEmbeddingSmall = "text-embedding-3-small",
             GeminiPro25 = "gemini-2.5-pro-preview-03-25",
         };
+
+    public static Client Client { get; } =
+        new()
+        {
+            Url =
+                Environment.GetEnvironmentVariable("CLIENT_URL")
+                ?? throw new Exception("Client URL is not set"),
+        };
 }
 
 public class DatabaseOptions
@@ -129,4 +137,9 @@ public class Models
 public class ExaAI
 {
     public string ApiKey { get; init; } = string.Empty;
+}
+
+public class Client
+{
+    public string Url { get; set; }
 }
