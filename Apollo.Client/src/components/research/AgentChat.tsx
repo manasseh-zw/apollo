@@ -7,6 +7,7 @@ import ReactMarkdown from "react-markdown";
 interface AgentChatProps {
   connection: HubConnection | null;
   researchId: string;
+  initialChatMessages?: AgentChatMessage[];
 }
 
 const agentPersonas: Record<string, { name: string; avatar: string }> = {
@@ -17,8 +18,14 @@ const agentPersonas: Record<string, { name: string; avatar: string }> = {
 
 const activeAgents = Object.values(agentPersonas);
 
-export default function AgentChat({ connection, researchId }: AgentChatProps) {
-  const [messages, setMessages] = useState<AgentChatMessage[]>([]);
+export default function AgentChat({
+  connection,
+  researchId,
+  initialChatMessages,
+}: AgentChatProps) {
+  const [messages, setMessages] = useState<AgentChatMessage[]>(
+    initialChatMessages ?? []
+  );
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {

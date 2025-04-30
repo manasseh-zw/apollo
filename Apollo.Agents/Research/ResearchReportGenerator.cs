@@ -1,5 +1,6 @@
 using System.Text;
 using Apollo.Agents.Contracts;
+using Apollo.Agents.Events;
 using Apollo.Agents.Helpers;
 using Apollo.Agents.Memory;
 using Apollo.Agents.State;
@@ -29,13 +30,15 @@ public class ResearchReportGenerator : IResearchReportGenerator
     private readonly IStateManager _state;
     private readonly ILogger<ResearchReportGenerator> _logger;
     private readonly IChatCompletionService _chat;
+    private readonly IResearchEventHandler _eventHandler;
 
     public ResearchReportGenerator(
         IMemoryContext memory,
         ApolloDbContext repository,
         IClientUpdateCallback clientUpdate,
         IStateManager state,
-        ILogger<ResearchReportGenerator> logger
+        ILogger<ResearchReportGenerator> logger,
+        IResearchEventHandler eventHandler
     )
     {
         _memory = memory;
@@ -43,6 +46,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
         _clientUpdate = clientUpdate;
         _state = state;
         _logger = logger;
+        _eventHandler = eventHandler;
 
         var kernel = Kernel
             .CreateBuilder()
@@ -61,6 +65,15 @@ public class ResearchReportGenerator : IResearchReportGenerator
     )
     {
         _logger.LogInformation("[{ResearchId}] Starting report generation", researchId);
+        _state.AddFeedUpdate(
+            researchId,
+            new ProgressMessageFeedUpdate
+            {
+                ResearchId = researchId,
+                Type = ResearchFeedUpdateType.Message,
+                Message = "Starting report generation...",
+            }
+        );
         _clientUpdate.SendResearchFeedUpdate(
             new ProgressMessageFeedUpdate
             {
@@ -95,6 +108,16 @@ public class ResearchReportGenerator : IResearchReportGenerator
                 var sectionTask = Task.Run(
                     async () =>
                     {
+                        _state.AddFeedUpdate(
+                            researchId,
+                            new ProgressMessageFeedUpdate
+                            {
+                                ResearchId = researchId,
+                                Type = ResearchFeedUpdateType.Message,
+                                Message =
+                                    $"Gathering information for section {sectionIndex + 1} of {toc.Count}: {section}",
+                            }
+                        );
                         _clientUpdate.SendResearchFeedUpdate(
                             new ProgressMessageFeedUpdate
                             {
@@ -169,6 +192,15 @@ public class ResearchReportGenerator : IResearchReportGenerator
                 .Where(result => !string.IsNullOrEmpty(result.Content))
                 .ToList();
 
+            _state.AddFeedUpdate(
+                researchId,
+                new ProgressMessageFeedUpdate
+                {
+                    ResearchId = researchId,
+                    Type = ResearchFeedUpdateType.Message,
+                    Message = "Synthesizing final report...",
+                }
+            );
             _clientUpdate.SendResearchFeedUpdate(
                 new ProgressMessageFeedUpdate
                 {
@@ -229,6 +261,25 @@ public class ResearchReportGenerator : IResearchReportGenerator
             await _repository.ResearchReports.AddAsync(report, cancellationToken);
             await _repository.SaveChangesAsync(cancellationToken);
 
+            // Notify about research completion with report
+            await _eventHandler.HandleResearchCompletedWithReport(
+                new ResearchCompletedWithReportEvent
+                {
+                    ResearchId = research.Id,
+                    UserId = research.UserId.ToString(),
+                    Report = report,
+                }
+            );
+
+            _state.AddFeedUpdate(
+                researchId,
+                new ProgressMessageFeedUpdate
+                {
+                    ResearchId = researchId,
+                    Type = ResearchFeedUpdateType.Message,
+                    Message = "Report generation complete!",
+                }
+            );
             _clientUpdate.SendResearchFeedUpdate(
                 new ProgressMessageFeedUpdate
                 {

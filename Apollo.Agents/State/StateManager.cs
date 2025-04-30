@@ -18,6 +18,8 @@ public interface IStateManager
     void MarkAnalysisStarted(string researchId);
     void MarkAnalysisComplete(string researchId);
     bool HasInitialAnalysisBeenPerformed(string researchId);
+    void AddFeedUpdate(string researchId, ResearchFeedUpdateEvent update);
+    void AddChatMessage(string researchId, AgentChatMessageEvent message);
 }
 
 public class StateManager : IStateManager
@@ -52,7 +54,10 @@ public class StateManager : IStateManager
                         "Creating new research state for ID: {ResearchId}",
                         researchId
                     );
-                    return await factory();
+                    var state = await factory();
+                    state.FeedUpdates = new List<ResearchFeedUpdateEvent>();
+                    state.ChatMessages = new List<AgentChatMessageEvent>();
+                    return state;
                 }
             ) ?? throw new Exception("research state is null");
     }
@@ -149,7 +154,7 @@ public class StateManager : IStateManager
         );
 
         // Add Analysis phase if it's in progress or has been completed
-        if (state.IsAnalyzing || state.HasPerformedInitialAnalysis)
+        if (state.IsAnalyzing && state.HasPerformedInitialAnalysis)
         {
             timelineItems.Add(
                 new TimelineItem
@@ -359,6 +364,38 @@ public class StateManager : IStateManager
         var state = GetState(researchId);
         return state.HasPerformedInitialAnalysis;
     }
+
+    public void AddFeedUpdate(string researchId, ResearchFeedUpdateEvent update)
+    {
+        UpdateState(
+            researchId,
+            state =>
+            {
+                state.FeedUpdates.Add(update);
+                _logger.LogDebug(
+                    "[{ResearchId}] Added feed update of type {UpdateType}",
+                    researchId,
+                    update.Type
+                );
+            }
+        );
+    }
+
+    public void AddChatMessage(string researchId, AgentChatMessageEvent message)
+    {
+        UpdateState(
+            researchId,
+            state =>
+            {
+                state.ChatMessages.Add(message);
+                _logger.LogDebug(
+                    "[{ResearchId}] Added chat message from {Author}",
+                    researchId,
+                    message.Author
+                );
+            }
+        );
+    }
 }
 
 public class ResearchState
@@ -377,6 +414,8 @@ public class ResearchState
     public bool IsAnalyzing { get; set; } = false;
     public bool SynthesisComplete { get; set; } = false;
     public bool HasPerformedInitialAnalysis { get; set; } = false;
+    public List<ResearchFeedUpdateEvent> FeedUpdates { get; set; } = [];
+    public List<AgentChatMessageEvent> ChatMessages { get; set; } = [];
 
     public ResearchQuestion? GetActiveQuestion()
     {

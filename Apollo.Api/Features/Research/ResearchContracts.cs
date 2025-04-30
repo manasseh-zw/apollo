@@ -1,3 +1,4 @@
+using Apollo.Agents.Contracts;
 using Apollo.Data.Models;
 
 namespace Apollo.Api.Features.Research;
@@ -36,4 +37,9 @@ public record PaginatedResponse<T>(
     int Page,
     int PageSize,
     bool HasMore
+);
+
+public record ResearchUpdatesResponse(
+    List<ResearchFeedUpdateEvent> FeedUpdates,
+    List<AgentChatMessageEvent> ChatMessages
 );

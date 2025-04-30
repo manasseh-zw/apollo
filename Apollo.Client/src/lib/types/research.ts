@@ -141,3 +141,8 @@ export type PaginatedResponse<T> = {
   pageSize: number;
   hasMore: boolean;
 };
+
+export type ResearchUpdatesResponse = {
+  feedUpdates: ResearchFeedUpdate[];
+  chatMessages: AgentChatMessage[];
+};

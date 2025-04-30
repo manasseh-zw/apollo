@@ -6,9 +6,6 @@ using Apollo.Agents.State;
 using Apollo.Config;
 using Apollo.Data.Models;
 using Apollo.Data.Repository;
-using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.Drawing.Diagrams;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -137,6 +134,15 @@ public class ResearchOrchestrator
             researchId
         );
 
+        _state.AddFeedUpdate(
+            researchId,
+            new ProgressMessageFeedUpdate
+            {
+                ResearchId = researchId,
+                Type = ResearchFeedUpdateType.Message,
+                Message = "Research is now initiating!",
+            }
+        );
         _clientUpdate.SendResearchFeedUpdate(
             new ProgressMessageFeedUpdate
             {
@@ -166,14 +172,14 @@ public class ResearchOrchestrator
                 {
                     if (currentMessageBuffer.Length > 0)
                     {
-                        _clientUpdate.SendAgentChatMessage(
-                            new AgentChatMessageEvent
-                            {
-                                ResearchId = researchId,
-                                Author = currentAuthor,
-                                Message = currentMessageBuffer.ToString(),
-                            }
-                        );
+                        var message = new AgentChatMessageEvent
+                        {
+                            ResearchId = researchId,
+                            Author = currentAuthor,
+                            Message = currentMessageBuffer.ToString(),
+                        };
+                        _state.AddChatMessage(researchId, message);
+                        _clientUpdate.SendAgentChatMessage(message);
                         _logger.LogInformation(
                             "[{ResearchId}] >> {message} from {AgentName}",
                             researchId,
@@ -188,14 +194,14 @@ public class ResearchOrchestrator
             }
             if (currentMessageBuffer.Length > 0 && currentAuthor != null)
             {
-                _clientUpdate.SendAgentChatMessage(
-                    new AgentChatMessageEvent
-                    {
-                        ResearchId = researchId,
-                        Author = currentAuthor,
-                        Message = currentMessageBuffer.ToString(),
-                    }
-                );
+                var message = new AgentChatMessageEvent
+                {
+                    ResearchId = researchId,
+                    Author = currentAuthor,
+                    Message = currentMessageBuffer.ToString(),
+                };
+                _state.AddChatMessage(researchId, message);
+                _clientUpdate.SendAgentChatMessage(message);
                 _logger.LogInformation(
                     "[{ResearchId}] >> Sent final message {message}  after loop from {AgentName}",
                     researchId,

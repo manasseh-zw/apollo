@@ -310,7 +310,9 @@ public class Prompts
                     Given the research topic '[title]' and description '[description]', please:
                     Propose a logical and comprehensive Table of Contents that effectively organizes all the gathered information
                     ```
-                *   **Action:** Call `StatePlugin.UpdateTableOfContents()` with the final TOC
+                *   **Table of Contents**
+                *   **Action:** Call `StatePlugin.UpdateTableOfContents()` with the final TOC, where you pass only the main sections and subsections are within the same string ..
+                    e.g.["Section Title: subsection1, subsection2, section3","Section Title: ..."], so the sectoins you pass to the plugin are to be no more 15 Main sections
 
             4.  **Step 4: Mark Analysis Complete**
                 *   **Action:** Call `StatePlugin.MarkAnalysisComplete()`

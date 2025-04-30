@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Check, FileSearch, FileText } from "lucide-react";
-import { cn, Spinner } from "@heroui/react";
+import { cn, Spinner, Avatar, AvatarGroup } from "@heroui/react";
 import {
   type TimelineItem,
   type ResearchFeedUpdate,
@@ -10,27 +10,34 @@ import {
   type ResearchResponse,
   TimelineItemStatus,
   TimelineItemType,
+  ResearchFeedUpdateType,
+  type SearchResultsUpdate,
 } from "../../../lib/types/research";
 import ResearchFeedUpdateComponent from "./FeedUpdate";
 import TriLoader from "./TriLoader";
 import { useResearchTimer } from "../../../lib/hooks/useResearchTimer";
 import { HubConnection } from "@microsoft/signalr";
+import React from "react";
 
 interface ResearchFeedProps {
   connection: HubConnection | null;
   researchId: string;
   research: ResearchResponse;
+  initialFeedUpdates?: ResearchFeedUpdate[];
 }
 
 export default function ResearchFeed({
   connection,
   researchId,
   research,
+  initialFeedUpdates,
 }: ResearchFeedProps) {
   const [expanded, setExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [feedUpdates, setFeedUpdates] = useState<ResearchFeedUpdate[]>([]);
+  const [feedUpdates, setFeedUpdates] = useState<ResearchFeedUpdate[]>(
+    initialFeedUpdates ?? []
+  );
   const [timelineItems, setTimelineItems] = useState<TimelineItem[]>(
     research.plan.questions.map((q, i) => ({
       id: i.toString(),
@@ -70,6 +77,24 @@ export default function ResearchFeed({
 
   const elapsedTime = useResearchTimer(research.startedAt);
 
+  const searchResultIcons = React.useMemo(() => {
+    const icons = new Set<string>();
+    feedUpdates.forEach((update) => {
+      if (
+        update.type === ResearchFeedUpdateType.SearchResults &&
+        "results" in update // Type guard to ensure update is SearchResultsUpdate
+      ) {
+        const searchUpdate = update as SearchResultsUpdate;
+        searchUpdate.results?.forEach((result) => {
+          if (result?.icon) {
+            icons.add(result.icon);
+          }
+        });
+      }
+    });
+    return Array.from(icons);
+  }, [feedUpdates]);
+
   if (error) {
     return (
       <div className="flex h-full w-full items-center justify-center">
@@ -90,19 +115,55 @@ export default function ResearchFeed({
         </div>
         <small className="mt-3">{research.title}</small>
 
-        <div className="mt-6 flex-1 overflow-y-auto">
-          <div className="relative">
-            <div
-              className="absolute mt-1 left-[10px] top-0 h-full w-[2px] bg-gray-300"
-              style={{
-                height: `${timelineItems.length * 75}px`, // Adjust based on your item height
-              }}
-            ></div>
+        {/* Timeline section with scrollable content */}
+        <div className="mt-6 flex-1 flex flex-col overflow-hidden ">
+          <div className="flex-1 overflow-y-auto">
+            <div className="relative">
+              <div
+                className="absolute mt-1 left-[10px] top-0 h-full w-[2px] bg-gray-300"
+                style={{
+                  height: `${timelineItems.length * 75}px`,
+                }}  
+              ></div>
 
-            <div className="mb-8 flex flex-col gap-6">
-              {timelineItems.map((item) => (
-                <TimelineItemComponent key={item.id} {...item} />
-              ))}
+              <div className="mb-8 flex flex-col gap-6">
+                {timelineItems.map((item) => (
+                  <TimelineItemComponent key={item.id} {...item} />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Search Sources Avatar Group */}
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Sources</span>
+              <AvatarGroup    
+                size="sm"
+                max={4}
+                total={searchResultIcons.length}
+                renderCount={(count) => (
+                  <p className="text-small text-foreground font-medium ms-2 ">
+                    +{count} others
+                  </p>
+                )}
+              >
+                {searchResultIcons
+                  .slice(0, 5)
+                  .map((icon: string, index: number) => (
+                    <Avatar
+                      classNames={{ base: "bg-white " }}
+                      key={index}
+                      src={icon}
+                      fallback={
+                        <img
+                          src="https://www.google.com/favicon.ico"
+                          alt="fallback"
+                        />
+                      }
+                    />
+                  ))}
+              </AvatarGroup>
             </div>
           </div>
         </div>

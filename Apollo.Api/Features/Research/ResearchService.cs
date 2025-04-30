@@ -1,4 +1,6 @@
+using Apollo.Agents.Contracts;
 using Apollo.Agents.Events;
+using Apollo.Agents.State;
 using Apollo.Data.Models;
 using Apollo.Data.Repository;
 using FluentResults;
@@ -17,17 +19,24 @@ public interface IResearchService
         int page = 1,
         int pageSize = 5
     );
+    Task<Result<ResearchUpdatesResponse>> GetResearchUpdates(Guid userId, Guid researchId);
 }
 
 public class ResearchService : IResearchService
 {
     private readonly ApolloDbContext _repository;
     private readonly IResearchEventHandler _eventHandler;
+    private readonly IStateManager _stateManager;
 
-    public ResearchService(ApolloDbContext repository, IResearchEventHandler eventHandler)
+    public ResearchService(
+        ApolloDbContext repository,
+        IResearchEventHandler eventHandler,
+        IStateManager stateManager
+    )
     {
         _repository = repository;
         _eventHandler = eventHandler;
+        _stateManager = stateManager;
     }
 
     public async Task<Result<PaginatedResponse<ResearchHistoryItemResponse>>> GetResearchHistory(
@@ -157,5 +166,42 @@ public class ResearchService : IResearchService
             research.Status
         );
         return Result.Ok(response);
+    }
+
+    public async Task<Result<ResearchUpdatesResponse>> GetResearchUpdates(
+        Guid userId,
+        Guid researchId
+    )
+    {
+        // First verify the user has access to this research
+        var research = await _repository.Research.FirstOrDefaultAsync(r =>
+            r.Id == researchId && r.UserId == userId
+        );
+
+        if (research == null)
+        {
+            return Result.Fail("Research not found");
+        }
+
+        // Only return updates if research is in progress
+        if (research.Status != ResearchStatus.InProgress)
+        {
+            return Result.Ok(new ResearchUpdatesResponse(new List<ResearchFeedUpdateEvent>(), []));
+        }
+
+        try
+        {
+            var state = _stateManager.GetState(researchId.ToString());
+            return Result.Ok(
+                new ResearchUpdatesResponse(
+                    state.FeedUpdates ?? new List<ResearchFeedUpdateEvent>(),
+                    state.ChatMessages ?? new List<AgentChatMessageEvent>()
+                )
+            );
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail($"Failed to retrieve research updates: {ex.Message}");
+        }
     }
 }

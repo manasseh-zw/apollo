@@ -6,13 +6,18 @@ import { useState, useEffect } from "react";
 import * as signalR from "@microsoft/signalr";
 import { config } from "../../../../../config";
 import {
-  type QuestionTimelineUpdate,
   type ResearchFeedUpdate,
   type AgentChatMessage,
   type ResearchResponse,
+  type ResearchUpdatesResponse,
   ResearchStatus,
+  type TimelineUpdate,
+  type ResearchReport as ResearchReportType,
 } from "../../../../lib/types/research";
-import { getResearchById } from "../../../../lib/services/research.service";
+import {
+  getResearchById,
+  getResearchUpdates,
+} from "../../../../lib/services/research.service";
 import { protectedLoader } from "../../../../lib/utils/loaders";
 
 export const Route = createFileRoute("/__app/research/$id/")({
@@ -33,12 +38,28 @@ export const Route = createFileRoute("/__app/research/$id/")({
       });
     }
 
-    return result.data as ResearchResponse;
+    const research = result.data as ResearchResponse;
+
+    // If research is in progress, fetch cached updates
+    let updates: ResearchUpdatesResponse | null = null;
+    if (research.status === ResearchStatus.InProgress) {
+      const updatesResult = await getResearchUpdates(params.id);
+      console.log(updatesResult);
+      if (updatesResult.success) {
+        updates = updatesResult.data;
+      }
+    }
+
+    return {
+      research,
+      updates,
+    };
   },
 });
 
 function RouteComponent() {
-  const research = Route.useLoaderData();
+  const { research: initialResearch, updates } = Route.useLoaderData();
+  const [research, setResearch] = useState<ResearchResponse>(initialResearch);
   const [connection, setConnection] = useState<signalR.HubConnection | null>(
     null
   );
@@ -56,12 +77,9 @@ function RouteComponent() {
       .build();
 
     // Set up event handlers
-    newConnection.on(
-      "ReceiveTimelineUpdate",
-      (update: TimelineUpdate) => {
-        console.log("Timeline update:", update);
-      }
-    );
+    newConnection.on("ReceiveTimelineUpdate", (update: TimelineUpdate) => {
+      console.log("Timeline update:", update);
+    });
 
     newConnection.on(
       "ReceiveResearchFeedUpdate",
@@ -73,6 +91,18 @@ function RouteComponent() {
     newConnection.on("ReceiveAgentChatMessage", (message: AgentChatMessage) => {
       console.log("Agent message:", message);
     });
+
+    newConnection.on(
+      "ResearchCompletedWithReport",
+      (researchId: string, report: ResearchReportType) => {
+        console.log("Research completed with report:", researchId, report);
+        setResearch((prev) => ({
+          ...prev,
+          status: ResearchStatus.Complete,
+          report,
+        }));
+      }
+    );
 
     // Start the connection
     newConnection
@@ -106,10 +136,15 @@ function RouteComponent() {
           connection={connection}
           researchId={researchId}
           research={research}
+          initialFeedUpdates={updates?.feedUpdates}
         />
       </div>
       <div className="h-full col-span-4 flex flex-col overflow-hidden py-2">
-        <AgentChat connection={connection} researchId={researchId} />
+        <AgentChat
+          connection={connection}
+          researchId={researchId}
+          initialChatMessages={updates?.chatMessages}
+        />
       </div>
     </main>
   );

@@ -3,6 +3,9 @@ import type {
   ResearchResponse,
   ResearchHistoryItem,
   PaginatedResponse,
+  ResearchFeedUpdate,
+  AgentChatMessage,
+  ResearchUpdatesResponse,
 } from "../types/research";
 
 export async function getResearchById(
@@ -47,4 +50,10 @@ export async function createResearch(
     method: "POST",
     body: JSON.stringify(data),
   });
+}
+
+export async function getResearchUpdates(
+  id: string
+): Promise<ApiResponse<ResearchUpdatesResponse>> {
+  return apiRequest<ResearchUpdatesResponse>(`/api/research/${id}/updates`);
 }

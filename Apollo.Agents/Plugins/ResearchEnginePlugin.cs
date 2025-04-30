@@ -51,14 +51,14 @@ public class ResearchEnginePlugin
         foreach (var query in queries)
         {
             // Send searching update
-            _clientUpdate.SendResearchFeedUpdate(
-                new WebSearchFeedUpdate
-                {
-                    ResearchId = researchId,
-                    Type = ResearchFeedUpdateType.Searching,
-                    Query = query,
-                }
-            );
+            var searchingUpdate = new WebSearchFeedUpdate
+            {
+                ResearchId = researchId,
+                Type = ResearchFeedUpdateType.Searching,
+                Query = query,
+            };
+            _state.AddFeedUpdate(researchId, searchingUpdate);
+            _clientUpdate.SendResearchFeedUpdate(searchingUpdate);
 
             var searchResponse = await PerformWebSearch(query);
             var newResults = searchResponse
@@ -96,27 +96,26 @@ public class ResearchEnginePlugin
                         Highlights = result.Highlights ?? [],
                     };
 
-                    _clientUpdate.SendResearchFeedUpdate(
-                        new SearchResultsFeedUpdate
-                        {
-                            ResearchId = researchId,
-                            Type = ResearchFeedUpdateType.SearchResults,
-                            Results = [searchResultItem],
-                        }
-                    );
-                    await Task.Delay(1000);
+                    var searchResultsUpdate = new SearchResultsFeedUpdate
+                    {
+                        ResearchId = researchId,
+                        Type = ResearchFeedUpdateType.SearchResults,
+                        Results = [searchResultItem],
+                    };
+                    _state.AddFeedUpdate(researchId, searchResultsUpdate);
+                    _clientUpdate.SendResearchFeedUpdate(searchResultsUpdate);
                 }
             }
             else
             {
-                _clientUpdate.SendResearchFeedUpdate(
-                    new ProgressMessageFeedUpdate
-                    {
-                        ResearchId = researchId,
-                        Type = ResearchFeedUpdateType.Message,
-                        Message = $"No new results found for query: {query}",
-                    }
-                );
+                var noResultsUpdate = new ProgressMessageFeedUpdate
+                {
+                    ResearchId = researchId,
+                    Type = ResearchFeedUpdateType.Message,
+                    Message = $"No new results found for query: {query}",
+                };
+                _state.AddFeedUpdate(researchId, noResultsUpdate);
+                _clientUpdate.SendResearchFeedUpdate(noResultsUpdate);
             }
         }
 

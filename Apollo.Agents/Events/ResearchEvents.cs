@@ -1,4 +1,5 @@
 using Apollo.Agents.Research;
+using Apollo.Data.Models;
 
 namespace Apollo.Agents.Events;
 
@@ -14,10 +15,18 @@ public class ResearchCompletedEvent
     public string UserId { get; set; }
 }
 
+public class ResearchCompletedWithReportEvent
+{
+    public Guid ResearchId { get; set; }
+    public string UserId { get; set; }
+    public ResearchReport Report { get; set; }
+}
+
 public interface IResearchEventHandler
 {
     Task HandleResearchStart(ResearchStartEvent @event);
     Task HandleResearchCompleted(ResearchCompletedEvent @event);
+    Task HandleResearchCompletedWithReport(ResearchCompletedWithReportEvent @event);
 }
 
 public class ResearchEventHandler : IResearchEventHandler
@@ -41,10 +50,16 @@ public class ResearchEventHandler : IResearchEventHandler
     {
         await _notifier.NotifyResearchCompleted(@event.UserId, @event.ResearchId);
     }
+
+    public async Task HandleResearchCompletedWithReport(ResearchCompletedWithReportEvent @event)
+    {
+        await _notifier.NotifyResearchCompletedWithReport(@event.UserId, @event.ResearchId, @event.Report);
+    }
 }
 
 public interface IResearchNotifier
 {
     Task NotifyResearchSaved(string userId, Guid researchId);
     Task NotifyResearchCompleted(string userId, Guid researchId);
+    Task NotifyResearchCompletedWithReport(string userId, Guid researchId, ResearchReport report);
 }
