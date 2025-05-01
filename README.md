@@ -29,6 +29,11 @@ Apollo is an advanced research assistant powered by multiple AI agents working c
 
 ## 🏗️ Architecture
 
+<br>
+<p align="center ">
+  <img src="docs/sys.png" alt="System design" width="750"/>
+</p>
+
 - **Backend:** .NET, ASP.NET Core Web API
 
   - **Agents:** Built using Semantic Kernel, orchestrated via agent group chat concepts.
