@@ -90,10 +90,6 @@ function SignIn() {
     flow: "implicit",
   });
 
-  const handleGuestSignIn = () => {
-    router.navigate({ to: redirectUrl, replace: true });
-  };
-
   const form = useForm({
     defaultValues: {
       userIdentifier: "",

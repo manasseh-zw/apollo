@@ -75,10 +75,6 @@ function SignUp() {
     flow: "implicit",
   });
 
-  const handleGuestSignIn = () => {
-    router.navigate({ to: "/research", replace: true });
-  };
-
   const form = useForm({
     defaultValues: {
       username: "",
