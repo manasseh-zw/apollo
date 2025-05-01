@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Text;
 using Apollo.Agents.Contracts;
 using Apollo.Agents.Events;
@@ -8,6 +9,7 @@ using Apollo.Config;
 using Apollo.Data.Models;
 using Apollo.Data.Repository;
 using Microsoft.Extensions.Logging;
+using Microsoft.KernelMemory;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
@@ -31,6 +33,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
     private readonly ILogger<ResearchReportGenerator> _logger;
     private readonly IChatCompletionService _chat;
     private readonly IResearchEventHandler _eventHandler;
+    private const int BatchSize = 3; // Process sections in batches for better efficiency
 
     public ResearchReportGenerator(
         IMemoryContext memory,
@@ -65,23 +68,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
     )
     {
         _logger.LogInformation("[{ResearchId}] Starting report generation", researchId);
-        _state.AddFeedUpdate(
-            researchId,
-            new ProgressMessageFeedUpdate
-            {
-                ResearchId = researchId,
-                Type = ResearchFeedUpdateType.Message,
-                Message = "Starting report generation...",
-            }
-        );
-        _clientUpdate.SendResearchFeedUpdate(
-            new ProgressMessageFeedUpdate
-            {
-                ResearchId = researchId,
-                Type = ResearchFeedUpdateType.Message,
-                Message = "Starting report generation...",
-            }
-        );
+        UpdateProgress(researchId, "Starting report creation process now...");
 
         try
         {
@@ -96,136 +83,88 @@ public class ResearchReportGenerator : IResearchReportGenerator
                 throw new Exception("Table of contents is empty. Cannot generate report.");
             }
 
-            // Create tasks for concurrent processing of all sections
-            var sectionTasks =
-                new List<Task<(string Section, string Content, List<SourceMetadata> Sources)>>();
+            // Process sections in batches to manage memory and improve throughput
+            var allSectionContents =
+                new ConcurrentBag<(string Section, string Content, List<SourceMetadata> Sources)>();
 
-            for (int i = 0; i < toc.Count; i++)
+            for (int batchStart = 0; batchStart < toc.Count; batchStart += BatchSize)
             {
-                var section = toc[i];
-                var sectionIndex = i; // Capture for progress updates
+                var currentBatchSize = Math.Min(BatchSize, toc.Count - batchStart);
+                var batchTasks =
+                    new List<
+                        Task<(string Section, string Content, List<SourceMetadata> Sources)>
+                    >();
 
-                var sectionTask = Task.Run(
-                    async () =>
+                for (int i = 0; i < currentBatchSize; i++)
+                {
+                    var sectionIndex = batchStart + i;
+                    var section = toc[sectionIndex];
+
+                    var sectionTask = ProcessSectionAsync(
+                        researchId,
+                        section,
+                        sectionIndex,
+                        toc.Count,
+                        state,
+                        cancellationToken
+                    );
+                    batchTasks.Add(sectionTask);
+                }
+
+                var batchResults = await Task.WhenAll(batchTasks);
+                foreach (var result in batchResults)
+                {
+                    if (!string.IsNullOrEmpty(result.Content))
                     {
-                        _state.AddFeedUpdate(
-                            researchId,
-                            new ProgressMessageFeedUpdate
-                            {
-                                ResearchId = researchId,
-                                Type = ResearchFeedUpdateType.Message,
-                                Message =
-                                    $"Gathering information for section {sectionIndex + 1} of {toc.Count}: {section}",
-                            }
-                        );
-                        _clientUpdate.SendResearchFeedUpdate(
-                            new ProgressMessageFeedUpdate
-                            {
-                                ResearchId = researchId,
-                                Type = ResearchFeedUpdateType.Message,
-                                Message =
-                                    $"Gathering information for section {sectionIndex + 1} of {toc.Count}: {section}",
-                            }
-                        );
-
-                        var memoryResults = await _memory.AskAsync(
-                            researchId,
-                            $"Hie do a comprehensive report essay analysis of the '{section}' for {state.Title} , {state.Description}, including all relevant facts, data, and findings. Include specific details and ensure all information is properly attributed to sources.",
-                            cancellationToken
-                        );
-
-                        if (memoryResults.RelevantSources.Count < 1)
-                        {
-                            _logger.LogWarning(
-                                "[{ResearchId}] No memory results found for section: {Section}",
-                                researchId,
-                                section
-                            );
-                            return (section, string.Empty, new List<SourceMetadata>());
-                        }
-
-                        var sources = new List<SourceMetadata>();
-                        foreach (var source in memoryResults.RelevantSources)
-                        {
-                            foreach (var partition in source.Partitions)
-                            {
-                                if (partition.Tags != null)
-                                {
-                                    var metadata = new SourceMetadata
-                                    {
-                                        Url = partition
-                                            .Tags.FirstOrDefault(t => t.Key == "url")
-                                            .Value?.FirstOrDefault(),
-                                        Title = partition
-                                            .Tags.FirstOrDefault(t => t.Key == "title")
-                                            .Value?.FirstOrDefault(),
-                                        Author = partition
-                                            .Tags.FirstOrDefault(t => t.Key == "author")
-                                            .Value?.FirstOrDefault(),
-                                        PublishedDate = partition
-                                            .Tags.FirstOrDefault(t => t.Key == "published")
-                                            .Value?.FirstOrDefault(),
-                                    };
-
-                                    if (
-                                        !string.IsNullOrEmpty(metadata.Title)
-                                        || !string.IsNullOrEmpty(metadata.Url)
-                                    )
-                                    {
-                                        sources.Add(metadata);
-                                    }
-                                }
-                            }
-                        }
-
-                        return (section, memoryResults.Result, sources);
-                    },
-                    cancellationToken
-                );
-
-                sectionTasks.Add(sectionTask);
+                        allSectionContents.Add(result);
+                    }
+                }
             }
 
-            var sectionResults = await Task.WhenAll(sectionTasks);
-
-            var sectionContents = sectionResults
-                .Where(result => !string.IsNullOrEmpty(result.Content))
-                .ToList();
-
-            _state.AddFeedUpdate(
+            UpdateProgress(
                 researchId,
-                new ProgressMessageFeedUpdate
-                {
-                    ResearchId = researchId,
-                    Type = ResearchFeedUpdateType.Message,
-                    Message = "Synthesizing final report...",
-                }
-            );
-            _clientUpdate.SendResearchFeedUpdate(
-                new ProgressMessageFeedUpdate
-                {
-                    ResearchId = researchId,
-                    Type = ResearchFeedUpdateType.Message,
-                    Message = "Synthesizing final report...",
-                }
+                "Okay we're now synthesizing the final report... its cooking"
             );
 
+            // Combine all sections into a single document
             var formattedSections = new StringBuilder();
-            foreach (var (section, content, sources) in sectionContents)
+            var allSources = new List<SourceMetadata>();
+
+            // Add overview section first
+            formattedSections.AppendLine($"# {state.Title}");
+            formattedSections.AppendLine($"\n## Overview");
+            formattedSections.AppendLine(state.Description);
+            formattedSections.AppendLine("\n---\n");
+
+            // Add each content section
+            foreach (
+                var (section, content, sources) in allSectionContents.OrderBy(s =>
+                    toc.IndexOf(s.Section)
+                )
+            )
             {
                 formattedSections.AppendLine($"## {section}");
-                formattedSections.AppendLine("Content:");
                 formattedSections.AppendLine(content);
-                formattedSections.AppendLine("\nSources for this section:");
-                foreach (var source in sources.DistinctBy(s => s.Url))
-                {
-                    formattedSections.AppendLine(
-                        $"- {source.Title} | {source.Author} | {source.Url} | {source.PublishedDate}"
-                    );
-                }
-                formattedSections.AppendLine("\n---\n");
+                formattedSections.AppendLine("\n");
+
+                // Add sources to overall collection
+                allSources.AddRange(sources);
             }
 
+            // Add consolidated sources section at the end
+            formattedSections.AppendLine("## Sources and References");
+            foreach (
+                var source in allSources
+                    .DistinctBy(s => s.Url)
+                    .Where(s => !string.IsNullOrEmpty(s.Url))
+            )
+            {
+                formattedSections.AppendLine(
+                    $"- {source.Title ?? "Untitled"} | {source.Author ?? "Unknown"} | {source.Url} | {source.PublishedDate ?? "Unknown date"}"
+                );
+            }
+
+            // For debugging purposes
             var promptFileName =
                 $"synthesis_prompt_{researchId}_{DateTime.UtcNow:yyyyMMdd_HHmmss}.txt";
             await File.WriteAllTextAsync(
@@ -239,21 +178,14 @@ public class ResearchReportGenerator : IResearchReportGenerator
                 promptFileName
             );
 
-            var chatHistory = new ChatHistory();
-            chatHistory.AddSystemMessage(Prompts.ReportSynthesizerPrompt);
-            chatHistory.AddUserMessage(formattedSections.ToString());
-
-            var finalReport = await _chat.GetChatMessageContentAsync(
-                chatHistory,
-                executionSettings: new OpenAIPromptExecutionSettings() { MaxTokens = 1047576 },
-                cancellationToken: cancellationToken
+            // Generate final report using the chat service
+            var finalReport = await SynthesizeFinalReportAsync(
+                formattedSections.ToString(),
+                cancellationToken
             );
 
-            var report = new ResearchReport
-            {
-                Content = finalReport.Content,
-                ResearchId = research.Id,
-            };
+            // Save the report
+            var report = new ResearchReport { Content = finalReport, ResearchId = research.Id };
 
             research.Report = report;
             research.Status = ResearchStatus.Complete;
@@ -271,23 +203,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
                 }
             );
 
-            _state.AddFeedUpdate(
-                researchId,
-                new ProgressMessageFeedUpdate
-                {
-                    ResearchId = researchId,
-                    Type = ResearchFeedUpdateType.Message,
-                    Message = "Report generation complete!",
-                }
-            );
-            _clientUpdate.SendResearchFeedUpdate(
-                new ProgressMessageFeedUpdate
-                {
-                    ResearchId = researchId,
-                    Type = ResearchFeedUpdateType.Message,
-                    Message = "Report generation complete!",
-                }
-            );
+            UpdateProgress(researchId, "Report Synthesis complete!");
             _logger.LogInformation(
                 "[{ResearchId}] Report generation completed successfully",
                 researchId
@@ -305,6 +221,164 @@ public class ResearchReportGenerator : IResearchReportGenerator
             );
             throw;
         }
+    }
+
+    private async Task<(
+        string Section,
+        string Content,
+        List<SourceMetadata> Sources
+    )> ProcessSectionAsync(
+        string researchId,
+        string section,
+        int sectionIndex,
+        int totalSections,
+        ResearchState state,
+        CancellationToken cancellationToken
+    )
+    {
+        UpdateProgress(
+            researchId,
+            $"Processing section {sectionIndex + 1} of {totalSections}: {section}"
+        );
+
+        // More focused query to get facts, quotes, and key findings instead of full essay
+        var memoryResults = await _memory.AskAsync(
+            researchId,
+            $"For the section '{section}' in research about '{state.Title}', provide ONLY the following: "
+                + $"1. Key facts and data points (with numbers when available) "
+                + $"2. Direct quotes from sources (with attribution) "
+                + $"3. Main findings relevant to this specific section "
+                + $"4. Cite all sources. Format as bullet points with concise information, not as an essay.",
+            cancellationToken
+        );
+
+        if (memoryResults.RelevantSources.Count < 1)
+        {
+            _logger.LogWarning(
+                "[{ResearchId}] No memory results found for section: {Section}",
+                researchId,
+                section
+            );
+            return (section, string.Empty, new List<SourceMetadata>());
+        }
+
+        // Extract source metadata
+        var sources = ExtractSourceMetadata(memoryResults);
+
+        var sectionContent = await FormatSectionContentAsync(
+            section,
+            memoryResults.Result,
+            state.Title,
+            cancellationToken
+        );
+
+        return (section, sectionContent, sources);
+    }
+
+    private static List<SourceMetadata> ExtractSourceMetadata(MemoryAnswer answer)
+    {
+        var sources = new List<SourceMetadata>();
+
+        foreach (var source in answer.RelevantSources)
+        {
+            foreach (var partition in source.Partitions)
+            {
+                if (partition.Tags != null)
+                {
+                    var metadata = new SourceMetadata
+                    {
+                        Url = partition
+                            .Tags.FirstOrDefault(t => t.Key == "url")
+                            .Value?.FirstOrDefault(),
+                        Title = partition
+                            .Tags.FirstOrDefault(t => t.Key == "title")
+                            .Value?.FirstOrDefault(),
+                        Author = partition
+                            .Tags.FirstOrDefault(t => t.Key == "author")
+                            .Value?.FirstOrDefault(),
+                        PublishedDate = partition
+                            .Tags.FirstOrDefault(t => t.Key == "published")
+                            .Value?.FirstOrDefault(),
+                    };
+
+                    if (
+                        !string.IsNullOrEmpty(metadata.Title) || !string.IsNullOrEmpty(metadata.Url)
+                    )
+                    {
+                        sources.Add(metadata);
+                    }
+                }
+            }
+        }
+
+        return sources;
+    }
+
+    private async Task<string> FormatSectionContentAsync(
+        string section,
+        string rawContent,
+        string researchTitle,
+        CancellationToken cancellationToken
+    )
+    {
+        // Small LLM call to format the raw bullet points into a cohesive section
+        var chatHistory = new ChatHistory();
+        chatHistory.AddSystemMessage(
+            "You are an expert research assistant. Your task is to organize raw research bullet points "
+                + "into a well-formatted, coherent section of a research report. Maintain all factual information "
+                + "and citations, but improve the organization and flow. Be concise while keeping all key information."
+        );
+
+        chatHistory.AddUserMessage(
+            $"I need to format these research points for the section '{section}' of my report on '{researchTitle}'.\n\n"
+                + $"Raw research points:\n{rawContent}\n\n"
+                + "Please organize this into a well-formatted section with proper paragraphs, maintaining all facts and citations. "
+                + "Keep it focused and concise while ensuring all key information is included."
+        );
+
+        var formattedResponse = await _chat.GetChatMessageContentAsync(
+            chatHistory,
+            executionSettings: new OpenAIPromptExecutionSettings() { MaxTokens = 8000 },
+            cancellationToken: cancellationToken
+        );
+
+        return formattedResponse.Content;
+    }
+
+    private async Task<string> SynthesizeFinalReportAsync(
+        string formattedSections,
+        CancellationToken cancellationToken
+    )
+    {
+        var chatHistory = new ChatHistory();
+        chatHistory.AddSystemMessage(Prompts.ReportSynthesizerPrompt);
+
+        chatHistory.AddUserMessage(
+            "Below is structured research content with multiple sections. Please synthesize it into a polished, "
+                + "comprehensive final report while maintaining all the facts, data points, and source attributions:\n\n"
+                + formattedSections
+        );
+
+        var finalResponse = await _chat.GetChatMessageContentAsync(
+            chatHistory,
+            executionSettings: new OpenAIPromptExecutionSettings() { MaxTokens = 32768 },
+            cancellationToken: cancellationToken
+        );
+
+        return finalResponse.Content;
+    }
+
+    private void UpdateProgress(string researchId, string message)
+    {
+        var update = new ProgressMessageFeedUpdate
+        {
+            ResearchId = researchId,
+            Type = ResearchFeedUpdateType.Message,
+            Message = message,
+        };
+
+        _state.AddFeedUpdate(researchId, update);
+        _clientUpdate.SendResearchFeedUpdate(update);
     }
 }
 

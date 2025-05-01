@@ -148,7 +148,7 @@ public class ResearchOrchestrator
             {
                 ResearchId = researchId,
                 Type = ResearchFeedUpdateType.Message,
-                Message = "Research is now initiating!",
+                Message = "Initializing the research process...",
             }
         );
 

@@ -29,8 +29,6 @@ export default function ResearchFeed({
   research,
   initialFeedUpdates,
 }: ResearchFeedProps) {
-  //   const [expanded, setExpanded] = useState(false);
-  //   const [isLoading, setIsLoading] = useState(false);
   const [error] = useState<string | null>(null);
   const [feedUpdates, setFeedUpdates] = useState<ResearchFeedUpdate[]>(
     initialFeedUpdates ?? []
@@ -100,70 +98,83 @@ export default function ResearchFeed({
     );
   }
 
+  const gradientColor = "white"; // Or fetch dynamically if possible/needed
+
   return (
+    // Overall container: Full height, flex row, overflow hidden
     <div className="flex h-full w-full overflow-hidden bg-white font-geist">
-      <div className="w-[317px] border-r border-gray-200 bg-content p-5 flex flex-col h-full">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <TriLoader />
-            <h2 className="text-lg text-gray-800">Deep Research</h2>
+      {/* Left Column: Fixed width, full height, flex column */}
+      <div className="w-[317px] flex-shrink-0 border-r border-gray-200 bg-content p-5 flex flex-col h-full">
+        {/* Left Column Header: Takes natural height */}
+        <div className="flex-shrink-0">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <TriLoader />
+              <h2 className="text-lg text-gray-800">Deep Research</h2>
+            </div>
+            <p className="text-sm">{elapsedTime}</p>
           </div>
-          <p className="text-sm">{elapsedTime}</p>
+          <small className="mt-3 block">{research.title}</small>{" "}
+          {/* Use block for consistent spacing */}
         </div>
-        <small className="mt-3">{research.title}</small>
 
-        {/* Timeline section with scrollable content */}
-        <div className="mt-6 flex-1 flex flex-col overflow-hidden ">
-          <div className="flex-1 overflow-y-auto">
-            <div className="relative">
-              <div className="mb-8 flex flex-col gap-6">
-                <VerticalTimeline
-                  items={timelineItems}
-                  color="primary" // Or "secondary", "success", etc.
-                  // Optional: uncomment to hide lines
-                  // className="my-custom-timeline-styles" // Optional: for wrapper styles
-                  // itemClassName="my-custom-item-styles" // Optional: for individual item styles
-                />
-              </div>
-            </div>
+        <div className="mt-6 flex-1 overflow-y-auto overflow-x-hidden relative">
+          <div className="mb-4">
+            {" "}
+            {/* Adjusted margin-bottom */}
+            <VerticalTimeline
+              items={timelineItems}
+              color="primary" // Or "secondary", "success", etc.
+            />
           </div>
+          {/* Fade-out Gradient */}
+          <div
+            className="sticky bottom-0 left-0 right-0 h-8 pointer-events-none"
+            style={{
+              background: `linear-gradient(to bottom, transparent, ${gradientColor})`,
+            }}
+          />
+        </div>
 
-          {/* Search Sources Avatar Group */}
-          <div className="mt-4 pt-4 border-t border-gray-200">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Sources</span>
-              <AvatarGroup
-                size="sm"
-                max={4}
-                total={searchResultIcons.length}
-                renderCount={(count) => (
-                  <p className="text-small text-foreground font-medium ms-2 ">
-                    +{count} others
-                  </p>
-                )}
-              >
-                {searchResultIcons
-                  .slice(0, 5)
-                  .map((icon: string, index: number) => (
-                    <Avatar
-                      classNames={{ base: "bg-white " }}
-                      key={index}
-                      src={icon}
-                      fallback={
-                        <img
-                          src="https://www.google.com/favicon.ico"
-                          alt="fallback"
-                        />
-                      }
-                    />
-                  ))}
-              </AvatarGroup>
-            </div>
+        {/* Fixed Sources Section: Takes natural height, anchored at the bottom */}
+        <div className="mt-auto pt-4 border-t border-gray-200 flex-shrink-0">
+          {" "}
+          {/* mt-auto pushes it down */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">Sources</span>
+            <AvatarGroup
+              size="sm"
+              max={4}
+              total={searchResultIcons.length}
+              renderCount={(count) => (
+                <p className="text-small text-foreground font-medium ms-2 ">
+                  +{count} others
+                </p>
+              )}
+            >
+              {searchResultIcons
+                .slice(0, 5)
+                .map((icon: string, index: number) => (
+                  <Avatar
+                    classNames={{ base: "bg-white " }}
+                    key={index}
+                    src={icon}
+                    fallback={
+                      <img
+                        src="https://www.google.com/favicon.ico"
+                        alt="fallback"
+                      />
+                    }
+                  />
+                ))}
+            </AvatarGroup>
           </div>
         </div>
       </div>
 
+      {/* Right Column (Live Feed): Takes remaining width, handles its own scrolling */}
       <div className="flex-1 relative">
+        {/* Live Feed Badge */}
         <div className="absolute top-4 right-4 flex items-center gap-2 bg-content2 bg-opacity-80 backdrop-blur-sm px-3 py-1.5 rounded-full z-10">
           <span className="text-sm text-primary">Live Feed</span>
           <div className="relative flex">
@@ -172,6 +183,7 @@ export default function ResearchFeed({
           </div>
         </div>
 
+        {/* Scrollable Feed Content Area */}
         <div className="absolute inset-0 overflow-y-auto overflow-x-hidden p-5">
           <div className="space-y-6">
             {feedUpdates.map((update, index) => (
@@ -180,7 +192,7 @@ export default function ResearchFeed({
                 update={update}
               />
             ))}
-            <div ref={feedEndRef} />
+            <div ref={feedEndRef} /> {/* For scrolling to bottom */}
           </div>
         </div>
       </div>

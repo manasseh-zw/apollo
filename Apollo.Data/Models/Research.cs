@@ -10,6 +10,7 @@ public class Research
     public required ResearchPlan Plan { get; set; }
     public ResearchReport? Report { get; set; }
     public DateTime StartedAt { get; set; }
+    public DateTime CompletedAt { get; set; }
     public ResearchStatus Status { get; set; }
 
     [ForeignKey(nameof(User))]

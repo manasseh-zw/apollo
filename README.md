@@ -39,7 +39,7 @@ Apollo is an advanced research assistant powered by multiple AI agents working c
   - **Agents:** Built using Semantic Kernel, orchestrated via agent group chat concepts.
   - **Memory:** Kernel Memory with PostgreSQL/pgvector as the vector database backend.
   - **Events:** Research Events Bus implemented using .NET channels for asynchronous processing.
-  - **Search/Crawling:** Integrates with Exa AI for web searching and content retrieval.
+  - **Search/Crawling:** Integrates ![alt text](<deep research.png>)with Exa AI for web searching and content retrieval.
 
 - **Frontend:** React (Vite) with TanStack Router & Query. (Hosted separately, e.g., on Vercel).
 

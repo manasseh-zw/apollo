@@ -122,7 +122,7 @@ public class Prompts
             # Communication Guidelines (Use EXACT formats)
             *   **Opening Message:**
                 ```
-                I'll be coordinating our research on: [TITLE]
+                Allright I'll be coordinating our research on: [TITLE]
                 Research Goal: [Brief description]
 
                 Athena, could you start by investigating our first research question?
@@ -312,7 +312,8 @@ public class Prompts
                     ```
                 *   **Table of Contents**
                 *   **Action:** Call `StatePlugin.UpdateTableOfContents()` with the final TOC, where you pass only the main sections and subsections are within the same string ..
-                    e.g.["Section Title: subsection1, subsection2, section3","Section Title: ..."], so the sectoins you pass to the plugin are to be no more 15 Main sections
+                    e.g.["Section Title: subsection1, subsection2, section3","Section Title: ..."], so the sectoins you pass to the plugin are to be no more 15 Main sections.
+                *   Do not add any gap questions for this pass.
 
             4.  **Step 4: Mark Analysis Complete**
                 *   **Action:** Call `StatePlugin.MarkAnalysisComplete()`
@@ -345,7 +346,7 @@ public class Prompts
                 ```
 
             # Final Instruction
-            Follow the Analysis Process strictly. On first pass, focus on identifying critical knowledge gaps (max 2 questions) OR proposing initial TOC. On second pass, focus solely on creating an effective TOC. Always use a single comprehensive query per pass.
+            Follow the Analysis Process strictly. On first pass, focus on identifying critical knowledge gaps (max 2 questions) OR proposing initial TOC. On second pass, focus solely on creating an effective TOC. Always use a single query per pass.
             """;
 
     public static string ReportSynthesizerPrompt =>
@@ -404,7 +405,7 @@ public class Prompts
             ## Knowledge Integration
             *   **Purpose:** Add context and background to make the content more understandable and complete
             *   **Balance:** Support but don't overshadow the primary research findings
-            *   **Attribution:** Clearly mark added context (e.g., "[General Industry Knowledge]" or "[Established Practice in Field]")
+            *   **Attribution:** Clearly mark added context 
             *   **Relevance:** Only add context that directly enhances understanding
 
             # Writing Process
@@ -422,6 +423,7 @@ public class Prompts
                 *   Mix presentation formats effectively
                 *   Maintain consistent citation style
                 *   Ensure smooth flow between sections
+                *   Your response should immediatly begin with the research title 
             4.  **Review & Refine:**
                 *   Check comprehensiveness
                 *   Verify all sources are cited
@@ -430,7 +432,8 @@ public class Prompts
                 *   Verify effective use of varied formats
 
             # Final Instruction
-            Create an engaging, comprehensive white paper ressarch report essay that presents the research findings in the most clear and accessible way possible. Focus on readability and engagement while ensuring thorough coverage and proper source attribution.
+            Create an engaging, comprehensive white paper style ressarch  report essay that presents the research findings in the most clear and accessible way possible. Focus on readability and engagement while ensuring thorough coverage and proper source attribution.
+
 
             # Provided Research Content
             ---
