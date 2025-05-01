@@ -12,7 +12,7 @@
 
 <br>
 <p align="center ">
-  <img src="docs/demo.png" alt="Apollo Logo" width="500"/>
+  <img src="docs/demo.png" alt="Apollo Logo" width="700"/>
 </p>
 
 Apollo is an advanced research assistant powered by multiple AI agents working collaboratively. It takes a user's research query, breaks it down into fundamental questions, and orchestrates a team of specialized agents to gather, process, analyze, and synthesize information into a comprehensive report.
