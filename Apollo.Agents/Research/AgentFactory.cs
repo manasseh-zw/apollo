@@ -4,6 +4,7 @@ using Apollo.Agents.State;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
+using Microsoft.SemanticKernel.Plugins.Core;
 
 namespace Apollo.Agents.Research;
 
@@ -16,6 +17,7 @@ public static class AgentFactory
     public const string ResearchAnalyzerAgentName = "ResearchAnalyzer";
 
     private const string StatePluginName = nameof(StatePlugin);
+    private const string TimePluginName = nameof(TimePlugin);
     private const string ResearchEnginePluginName = "Research_Engine";
     private const string KernelMemoryPluginName = "Research_Memory";
     private const string SynthesizeResearchPluginName = "Research_Synthesis";
@@ -72,15 +74,22 @@ public static class AgentFactory
     {
         var kernel = kernelBuilder.Build();
 
+        var timePluginInstance = new TimePlugin();
+
         var statePluginInstance = new StatePlugin(
             state,
             kernel.LoggerFactory.CreateLogger<StatePlugin>(),
             researchId
         );
+
+        var timePlugin = KernelPluginFactory.CreateFromObject(timePluginInstance, TimePluginName);
+
         var statePlugin = KernelPluginFactory.CreateFromObject(
             statePluginInstance,
             StatePluginName
         );
+
+        kernel.Plugins.Add(timePlugin);
         kernel.Plugins.Add(statePlugin);
 
         var researchEnginePlugin = KernelPluginFactory.CreateFromObject(
