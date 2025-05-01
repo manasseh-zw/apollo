@@ -101,10 +101,7 @@ export default function ResearchReport({ report }: ResearchReportProps) {
       <main className="flex-1 overflow-auto p-8 md:px-16 lg:px-24 pb-24 font-geist">
         {/* max-w-3xl mx-auto: Limits content width and centers it */}
         {/* prose...: Applies Tailwind Typography styles */}
-        <div
-          className="max-w-3xl mx-auto prose prose-slate text-primary prose-li:text-primary prose-p:text-primary prose-headings:text-primary prose-strong:text-foreground prose-code:text-foreground prose-pre:bg-content2 prose-pre:text-foreground prose-pre:border prose-pre:border-content4 prose-pre:rounded-lg prose-a:text-primary prose-p:leading-relaxed prose-li:leading-relaxed [&>*]:leading-relaxed [&>ul]:list-none [&>ul>li]:relative [&>ul>li]:before:absolute [&>ul>li]:before:left-0 [&>ul>li]:before:content-['•'] [&>ul>li]:before:text-primary-400 prose-hr:border-content4 prose-hr:my-5 break-words" 
-          style={{ fontSize: `${fontSize}px` }}
-        >
+        <div style={{ fontSize: `${fontSize}px` }}>
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
             {report.content}
           </ReactMarkdown>
