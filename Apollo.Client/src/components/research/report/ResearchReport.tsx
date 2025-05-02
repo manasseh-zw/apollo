@@ -6,13 +6,14 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-} from "@heroui/react"; // Assuming this path is correct
+} from "@heroui/react";
 import { ChevronDownIcon } from "lucide-react";
-import { MSWord, MSPowerPoint, PDFIcon } from "../../Icons"; // Assuming this path is correct
-import FontSizeController from "./FontSizeController"; // Assuming this path is correct
-import type { ResearchReport as ResearchReportType } from "../../../lib/types/research"; // Assuming this path is correct
+import { MSWord, MSPowerPoint, PDFIcon } from "../../Icons";
+import FontSizeController from "./FontSizeController";
+import type { ResearchReport as ResearchReportType } from "../../../lib/types/research";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 interface ResearchReportProps {
   report: ResearchReportType | null;
@@ -46,8 +47,6 @@ export default function ResearchReport({ report }: ResearchReportProps) {
   return (
     // flex flex-col h-full: Ensures the component takes full height and lays out children vertically
     <div className="flex flex-col h-full bg-white">
-      {/* Top Header */}
-      {/* Added some padding for consistency */}
       <header className="pt-4 px-4 sm:px-6 md:px-8">
         <div className="max-w-3xl mx-auto flex justify-end">
           <ButtonGroup variant="flat">
@@ -96,20 +95,19 @@ export default function ResearchReport({ report }: ResearchReportProps) {
         </div>
       </header>
 
-      {/* Main Content */}
-      {/* flex-1: Allows this section to grow/shrink vertically to fill available space */}
-      <main className="flex-1 overflow-auto p-8 md:px-16 lg:px-24 pb-24 font-geist">
-        {/* max-w-3xl mx-auto: Limits content width and centers it */}
-        {/* prose...: Applies Tailwind Typography styles */}
-        <div style={{ fontSize: `${fontSize}px` }}>
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {report.content}
-          </ReactMarkdown>
+      <main className="flex-1 overflow-auto justify-center">
+        <div className="max-w-3xl font-geist">
+          <div className="markdown" style={{ fontSize: `${fontSize}px` }}>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+            >
+              {report.content}
+            </ReactMarkdown>
+          </div>
         </div>
       </main>
 
-      {/* Font Size Controller */}
-      {/* Relative positioning might be fine, depends on FontSizeController's implementation */}
       <div className="relative">
         <FontSizeController
           fontSize={fontSize}

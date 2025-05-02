@@ -56,7 +56,7 @@ public class MemoryContext : IMemoryContext
                 }
             )
             .WithSearchClientConfig(new() { AnswerTokens = 32768 })
-            // .WithStructRagSearchClient()
+            .WithStructRagSearchClient()
             .Build<MemoryServerless>(
                 //this is fine because i am not storing any documents at the moment
                 new() { AllowMixingVolatileAndPersistentData = true }

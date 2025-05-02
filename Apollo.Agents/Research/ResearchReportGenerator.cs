@@ -244,11 +244,11 @@ public class ResearchReportGenerator : IResearchReportGenerator
         // More focused query to get facts, quotes, and key findings instead of full essay
         var memoryResults = await _memory.AskAsync(
             researchId,
-            $"For the section '{section}' in research about '{state.Title}', provide ONLY the following: "
-                + $"1. Key facts and data points (with numbers when available) "
+            $"For the section '{section}' in research about '{state.Title}', provide research notes that contain the following: "
+                + $"1. Comprehensive key facts and data points (with numbers when available) "
                 + $"2. Direct quotes from sources (with attribution) "
                 + $"3. Main findings relevant to this specific section "
-                + $"4. Cite all sources. Format as bullet points with concise information, not as an essay.",
+                + $"4. Cite all sources",
             cancellationToken
         );
 
@@ -265,12 +265,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
         // Extract source metadata
         var sources = ExtractSourceMetadata(memoryResults);
 
-        var sectionContent = await FormatSectionContentAsync(
-            section,
-            memoryResults.Result,
-            state.Title,
-            cancellationToken
-        );
+        var sectionContent = memoryResults.Result;
 
         return (section, sectionContent, sources);
     }
@@ -312,37 +307,6 @@ public class ResearchReportGenerator : IResearchReportGenerator
         }
 
         return sources;
-    }
-
-    private async Task<string> FormatSectionContentAsync(
-        string section,
-        string rawContent,
-        string researchTitle,
-        CancellationToken cancellationToken
-    )
-    {
-        // Small LLM call to format the raw bullet points into a cohesive section
-        var chatHistory = new ChatHistory();
-        chatHistory.AddSystemMessage(
-            "You are an expert research assistant. Your task is to organize raw research bullet points "
-                + "into a well-formatted, coherent section of a research report. Maintain all factual information "
-                + "and citations, but improve the organization and flow. Be concise while keeping all key information."
-        );
-
-        chatHistory.AddUserMessage(
-            $"I need to format these research points for the section '{section}' of my report on '{researchTitle}'.\n\n"
-                + $"Raw research points:\n{rawContent}\n\n"
-                + "Please organize this into a well-formatted section with proper paragraphs, maintaining all facts and citations. "
-                + "Keep it focused and concise while ensuring all key information is included."
-        );
-
-        var formattedResponse = await _chat.GetChatMessageContentAsync(
-            chatHistory,
-            executionSettings: new OpenAIPromptExecutionSettings() { MaxTokens = 8000 },
-            cancellationToken: cancellationToken
-        );
-
-        return formattedResponse.Content;
     }
 
     private async Task<string> SynthesizeFinalReportAsync(

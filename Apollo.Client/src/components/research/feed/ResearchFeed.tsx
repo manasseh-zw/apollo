@@ -98,14 +98,11 @@ export default function ResearchFeed({
     );
   }
 
-  const gradientColor = "white"; // Or fetch dynamically if possible/needed
+  const gradientColor = "white";
 
   return (
-    // Overall container: Full height, flex row, overflow hidden
     <div className="flex h-full w-full overflow-hidden bg-white font-geist">
-      {/* Left Column: Fixed width, full height, flex column */}
-      <div className="w-[317px] flex-shrink-0 border-r border-gray-200 bg-content p-5 flex flex-col h-full">
-        {/* Left Column Header: Takes natural height */}
+      <div className="w-[310px] flex-shrink-0 border-r border-gray-200 bg-content p-5 flex flex-col h-full">
         <div className="flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -115,17 +112,13 @@ export default function ResearchFeed({
             <p className="text-sm">{elapsedTime}</p>
           </div>
           <small className="mt-3 block">{research.title}</small>{" "}
-          {/* Use block for consistent spacing */}
         </div>
 
         <div className="mt-6 flex-1 overflow-y-auto overflow-x-hidden relative">
-          <div className="mb-4">
+          <div className="mb-3">
             {" "}
             {/* Adjusted margin-bottom */}
-            <VerticalTimeline
-              items={timelineItems}
-              color="primary" // Or "secondary", "success", etc.
-            />
+            <VerticalTimeline items={timelineItems} color="primary" />
           </div>
           {/* Fade-out Gradient */}
           <div
@@ -172,7 +165,6 @@ export default function ResearchFeed({
         </div>
       </div>
 
-      {/* Right Column (Live Feed): Takes remaining width, handles its own scrolling */}
       <div className="flex-1 relative">
         {/* Live Feed Badge */}
         <div className="absolute top-4 right-4 flex items-center gap-2 bg-content2 bg-opacity-80 backdrop-blur-sm px-3 py-1.5 rounded-full z-10">
@@ -183,7 +175,6 @@ export default function ResearchFeed({
           </div>
         </div>
 
-        {/* Scrollable Feed Content Area */}
         <div className="absolute inset-0 overflow-y-auto overflow-x-hidden p-5">
           <div className="space-y-6">
             {feedUpdates.map((update, index) => (
@@ -192,7 +183,7 @@ export default function ResearchFeed({
                 update={update}
               />
             ))}
-            <div ref={feedEndRef} /> {/* For scrolling to bottom */}
+            <div ref={feedEndRef} />
           </div>
         </div>
       </div>

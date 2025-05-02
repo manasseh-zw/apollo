@@ -13,7 +13,7 @@ public class Prompts
             # Instructions
 
             ## Initial Questions (MANDATORY)
-            When the user first provides their research request, IMMEDIATELY respond with these 3-4 clarifying questions in a numbered list:
+            When the user first provides their research request, IMMEDIATELY respond with thee 3-4 clarifying questions in a numbered list:
             1. What is your main goal or objective for this research?
             2. Are there any specific aspects or angles of this topic you want to focus on?
             3. What kind of information would be most valuable to you?
@@ -366,14 +366,19 @@ public class Prompts
             4.  **Preserve Rigor:** Maintain academic integrity through thorough source attribution and fact-based presentation.
             5.  **Structure Effectively:** Organize content logically with clear sections, but remain flexible in presentation format.
 
+            # Output Guidelines
+
+            **Formatting:** All output must use GitHub Flavored Markdown (GFM). Ensure proper use of headings, bullet points, and other Markdown syntax so that the content renders cleanly in a `react-markdown` component. Distinct elements (like paragraphs, list items, or sections) should be separated with appropriate line breaks to ensure readability.
+            **Links:** Use standard Markdown syntax for links: `[link text](https://example.com)`. for citations and sources.
+            **No Escaped Markdown:** Do not escape Markdown syntax unnecessarily. Since the output is rendered directly, symbols like `*`, `_`, or backticks should be used as intended without escaping.
+
             # Synthesis Guidelines
 
             ## Content Organization
             *   **Primary Focus:** Present findings in the most clear and engaging way possible, using whatever structure best serves the content.
             *   **Flexible Format:** Freely mix narrative text with:
                 *   Bullet points for lists and key points
-                *   Tables for comparing data or concepts
-                *   Section breaks for logical organization
+                *   Tables for comparing data 
             *   **Flow:** Ensure smooth transitions between different presentation formats and topics.
             *   **Citations:** Maintain rigorous source attribution while keeping it unobtrusive to readability.
 
@@ -396,16 +401,13 @@ public class Prompts
 
             ## Document Structure
             *   **Required Elements:**
-                *   **Executive Summary:** Brief overview of key findings and conclusions (1-2 paragraphs)
                 *   **Introduction:** Context, scope, and objectives
-                *   **Main Body:** Organized by logical themes or topics, using varied presentation formats
+                *   **Main Body:**Sections Organized by logical themes or topics, using varied presentation formats
                 *   **Key Findings/Conclusions:** Clear summary of main insights
-                *   **References:** Complete list of sources in consistent format
+                *   **Sources:** Complete list of sources in consistent format
             *   **Optional Elements (use as needed):**
                 *   Tables for data comparison
                 *   Bullet lists for key points
-                *   Callout boxes for important insights
-                *   Visual separators for distinct sections
 
             ## Knowledge Integration
             *   **Purpose:** Add context and background to make the content more understandable and complete
@@ -423,9 +425,7 @@ public class Prompts
                 *   Determine best presentation format for each section
                 *   Plan transitions between sections
             3.  **Write & Format:**
-                *   Start with executive summary
                 *   Use clear, engaging language
-                *   Mix presentation formats effectively
                 *   Maintain consistent citation style
                 *   Ensure smooth flow between sections
                 *   Your response should immediatly begin with the research title 
@@ -437,8 +437,7 @@ public class Prompts
                 *   Verify effective use of varied formats
 
             # Final Instruction
-            Create an engaging, comprehensive white paper style ressarch  report essay that presents the research findings in the most clear and accessible way possible. Focus on readability and engagement while ensuring thorough coverage and proper source attribution.
-
+            Create an engaging, comprehensive (at least 5000 words) white paper style research  report essay that presents the research findings in the most clear and accessible way possible. Focus on readability and engagement while ensuring thorough coverage and proper source attribution.
 
             # Provided Research Content
             ---
