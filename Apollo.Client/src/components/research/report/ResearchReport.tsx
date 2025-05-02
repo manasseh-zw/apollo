@@ -13,7 +13,6 @@ import FontSizeController from "./FontSizeController";
 import type { ResearchReport as ResearchReportType } from "../../../lib/types/research";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
 
 interface ResearchReportProps {
   report: ResearchReportType | null;
