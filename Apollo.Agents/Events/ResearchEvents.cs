@@ -13,8 +13,10 @@ public class ResearchCompletedWithReportEvent
 {
     public Guid ResearchId { get; set; }
     public string UserId { get; set; }
-    public ResearchReport Report { get; set; }
+    public ResearchReportResponse Report { get; set; }
 }
+
+public record ResearchReportResponse(string Id, string content);
 
 public interface IResearchEventHandler
 {
@@ -52,5 +54,9 @@ public class ResearchEventHandler : IResearchEventHandler
 public interface IResearchNotifier
 {
     Task NotifyResearchSaved(string userId, Guid researchId);
-    Task NotifyResearchCompletedWithReport(string userId, Guid researchId, ResearchReport report);
+    Task NotifyResearchCompletedWithReport(
+        string userId,
+        Guid researchId,
+        ResearchReportResponse report
+    );
 }

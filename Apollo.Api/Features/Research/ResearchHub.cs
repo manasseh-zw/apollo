@@ -1,6 +1,6 @@
 using Apollo.Agents.Contracts;
+using Apollo.Agents.Events;
 using Apollo.Agents.Research;
-using Apollo.Data.Models;
 using Microsoft.AspNetCore.SignalR;
 
 public interface IResearchHubClient
@@ -8,7 +8,7 @@ public interface IResearchHubClient
     Task ReceiveResponse(string response);
     Task ResearchSaved(Guid researchId);
     Task ResearchCompleted(Guid researchId);
-    Task ResearchCompletedWithReport(Guid researchId, ResearchReport report);
+    Task ResearchCompletedWithReport(Guid researchId, ResearchReportResponse report);
 
     Task ReceiveTimelineUpdate(TimelineUpdateEvent update);
     Task ReceiveResearchFeedUpdate(ResearchFeedUpdateEvent update);

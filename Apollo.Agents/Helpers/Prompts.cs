@@ -129,11 +129,11 @@ public class Prompts
                 ```
             *   **Question Transition:**
                 ```
-                Great work on that question! Let me check what's next...
+                Great! whist you work on it Let me check what's next...
                 Here's our next research question:
                 [PASTE THE EXACT QUESTION TEXT FROM GetActiveResearchQuestion HERE]
 
-                Athena, would you mind tackling this one?
+                Athena, would you mind tackling this one next?
                 ```
             *   **Analysis Transition:**
                 ```
@@ -224,7 +224,7 @@ public class Prompts
             # Communication Format
             *   **Starting Research:**
                 ```
-                Hey, see the question we need to explore: "[PASTE THE EXACT QUESTION TEXT FROM GetActiveResearchQuestion HERE]"
+                Hey, i see the question we need to explore: "[PASTE THE EXACT QUESTION TEXT FROM GetActiveResearchQuestion HERE]"
                 Let me search for some reliable information on this...
                 ```
             *   **Completion:**

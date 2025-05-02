@@ -65,7 +65,6 @@ const VerticalTimeline = React.forwardRef<
 
       // Completed: Always show AnimatedCheckIcon with primary foreground color
       if (status === "complete") {
-        // Uses text-primary-foreground based on your theme (#f8f9fa)
         return (
           <AnimatedCheckIcon className="h-5 w-5 text-primary-foreground" />
         );
@@ -73,7 +72,6 @@ const VerticalTimeline = React.forwardRef<
 
       // In Progress: Always show Spinner with primary color
       if (status === "active") {
-        // Uses text-primary based on your theme (#252525)
         return <Spinner size="sm" />;
       }
 
@@ -131,8 +129,6 @@ const VerticalTimeline = React.forwardRef<
               {!hideProgressBars && !isLastItem && (
                 <div
                   aria-hidden="true"
-                  // Positioning: Centered horizontally, starts below icon, spans height
-                  // Uses default-200 (#dee2e6) for the inactive line based on your theme
                   className={cn(
                     "pointer-events-none absolute left-[14px] top-[28px] bottom-[-1px] w-0.5 bg-default-200",
                     // Active part of the line (overlay) - uses primary color (#252525)
@@ -199,24 +195,6 @@ const VerticalTimeline = React.forwardRef<
                   >
                     {item.text}
                   </div>
-                  {/* {item.description && (
-                    <div
-                      className={cn(
-                        "text-xs transition-[color] duration-300 lg:text-sm", // Base description style
-                        // --- Status-specific description styling ---
-                        {
-                          // Completed/Active: Use default-600 (#495057)
-                          "text-default-600":
-                            status === "complete" || status === "active",
-                          // Pending: Use default-400 (#adb5bd) - more muted
-                          "text-default-400": status === "inactive",
-                        }
-                        // --- End Status-specific description styling ---
-                      )}
-                    >
-                      {item.description}
-                    </div>
-                  )} */}
                 </div>
               </div>
             </div>
@@ -229,4 +207,4 @@ const VerticalTimeline = React.forwardRef<
 
 VerticalTimeline.displayName = "VerticalTimeline";
 
-export default VerticalTimeline; // Export as default
+export default VerticalTimeline;

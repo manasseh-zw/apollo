@@ -51,12 +51,16 @@ public class ResearchReportGenerator : IResearchReportGenerator
         _logger = logger;
         _eventHandler = eventHandler;
 
+        var httpClient = new HttpClient();
+        httpClient.Timeout = TimeSpan.FromMinutes(5);
+
         var kernel = Kernel
             .CreateBuilder()
             .AddAzureOpenAIChatCompletion(
                 deploymentName: AppConfig.Models.Gpt41,
                 endpoint: AppConfig.AzureAI.Endpoint,
-                apiKey: AppConfig.AzureAI.ApiKey
+                apiKey: AppConfig.AzureAI.ApiKey,
+                httpClient: httpClient
             )
             .Build();
         _chat = kernel.GetRequiredService<IChatCompletionService>();
@@ -198,7 +202,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
                 {
                     ResearchId = research.Id,
                     UserId = research.UserId.ToString(),
-                    Report = report,
+                    Report = new(report.Id.ToString(), report.Content),
                 }
             );
 

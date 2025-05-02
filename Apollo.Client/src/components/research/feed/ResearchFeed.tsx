@@ -102,8 +102,9 @@ export default function ResearchFeed({
 
   return (
     <div className="flex h-full w-full overflow-hidden bg-white font-geist">
-      <div className="w-[310px] flex-shrink-0 border-r border-gray-200 bg-content p-5 flex flex-col h-full">
-        <div className="flex-shrink-0">
+      <div className="w-[310px] flex-shrink-0 border-r border-gray-200 bg-content flex flex-col h-full">
+        {/* Header - fixed at top */}
+        <div className="flex-shrink-0 p-5 pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <TriLoader />
@@ -111,16 +112,13 @@ export default function ResearchFeed({
             </div>
             <p className="text-sm">{elapsedTime}</p>
           </div>
-          <small className="mt-3 block">{research.title}</small>{" "}
+          <small className="mt-3 block">{research.title}</small>
         </div>
 
-        <div className="mt-6 flex-1 overflow-y-auto overflow-x-hidden relative">
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-5 pb-2">
           <div className="mb-3">
-            {" "}
-            {/* Adjusted margin-bottom */}
             <VerticalTimeline items={timelineItems} color="primary" />
           </div>
-          {/* Fade-out Gradient */}
           <div
             className="sticky bottom-0 left-0 right-0 h-8 pointer-events-none"
             style={{
@@ -129,10 +127,8 @@ export default function ResearchFeed({
           />
         </div>
 
-        {/* Fixed Sources Section: Takes natural height, anchored at the bottom */}
-        <div className="mt-auto pt-4 border-t border-gray-200 flex-shrink-0">
-          {" "}
-          {/* mt-auto pushes it down */}
+        {/* Sources Section - fixed at bottom */}
+        <div className="flex-shrink-0 p-4 border-t border-gray-200">
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-600">Sources</span>
             <AvatarGroup
@@ -140,7 +136,7 @@ export default function ResearchFeed({
               max={4}
               total={searchResultIcons.length}
               renderCount={(count) => (
-                <p className="text-small text-foreground font-medium ms-2 ">
+                <p className="text-small text-foreground font-medium ms-2">
                   +{count} others
                 </p>
               )}
@@ -149,7 +145,7 @@ export default function ResearchFeed({
                 .slice(0, 5)
                 .map((icon: string, index: number) => (
                   <Avatar
-                    classNames={{ base: "bg-white " }}
+                    classNames={{ base: "bg-white" }}
                     key={index}
                     src={icon}
                     fallback={
@@ -165,6 +161,7 @@ export default function ResearchFeed({
         </div>
       </div>
 
+      {/* Main content area */}
       <div className="flex-1 relative">
         {/* Live Feed Badge */}
         <div className="absolute top-4 right-4 flex items-center gap-2 bg-content2 bg-opacity-80 backdrop-blur-sm px-3 py-1.5 rounded-full z-10">
@@ -175,6 +172,7 @@ export default function ResearchFeed({
           </div>
         </div>
 
+        {/* Feed Content */}
         <div className="absolute inset-0 overflow-y-auto overflow-x-hidden p-5">
           <div className="space-y-6">
             {feedUpdates.map((update, index) => (
