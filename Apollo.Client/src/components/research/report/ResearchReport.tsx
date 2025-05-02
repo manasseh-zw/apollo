@@ -97,7 +97,7 @@ export default function ResearchReport({ report }: ResearchReportProps) {
         </div>
       </header>
 
-      <main className="flex overflow-auto justify-center">
+      <main className="flex overflow-auto justify-center pb-5">
         <div className="max-w-3xl font-geist">
           <div className="markdown" style={{ fontSize: `${fontSize}px` }}>
             <ReactMarkdown remarkPlugins={[remarkGfm]}>

@@ -6,7 +6,7 @@ namespace Apollo.Agents.Memory;
 
 public interface IMemoryContext
 {
-    Task Ingest(string researchId, string content, TagCollection tags);
+    Task Ingest(string content, TagCollection tags);
     Task<SearchResult> SearchAsync(
         string researchId,
         string query,
@@ -17,9 +17,6 @@ public interface IMemoryContext
         string question,
         CancellationToken cancellationToken = default
     );
-
-    Task Clear(string researchId, CancellationToken cancellationToken = default);
-
     bool IsIngestionInProgress(string researchId);
     void SetIngestionInProgress(string researchId, bool inProgress);
 }
@@ -66,9 +63,9 @@ public class MemoryContext : IMemoryContext
             );
     }
 
-    public async Task Ingest(string researchId, string content, TagCollection tags)
+    public async Task Ingest(string content, TagCollection tags)
     {
-        await _memory.ImportTextAsync(content, tags: tags, index: researchId);
+        await _memory.ImportTextAsync(content, tags: tags, index: "apollo");
     }
 
     public async Task<SearchResult> SearchAsync(
@@ -79,7 +76,8 @@ public class MemoryContext : IMemoryContext
     {
         return await _memory.SearchAsync(
             query,
-            index: researchId,
+            filter: MemoryFilters.ByTag("researchId", researchId),
+            index: "apollo",
             cancellationToken: cancellationToken
         );
     }
@@ -92,14 +90,10 @@ public class MemoryContext : IMemoryContext
     {
         return await _memory.AskAsync(
             question,
-            index: researchId,
+            filter: MemoryFilters.ByTag("researchId", researchId),
+            index: "apollo",
             cancellationToken: cancellationToken
         );
-    }
-
-    public async Task Clear(string researchId, CancellationToken cancellationToken = default)
-    {
-        await _memory.DeleteIndexAsync(researchId, cancellationToken);
     }
 
     public bool IsIngestionInProgress(string researchId)

@@ -21,7 +21,7 @@ public class ResearchNotifier : IResearchNotifier
     public async Task NotifyResearchCompletedWithReport(
         string userId,
         Guid researchId,
-        ResearchReport report
+        ResearchReportResponse report
     )
     {
         await _hubContext.Clients.User(userId).ResearchCompletedWithReport(researchId, report);

@@ -223,8 +223,6 @@ public class ResearchReportGenerator : IResearchReportGenerator
                 researchId
             );
 
-            await _memory.Clear(researchId);
-
             return "Report generation completed successfully.";
         }
         catch (Exception ex)

@@ -101,7 +101,7 @@ export default function ResearchFeed({
   const gradientColor = "white";
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-white font-geist">
+    <div className="flex h-screen w-full overflow-hidden bg-white font-geist">
       <div className="w-[310px] flex-shrink-0 border-r border-gray-200 bg-content flex flex-col h-full">
         {/* Header - fixed at top */}
         <div className="flex-shrink-0 p-5 pb-3">
@@ -116,7 +116,7 @@ export default function ResearchFeed({
         </div>
 
         <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-5 pb-2">
-          <div className="mb-3">
+          <div className="">
             <VerticalTimeline items={timelineItems} color="primary" />
           </div>
           <div

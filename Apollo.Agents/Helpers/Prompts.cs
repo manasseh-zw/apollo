@@ -345,6 +345,7 @@ public class Prompts
                 ```
             *   **No Gaps (First Pass) or Second Pass:**
                 ```
+                You are to send this response after updating the table of contents
                 I've reviewed our research and organized it into a clear structure that captures all our findings.
                 Apollo, we can proceed with the synthesis.
                 ```
