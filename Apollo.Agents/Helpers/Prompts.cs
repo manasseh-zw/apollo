@@ -315,8 +315,8 @@ public class Prompts
                     Propose a logical and comprehensive Table of Contents that effectively organizes all the gathered information
                     ```
                 *   **Table of Contents**
-                *   **Action:** Call `StatePlugin.UpdateTableOfContents()` with the final TOC, where you pass only the main sections and subsections are within the same string ..
-                    e.g.["Section Title: subsection1, subsection2, section3","Section Title: ..."], so the sections you pass to the plugin are to be no more 15 Main sections.
+                *   **Action:** Call `StatePlugin.UpdateTableOfContents()` with the final TOC, where you pass only the main sections in and subsections are within the same string ..
+                    e.g.["Section Title: subsection1, subsection2, section3","Section Title: ..."],(in the order they will appear in the report) so the sections you pass to the plugin are to be no more 15 Main sections.
                 *   Do not add any gap questions for this pass.
 
             4.  **Step 4: Mark Analysis Complete**

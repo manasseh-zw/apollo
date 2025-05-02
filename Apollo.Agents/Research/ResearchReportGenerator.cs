@@ -12,10 +12,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.KernelMemory;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.Google;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 namespace Apollo.Agents.Research;
 
+#pragma warning disable SKEXP0070
 public interface IResearchReportGenerator
 {
     Task<string> GenerateReportAsync(
@@ -56,10 +58,15 @@ public class ResearchReportGenerator : IResearchReportGenerator
 
         var kernel = Kernel
             .CreateBuilder()
-            .AddAzureOpenAIChatCompletion(
-                deploymentName: AppConfig.Models.Gpt41,
-                endpoint: AppConfig.AzureAI.Endpoint,
-                apiKey: AppConfig.AzureAI.ApiKey,
+            // .AddAzureOpenAIChatCompletion(
+            //     deploymentName: AppConfig.Models.Gpt41,
+            //     endpoint: AppConfig.AzureAI.Endpoint,
+            //     apiKey: AppConfig.AzureAI.ApiKey,
+            //     httpClient: httpClient
+            // )
+            .AddGoogleAIGeminiChatCompletion(
+                modelId: AppConfig.Models.GeminiProFlash25,
+                apiKey: AppConfig.Google.ApiKey,
                 httpClient: httpClient
             )
             .Build();
@@ -127,7 +134,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
 
             UpdateProgress(
                 researchId,
-                "Okay we're now synthesizing the final report... its cooking"
+                "Okay we're now synthesizing each section of  the final report... its cooking"
             );
 
             // Combine all sections into a single document
@@ -155,7 +162,6 @@ public class ResearchReportGenerator : IResearchReportGenerator
                 allSources.AddRange(sources);
             }
 
-            // Add consolidated sources section at the end
             formattedSections.AppendLine("## Sources and References");
             foreach (
                 var source in allSources
@@ -180,6 +186,11 @@ public class ResearchReportGenerator : IResearchReportGenerator
                 "[{ResearchId}] Saved synthesis sections to file: {FileName}",
                 researchId,
                 promptFileName
+            );
+
+            UpdateProgress(
+                researchId,
+                "We're now putting each section all together this might take a while! ~ 2 (miniutes) "
             );
 
             // Generate final report using the chat service
@@ -211,6 +222,8 @@ public class ResearchReportGenerator : IResearchReportGenerator
                 "[{ResearchId}] Report generation completed successfully",
                 researchId
             );
+
+            await _memory.Clear(researchId);
 
             return "Report generation completed successfully.";
         }
@@ -320,15 +333,11 @@ public class ResearchReportGenerator : IResearchReportGenerator
         var chatHistory = new ChatHistory();
         chatHistory.AddSystemMessage(Prompts.ReportSynthesizerPrompt);
 
-        chatHistory.AddUserMessage(
-            "Below is structured research content with multiple sections. Please synthesize it into a polished, "
-                + "comprehensive final report while maintaining all the facts, data points, and source attributions:\n\n"
-                + formattedSections
-        );
+        chatHistory.AddUserMessage(formattedSections);
 
         var finalResponse = await _chat.GetChatMessageContentAsync(
             chatHistory,
-            executionSettings: new OpenAIPromptExecutionSettings() { MaxTokens = 32768 },
+            executionSettings: new GeminiPromptExecutionSettings() { MaxTokens = 32768 },
             cancellationToken: cancellationToken
         );
 

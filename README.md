@@ -119,3 +119,5 @@ _(Placeholder - Add specific setup steps here)_
 - **Frontend (Client):** Build the React application (`npm run build`) and deploy the static assets to a hosting service like Vercel or Netlify. Ensure the client's API URL configuration points to the deployed backend URL and the backend's CORS policy allows the client's origin.
 
 ---
+
+now an independent index per research, making querying faster and deletion easier.
