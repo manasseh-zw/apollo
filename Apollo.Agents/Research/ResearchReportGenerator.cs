@@ -193,7 +193,6 @@ public class ResearchReportGenerator : IResearchReportGenerator
             await _repository.ResearchReports.AddAsync(report, cancellationToken);
             await _repository.SaveChangesAsync(cancellationToken);
 
-            // Notify about research completion with report
             await _eventHandler.HandleResearchCompletedWithReport(
                 new ResearchCompletedWithReportEvent
                 {

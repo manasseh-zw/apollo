@@ -9,12 +9,6 @@ public class ResearchStartEvent
     public string UserId { get; set; }
 }
 
-public class ResearchCompletedEvent
-{
-    public Guid ResearchId { get; set; }
-    public string UserId { get; set; }
-}
-
 public class ResearchCompletedWithReportEvent
 {
     public Guid ResearchId { get; set; }
@@ -25,7 +19,6 @@ public class ResearchCompletedWithReportEvent
 public interface IResearchEventHandler
 {
     Task HandleResearchStart(ResearchStartEvent @event);
-    Task HandleResearchCompleted(ResearchCompletedEvent @event);
     Task HandleResearchCompletedWithReport(ResearchCompletedWithReportEvent @event);
 }
 
@@ -46,20 +39,18 @@ public class ResearchEventHandler : IResearchEventHandler
         await _queue.Writer.WriteAsync(@event);
     }
 
-    public async Task HandleResearchCompleted(ResearchCompletedEvent @event)
-    {
-        await _notifier.NotifyResearchCompleted(@event.UserId, @event.ResearchId);
-    }
-
     public async Task HandleResearchCompletedWithReport(ResearchCompletedWithReportEvent @event)
     {
-        await _notifier.NotifyResearchCompletedWithReport(@event.UserId, @event.ResearchId, @event.Report);
+        await _notifier.NotifyResearchCompletedWithReport(
+            @event.UserId,
+            @event.ResearchId,
+            @event.Report
+        );
     }
 }
 
 public interface IResearchNotifier
 {
     Task NotifyResearchSaved(string userId, Guid researchId);
-    Task NotifyResearchCompleted(string userId, Guid researchId);
     Task NotifyResearchCompletedWithReport(string userId, Guid researchId, ResearchReport report);
 }

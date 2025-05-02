@@ -10,7 +10,6 @@ public interface IResearchHubClient
     Task ResearchCompleted(Guid researchId);
     Task ResearchCompletedWithReport(Guid researchId, ResearchReport report);
 
-    // New methods for research updates
     Task ReceiveTimelineUpdate(TimelineUpdateEvent update);
     Task ReceiveResearchFeedUpdate(ResearchFeedUpdateEvent update);
     Task ReceiveAgentChatMessage(AgentChatMessageEvent message);
