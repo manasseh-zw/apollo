@@ -41,7 +41,7 @@ public class IngestEventHandler : IIngestEventHandler
                     { "published", result.PublishedDate },
                 };
 
-                await _memory.Ingest(result.Text, tags);
+                await _memory.Ingest(researchId, result.Text, tags);
             }
         }
         catch (Exception ex)

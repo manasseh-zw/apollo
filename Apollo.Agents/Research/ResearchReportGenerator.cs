@@ -80,7 +80,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
         _logger.LogInformation("[{ResearchId}] Starting report generation", researchId);
         UpdateProgress(
             researchId,
-            "Starting report creation process now... and please be patient this could take a while (~ 5-10 minutes) and please dont refresh the screen something could go horribly wrong! 😭"
+            "Starting report creation process now... and please be patient this could take a while..."
         );
 
         try
@@ -218,6 +218,8 @@ public class ResearchReportGenerator : IResearchReportGenerator
                     Report = new(report.Id.ToString(), report.Content),
                 }
             );
+
+            await _memory.DeleteIndex(researchId, cancellationToken);
 
             UpdateProgress(researchId, "Report Synthesis complete!");
             _logger.LogInformation(

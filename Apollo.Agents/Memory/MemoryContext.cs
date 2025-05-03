@@ -6,7 +6,7 @@ namespace Apollo.Agents.Memory;
 
 public interface IMemoryContext
 {
-    Task Ingest(string content, TagCollection tags);
+    Task Ingest(string researchId, string content, TagCollection tags);
     Task<SearchResult> SearchAsync(
         string researchId,
         string query,
@@ -17,6 +17,8 @@ public interface IMemoryContext
         string question,
         CancellationToken cancellationToken = default
     );
+
+    Task DeleteIndex(string researchId, CancellationToken cancellationToken = default);
     bool IsIngestionInProgress(string researchId);
     void SetIngestionInProgress(string researchId, bool inProgress);
 }
@@ -29,7 +31,9 @@ public class MemoryContext : IMemoryContext
     public MemoryContext()
     {
         _memory = new KernelMemoryBuilder()
-            .WithPostgresMemoryDb(AppConfig.DatabaseOptions.VectorConnectionString)
+            // .WithPostgresMemoryDb(AppConfig.DatabaseOptions.VectorConnectionString)
+            .WithSimpleVectorDb()
+            .WithSimpleQueuesPipeline()
             .With(new KernelMemoryConfig { DefaultIndexName = "apollo" })
             .WithAzureOpenAITextEmbeddingGeneration(
                 new()
@@ -61,9 +65,9 @@ public class MemoryContext : IMemoryContext
             );
     }
 
-    public async Task Ingest(string content, TagCollection tags)
+    public async Task Ingest(string researchId, string content, TagCollection tags)
     {
-        await _memory.ImportTextAsync(content, tags: tags);
+        await _memory.ImportTextAsync(content, tags: tags, index: researchId);
     }
 
     public async Task<SearchResult> SearchAsync(
@@ -74,7 +78,8 @@ public class MemoryContext : IMemoryContext
     {
         return await _memory.SearchAsync(
             query,
-            filter: MemoryFilters.ByTag("researchId", researchId),
+            // filter: MemoryFilters.ByTag("researchId", researchId),
+            index: researchId,
             cancellationToken: cancellationToken
         );
     }
@@ -87,7 +92,8 @@ public class MemoryContext : IMemoryContext
     {
         return await _memory.AskAsync(
             question,
-            filter: MemoryFilters.ByTag("researchId", researchId),
+            // filter: MemoryFilters.ByTag("researchId", researchId),
+            index: researchId,
             cancellationToken: cancellationToken
         );
     }
@@ -103,5 +109,10 @@ public class MemoryContext : IMemoryContext
             _activeIngestions.TryAdd(researchId, true);
         else
             _activeIngestions.TryRemove(researchId, out _);
+    }
+
+    public async Task DeleteIndex(string researchId, CancellationToken cancellationToken = default)
+    {
+        await _memory.DeleteIndexAsync(researchId, cancellationToken);
     }
 }
