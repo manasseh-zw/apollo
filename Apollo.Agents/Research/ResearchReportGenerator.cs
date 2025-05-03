@@ -259,7 +259,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
         var memoryResults = await _memory.AskAsync(
             researchId,
             $"For the section '{section}' in research about '{state.Title}', provide research notes that contain the following: "
-                + $"1. Comprehensive key facts and data points (with numbers when available) "
+                + $"1. Key facts and data points (with numbers when available) "
                 + $"2. Direct quotes from sources (with attribution) "
                 + $"3. Main findings relevant to this specific section "
                 + $"4. Cite all sources",

@@ -121,7 +121,7 @@ The value proposition extends beyond individual use cases—Apollo can be deploy
 ## 💡 Challenges & Design Decisions
 
 > [!NOTE]
-> These innovative design decisions highlight Apollo's architectural sophistication and our approach to solving complex technical challenges.
+> These innovative design decisions highlight Apollo's interesting architecture and my approach to solving complex technical challenges.
 
 - **Agent Communication:** Implemented a state machine to pass information outside of chat history context window, preventing rate limiting and enabling better context management.
 
@@ -161,12 +161,11 @@ _(Placeholder - Add specific setup steps here)_
 2. **Configuration:** Set up necessary API keys and connection strings in `.env` file (refer to `.env.example` if provided).
 3. **Backend:**
    ```bash
-   cd c:\Users\devma\Desktop\DeepResearch\Apollo
    dotnet run --project Apollo.Api\Apollo.Api.csproj
    ```
 4. **Frontend (if running locally):**
+
    ```bash
-   cd c:\Users\devma\Desktop\DeepResearch\Apollo\Apollo.Client
    bun install
    bun start
    ```
@@ -197,6 +196,23 @@ _(Placeholder - Add specific setup steps here)_
 </p>
 
 <br>
+
+## 📚 References
+
+> [!NOTE]
+> Apollo's architecture is built upon cutting-edge research and techniques in AI, RAG systems, and prompt engineering. The following references were instrumental in developing Apollo's sophisticated capabilities.
+
+- **Prompt Engineering**: [OpenAI's GPT-4 Prompting Guide](https://cookbook.openai.com/examples/gpt4-1_prompting_guide) - Leveraged to design Apollo's agent instructions and the structured prompts that power its research synthesis capabilities.
+
+- **Deep Research Implementation**: [Jina AI's Practical Guide to Implementing DeepSearch](https://jina.ai/news/a-practical-guide-to-implementing-deepsearch-deepresearch/) - Borrowed a leaf form Jinas deep research implementation attempt.
+
+- **Structured RAG Systems**: [Structured RAG paper](https://arxiv.org/abs/2410.08815) - The theoretical foundation for Apollo's sophisticated memory architecture, enabling more context-aware information retrieval and analysis.
+
+- **Kernel Memory Integration**: [Implementing Structured RAG Search Client in .NET](https://www.youtube.com/watch?v=O7Ce3YljyIY) - This tutorial by a .NET MVP informed my implementation of Kernel Memory's structured RAG search client (which was inspired by the above mentioned paper), enhancing memory-wide context by creating tables and reranking before queries are performed.
+
+- **Self-Reflection Capabilities**: [Langchain's Self-Reflective RAG](https://www.youtube.com/watch?v=pbAd8O1Lvm4) - Inspired Apollo's self-critique mechanism where the memory system evaluates its own knowledge gaps, leading to more comprehensive research outcomes.
+
+These advanced techniques were carefully integrated into Apollo's multi-agent architecture to create a research assistant that surpasses traditional approaches. The structured RAG implementation enhances memory-wide context utilization, while self-reflective RAG capabilities enable the system to critically evaluate its knowledge and identify gaps during the research process.
 
 ## 🔗 Links
 
