@@ -19,23 +19,20 @@
 </p>
 
 <h2 align="center">Powered By</h2>
-
 <p align="center">
-  <a href="https://ai.azure.com/" style="text-align:center; display:inline-block; margin: 0 30px;">
-    <img src="docs/foundry-logo.svg" alt="Azure AI Foundry" width="60"/><br/>
-    <span style=" font-size: 16px;">Azure AI Foundry</span>
-  </a>
-  <a href="https://learn.microsoft.com/en-us/semantic-kernel/" style="text-align:center; display:inline-block; margin: 0 20px;">
-    <img src="docs/sk-logo.png" alt="Semantic Kernel" width="60"/><br/>
-    <span style=" font-size: 16px;">Semantic Kernel</span>
-  </a>
-  <a href="https://microsoft.github.io/kernel-memory/" style="text-align:center; display:inline-block; margin: 0 20px;">
-    <img src="docs/ms-logo.png" alt="Kernel Memory" width="60"/><br/>
-    <span style=" font-size: 16px;">Kernel Memory</span>
-  </a>
+  <img src="docs/foundry-logo.svg" alt="Azure AI Foundry" width="80"/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="docs/sk-logo.png" alt="Semantic Kernel" width="80"/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ <img src="docs/ms-logo.png" alt="Kernel Memory" width="80"/>
 </p>
-
----
+<p align="center">
+  <a href="https://ai.azure.com/"><em> AI Foundry</em></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://learn.microsoft.com/en-us/semantic-kernel/"><em>Semantic Kernel</em></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://microsoft.github.io/kernel-memory/"><em>Kernel Memory</em></a>
+</p>
 
 <br>
 
