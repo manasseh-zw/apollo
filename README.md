@@ -33,7 +33,6 @@
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <a href="https://microsoft.github.io/kernel-memory/"><em>Kernel Memory</em></a>
 </p>
----
 
 <br>
 
