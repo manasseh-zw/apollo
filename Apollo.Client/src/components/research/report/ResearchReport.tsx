@@ -47,7 +47,6 @@ export default function ResearchReport({ report }: ResearchReportProps) {
     // flex flex-col h-full: Ensures the component takes full height and lays out children vertically
     <div className="flex flex-col h-full bg-white">
       {/* Top Header */}
-      {/* Added some padding for consistency */}
       <header className="pt-4 px-4 sm:px-6 md:px-8">
         <div className="max-w-3xl mx-auto flex justify-end">
           <ButtonGroup variant="flat">
@@ -96,9 +95,12 @@ export default function ResearchReport({ report }: ResearchReportProps) {
         </div>
       </header>
 
-      <main className="flex overflow-auto justify-center pb-5">
-        <div className="max-w-3xl font-geist">
-          <div className="markdown" style={{ fontSize: `${fontSize}px` }}>
+      <main className="flex overflow-y-auto overflow-x-hidden justify-center pb-5 px-4">
+        <div className="max-w-3xl w-full font-geist">
+          <div
+            className="prose prose-slate max-w-none"
+            style={{ fontSize: `${fontSize}px` }}
+          >
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {report.content}
             </ReactMarkdown>
