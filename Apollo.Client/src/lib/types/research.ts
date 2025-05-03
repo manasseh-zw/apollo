@@ -41,6 +41,7 @@ export type ResearchPlan = {
 };
 
 export type ResearchReport = {
+  title: string;
 	id: string;
 	content: string;
 };

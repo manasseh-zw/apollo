@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Button,
   ButtonGroup,
@@ -6,6 +6,10 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  useDisclosure,
+  Modal,
+  ModalContent,
+  ModalBody,
 } from "@heroui/react";
 import { ChevronDownIcon } from "lucide-react";
 import { MSWord, MSPowerPoint, PDFIcon } from "../../Icons";
@@ -13,6 +17,7 @@ import FontSizeController from "./FontSizeController";
 import type { ResearchReport as ResearchReportType } from "../../../lib/types/research";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useReactToPrint } from "react-to-print";
 
 interface ResearchReportProps {
   report: ResearchReportType | null;
@@ -23,6 +28,10 @@ export default function ResearchReport({ report }: ResearchReportProps) {
   const [selectedExportOption, setSelectedExportOption] = useState(
     new Set(["pdf"])
   );
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const reportContentRef = useRef<HTMLDivElement>(null); // Create a ref to the content
 
   const exportOptions = {
     pdf: { text: "Export as PDF", icon: PDFIcon },
@@ -43,14 +52,70 @@ export default function ResearchReport({ report }: ResearchReportProps) {
     );
   }
 
+  // Configure the react-to-print hook
+  const handlePrint = useReactToPrint({
+    contentRef: reportContentRef,
+    documentTitle: "Research Report",
+    pageStyle: `
+        @page {
+          size: A4; /* Or 'letter', etc. */
+          margin: 20mm; /* Adjust margins as needed */
+        }
+        @media print {
+          body {
+            -webkit-print-color-adjust: exact; /* Ensures background colors/images print in Chrome/Safari */
+            print-color-adjust: exact; /* Standard */
+          }
+          /* Ensure the prose styles apply correctly in print */
+          .prose {
+            max-width: none !important; /* Allow prose to fill the page width */
+          }
+          /* Add any other print-specific overrides */
+          main {
+             overflow: visible !important; /* Prevent content cutoff */
+             display: block !important; /* Ensure main is block for printing */
+          }
+          .report-content-wrapper {
+             /* Add specific print styles for the wrapper if needed */
+          }
+        }
+      `,
+  });
+
+  const handleExportClick = () => {
+    if (selectedOption === "pdf") {
+      handlePrint();
+    } else {
+      setIsOpen(true);
+    }
+  };
+
   return (
     // flex flex-col h-full: Ensures the component takes full height and lays out children vertically
     <div className="flex flex-col h-full bg-white">
-      {/* Top Header */}
-      <header className="pt-4 px-4 sm:px-6 md:px-8">
+      <Modal
+        size="sm"
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+        }}
+      >
+        <ModalContent className="p-3">
+          <ModalBody>
+            <p className="text-xl font-bold">
+              Sorry this is still in construction, coming soon though! ☺️
+            </p>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+      ;{/* Top Header */}
+      <header className="py-4 px-4 sm:px-6 md:px-8">
         <div className="max-w-3xl mx-auto flex justify-end">
-          <ButtonGroup variant="flat">
-            <Button className="bg-primary text-primary-foreground">
+          <ButtonGroup variant="flat" size="sm">
+            <Button
+              className="bg-primary text-primary-foreground"
+              onPress={handleExportClick}
+            >
               {exportOptions[selectedOption]?.text || "Export"}
             </Button>
             <Dropdown placement="bottom-end">
@@ -94,11 +159,11 @@ export default function ResearchReport({ report }: ResearchReportProps) {
           </ButtonGroup>
         </div>
       </header>
-
-      <main className="flex overflow-y-auto overflow-x-hidden justify-center pb-5 px-4">
+      <main className="flex overflow-y-auto overflow-x-hidden justify-center ">
         <div className="max-w-3xl w-full font-geist">
           <div
-            className="prose prose-slate max-w-none"
+            ref={reportContentRef}
+            className="prose prose-slate max-w-none pb-14"
             style={{ fontSize: `${fontSize}px` }}
           >
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -107,7 +172,6 @@ export default function ResearchReport({ report }: ResearchReportProps) {
           </div>
         </div>
       </main>
-
       <div className="relative">
         <FontSizeController
           fontSize={fontSize}

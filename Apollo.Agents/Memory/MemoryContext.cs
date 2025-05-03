@@ -30,9 +30,7 @@ public class MemoryContext : IMemoryContext
     {
         _memory = new KernelMemoryBuilder()
             .WithPostgresMemoryDb(AppConfig.DatabaseOptions.VectorConnectionString)
-            // .WithQdrantMemoryDb(
-            //     new() { APIKey = AppConfig.Quadrant.ApiKey, Endpoint = AppConfig.Quadrant.Endpoint }
-            // )
+            .With(new KernelMemoryConfig { DefaultIndexName = "apollo" })
             .WithAzureOpenAITextEmbeddingGeneration(
                 new()
                 {
@@ -52,10 +50,10 @@ public class MemoryContext : IMemoryContext
                     APIType = AzureOpenAIConfig.APITypes.TextCompletion,
                     Deployment = AppConfig.Models.Gpt41,
                     Endpoint = AppConfig.AzureAI.Endpoint,
-                    MaxTokenTotal = 1047576,
+                    MaxTokenTotal = 65456,
                 }
             )
-            .WithSearchClientConfig(new() { AnswerTokens = 32768 })
+            .WithSearchClientConfig(new() { AnswerTokens = 16555, MaxAskPromptSize = 32768 })
             .WithStructRagSearchClient()
             .Build<MemoryServerless>(
                 //this is fine because i am not storing any documents at the moment
@@ -65,7 +63,7 @@ public class MemoryContext : IMemoryContext
 
     public async Task Ingest(string content, TagCollection tags)
     {
-        await _memory.ImportTextAsync(content, tags: tags, index: "apollo");
+        await _memory.ImportTextAsync(content, tags: tags);
     }
 
     public async Task<SearchResult> SearchAsync(
@@ -77,7 +75,6 @@ public class MemoryContext : IMemoryContext
         return await _memory.SearchAsync(
             query,
             filter: MemoryFilters.ByTag("researchId", researchId),
-            index: "apollo",
             cancellationToken: cancellationToken
         );
     }
@@ -91,7 +88,6 @@ public class MemoryContext : IMemoryContext
         return await _memory.AskAsync(
             question,
             filter: MemoryFilters.ByTag("researchId", researchId),
-            index: "apollo",
             cancellationToken: cancellationToken
         );
     }

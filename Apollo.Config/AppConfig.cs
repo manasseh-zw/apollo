@@ -93,6 +93,17 @@ public static class AppConfig
                 Environment.GetEnvironmentVariable("CLIENT_URL")
                 ?? throw new Exception("Client URL is not set"),
         };
+
+    // public static Qdrant Qdrant { get; } =
+    //     new()
+    //     {
+    //         ApiKey =
+    //             Environment.GetEnvironmentVariable("QDRANT_API_KEY")
+    //             ?? throw new Exception("QDRANT_API_KEY is not set"),
+    //         Endpoint =
+    //             Environment.GetEnvironmentVariable("QDRANT_ENDPOINT")
+    //             ?? throw new Exception("QDRANT_ENDPOINT is not set"),
+    //     };
 }
 
 public class DatabaseOptions
@@ -136,10 +147,16 @@ public class Models
 
 public class ExaAI
 {
-    public string ApiKey { get; init; } = string.Empty;
+    public required string ApiKey { get; init; } = string.Empty;
 }
 
 public class Client
 {
-    public string Url { get; set; }
+    public required string Url { get; set; }
 }
+
+// public class Qdrant()
+// {
+//     public required string ApiKey { get; set; }
+//     public required string Endpoint { get; set; }
+// }

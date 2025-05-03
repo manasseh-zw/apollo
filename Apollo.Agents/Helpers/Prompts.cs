@@ -314,7 +314,8 @@ public class Prompts
                     ```
                 *   **Table of Contents**
                 *   **Action:** Call `StatePlugin.UpdateTableOfContents()` with the final TOC, where you pass only the main sections in and subsections are within the same string ..
-                    e.g.["Section Title: subsection1, subsection2, section3","Section Title: ..."],(in the order they will appear in the report) so the sections you pass to the plugin are to be no more 15 Main sections.
+                    e.g.["Section Title: subsection1, subsection2, section3","Section Title: ..."],(in the order they will appear in the report) so the sections you pass to the plugin are to be no more 10 Main body sections.
+                *   ** note that this TOC is for the  body of the research , add secitons that are to go directly into the main body of the final white paper report, so no intro sections or appendeces or sources secionts just the main gist of the research 
                 *   Do not add any gap questions for this pass.
 
             4.  **Step 4: Mark Analysis Complete**
@@ -396,15 +397,18 @@ public class Prompts
             *   **Core Content:** Include ALL key findings and data points from the source material.
             *   **Context:** Add relevant background information and explanations where needed for clarity.
             *   **Depth:** Maintain comprehensive coverage while keeping the presentation accessible.
-            *   **Citations:** Include ALL source citations, formatted consistently but unobtrusively, (clickable links) .(do not mention context.txt citations that is just memory context error but do use the content, just mention the actual author of that source do not put the link)
+            *   **Citations:** Include ALL source citations, formatted consistently but unobtrusively, `[link text](https://example.com)`. for inline citations and sources.
 
 
             ## Document Structure
             *   **Required Elements:**
-                *   **Introduction:** Context, scope, and objectives
+                *   **Introduction:** Context, scope summary fot whats to come, derived from the body section contents
                 *   **Main Body:**Sections Organized by logical themes or topics, using varied presentation formats
                 *   **Key Findings/Conclusions:** Clear summary of main insights
-                *   **Sources:** Complete list of sources in consistent format
+                *   **Sources:** Complete list of sources in consistent format 
+            *   **Do Nots:**
+                *   **No Apendences section, No references section that is what Sources is For**
+                *   **Lets shy away from making it too academic lets make it more modern and readable whilst mainting a professional logical form**
             *   **Optional Elements (use as needed):**
                 *   Tables for data comparison
                 *   Bullet lists for key points
@@ -437,7 +441,7 @@ public class Prompts
                 *   Verify effective use of varied formats
 
             # Final Instruction
-            Create an engaging, comprehensive (at least 5000 words) white paper style research  report essay that presents the research findings in the most clear and accessible way possible. Focus on readability and engagement while ensuring thorough coverage and proper source attribution.
+            Create an engaging, comprehensive at ~at least (4000 words+)  white paper style research report essay that presents the research findings in the most clear and accessible way possible. Focus on readability and engagement while ensuring thorough coverage and proper source attribution.
 
             # Provided Research Content
             ---

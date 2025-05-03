@@ -29,6 +29,7 @@ public class KernelMemoryPlugin
         CancellationToken cancellationToken = default
     )
     {
+        await Task.Delay(TimeSpan.FromSeconds(20));
         var response = await _memory.AskAsync(researchId, question, cancellationToken);
         return response.Result.ToLower();
     }
