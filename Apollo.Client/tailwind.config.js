@@ -16,16 +16,20 @@ export default {
             maxWidth: "none",
             color: "inherit",
             a: {
-              color: "#3182ce",
+              color: "#727CF9",
               textDecoration: "none",
               "&:hover": {
                 textDecoration: "underline",
-                color: "#2c5282",
+                color: "#A68AF9",
               },
             },
             table: {
               overflow: "hidden",
               borderCollapse: "collapse",
+              width: "100%",
+              borderRadius: "0.5rem",
+              boxShadow:
+                "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
             },
             "thead th": {
               borderWidth: "1px",
@@ -36,13 +40,15 @@ export default {
             },
             "thead th:first-child": {
               paddingLeft: "1.5rem",
+              borderTopLeftRadius: "0.375rem",
             },
             "thead th:last-child": {
               paddingRight: "1.5rem",
+              borderTopRightRadius: "0.375rem",
             },
             "tbody td": {
               borderWidth: "1px",
-              borderColor: "#e2e8f0",
+              borderColor: "#e9ecef",
               padding: "0.75rem 1rem",
             },
             "tbody td:first-child": {
@@ -55,7 +61,14 @@ export default {
               backgroundColor: "#f7fafc",
             },
             "tbody tr:hover": {
-              backgroundColor: "#ebf8ff",
+              backgroundColor: "#F5F3FF", // Very subtle purple-blue-violet hue
+              transition: "background-color 0.15s ease-in-out",
+            },
+            "tbody tr:last-child td:first-child": {
+              borderBottomLeftRadius: "0.375rem",
+            },
+            "tbody tr:last-child td:last-child": {
+              borderBottomRightRadius: "0.375rem",
             },
           },
         },

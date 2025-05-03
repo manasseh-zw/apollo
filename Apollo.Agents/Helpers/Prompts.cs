@@ -381,7 +381,7 @@ public class Prompts
                 *   Bullet points for lists and key points
                 *   Tables for comparing data 
             *   **Flow:** Ensure smooth transitions between different presentation formats and topics.
-            *   **Citations:** Maintain rigorous source attribution while keeping it unobtrusive to readability.
+            *   **Citations:** Maintain rigorous source attribution while keeping it unobtrusive to readability. (do not mention context.txt citations that is just memory context error but do use the content,just mention the actual author of that source dot put link)
 
             ## Writing Style
             *   **Tone:** Professional but engaging - aim for clear, accessible language while maintaining authority.
@@ -398,7 +398,8 @@ public class Prompts
             *   **Core Content:** Include ALL key findings and data points from the source material.
             *   **Context:** Add relevant background information and explanations where needed for clarity.
             *   **Depth:** Maintain comprehensive coverage while keeping the presentation accessible.
-            *   **Citations:** Include ALL source citations, formatted consistently but unobtrusively, (clickable links) .
+            *   **Citations:** Include ALL source citations, formatted consistently but unobtrusively, (clickable links) .(do not mention context.txt citations that is just memory context error but do use the content, just mention the actual author of that source do not put the link)
+
 
             ## Document Structure
             *   **Required Elements:**
