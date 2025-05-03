@@ -18,11 +18,30 @@
   <img src="https://img.shields.io/badge/PostgreSQL_+_pgvector-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL + pgvector"/>
 </p>
 
+<h2 align="center">Powered By</h2>
+
+<p align="center">
+  <a href="https://ai.azure.com/" style="text-align:center; display:inline-block; margin: 0 30px;">
+    <img src="docs/foundry-logo.svg" alt="Azure AI Foundry" width="60"/><br/>
+    <span style=" font-size: 16px;">Azure AI Foundry</span>
+  </a>
+  <a href="https://learn.microsoft.com/en-us/semantic-kernel/" style="text-align:center; display:inline-block; margin: 0 20px;">
+    <img src="docs/sk-logo.png" alt="Semantic Kernel" width="60"/><br/>
+    <span style=" font-size: 16px;">Semantic Kernel</span>
+  </a>
+  <a href="https://microsoft.github.io/kernel-memory/" style="text-align:center; display:inline-block; margin: 0 20px;">
+    <img src="docs/ms-logo.png" alt="Kernel Memory" width="60"/><br/>
+    <span style=" font-size: 16px;">Kernel Memory</span>
+  </a>
+</p>
+
 ---
 
 <br>
+
+<br>
 <p align="center ">
-  <img src="docs/demo.png" alt="Apollo Logo" width="700"/>
+  <img src="docs/demo.png" alt="Apollo Logo" width="800"/>
 </p>
 
 Apollo is an innovative multi-agent research assistant that revolutionizes deep research through a dynamic team of specialized AI agents working collaboratively. Unlike traditional research tools that rely on single-agent approaches, Apollo's breakthrough architecture takes a user's research query, intelligently breaks it down into fundamental questions, and orchestrates a team of specialized agents—each with distinct roles and expertise—to gather, process, analyze, and synthesize information into a comprehensive, cited research report.
@@ -72,7 +91,7 @@ The value proposition extends beyond individual use cases—Apollo can be deploy
   - **Agents:** Built using Semantic Kernel, orchestrated via agent group chat concepts.
   - **Memory:** Kernel Memory with PostgreSQL/pgvector as the vector database backend.
   - **Events:** Research Events Bus implemented using .NET channels for asynchronous processing.
-  - **Search/Crawling:** Integrates ![alt text](<deep research.png>)with Exa AI for web searching and content retrieval.
+  - **Search/Crawling:** Integrates with Exa AI for web searching and content retrieval.
 
 - **Frontend:** React (Vite) with TanStack Router & Query. (Hosted separately, e.g., on Vercel).
 
@@ -187,7 +206,7 @@ _(Placeholder - Add specific setup steps here)_
 
 - **Scalability:** The asynchronous event-driven design using .NET channels enables Apollo to handle multiple complex research tasks simultaneously without performance degradation. In testing, the system maintained responsiveness while processing 10+ concurrent research queries.
 
-- **Integration Flexibility:** The system integrates seamlessly with Microsoft's AI ecosystem (Azure OpenAI, Semantic Kernel, Kernel Memory) while maintaining the ability to incorporate specialized tools like Exa AI for search. This hybrid approach leverages the strengths of Microsoft's enterprise-grade infrastructure while accessing specialized capabilities when needed.
+- **Integration Flexibility:** The system integrates seamlessly with Microsoft's AI ecosystem (Azure AI Service via AI Foundry, Semantic Kernel, Kernel Memory) while maintaining the ability to incorporate specialized tools like Exa AI for search. This hybrid approach l everages the strengths of Microsoft's enterprise-grade infrastructure while accessing specialized capabilities when needed.
 
 ---
 
