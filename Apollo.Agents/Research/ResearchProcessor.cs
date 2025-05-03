@@ -1,4 +1,3 @@
-using System.Threading.Channels;
 using Apollo.Agents.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

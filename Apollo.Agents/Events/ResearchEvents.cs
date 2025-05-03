@@ -1,6 +1,3 @@
-using Apollo.Agents.Research;
-using Apollo.Data.Models;
-
 namespace Apollo.Agents.Events;
 
 public class ResearchStartEvent

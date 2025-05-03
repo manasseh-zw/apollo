@@ -13,7 +13,6 @@ using Microsoft.KernelMemory;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.Google;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 namespace Apollo.Agents.Research;
 
@@ -79,7 +78,10 @@ public class ResearchReportGenerator : IResearchReportGenerator
     )
     {
         _logger.LogInformation("[{ResearchId}] Starting report generation", researchId);
-        UpdateProgress(researchId, "Starting report creation process now...");
+        UpdateProgress(
+            researchId,
+            "Starting report creation process now... and please be patient this could take a while (~ 5-10 minutes) and please dont refresh the screen something could go horribly wrong! 😭"
+        );
 
         try
         {

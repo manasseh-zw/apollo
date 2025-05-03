@@ -1,5 +1,4 @@
 using Apollo.Agents.Events;
-using Apollo.Search.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

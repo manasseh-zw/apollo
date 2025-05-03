@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using Apollo.Agents.Memory;
-using Microsoft.KernelMemory;
 using Microsoft.SemanticKernel;
 
 namespace Apollo.Agents.Plugins;
