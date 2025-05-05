@@ -1,20 +1,12 @@
 import { useRef, useState } from "react";
 import {
   Button,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-  Modal,
-  ModalContent,
-  ModalBody,
   Popover,
   PopoverTrigger,
   PopoverContent,
   Slider,
 } from "@heroui/react";
 import { Share2, Download, Type } from "lucide-react";
-import { MSWord, MSPowerPoint, PDFIcon } from "../../Icons";
 import type { ResearchReport as ResearchReportType } from "../../../lib/types/research";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -32,23 +24,9 @@ export default function ResearchReport({
   isSharedView = false,
 }: ResearchReportProps) {
   const [fontSize, setFontSize] = useState(16);
-  const [selectedExportOption, setSelectedExportOption] = useState(
-    new Set(["pdf"])
-  );
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   const reportContentRef = useRef<HTMLDivElement>(null);
-
-  const exportOptions = {
-    pdf: { text: "Export as PDF", icon: PDFIcon },
-    word: { text: "Export as Word", icon: MSWord },
-    powerpoint: { text: "Export as PowerPoint", icon: MSPowerPoint },
-  };
-
-  const selectedOption = Array.from(
-    selectedExportOption
-  )[0] as keyof typeof exportOptions;
 
   if (!report) {
     return (
@@ -59,7 +37,7 @@ export default function ResearchReport({
   }
 
   const handlePrint = useReactToPrint({
-    contentRef: reportContentRef,
+    contentRef: reportContentRef, // Ensure content returns the ref's current node
     documentTitle: report.title,
     pageStyle: `
         @page {
@@ -83,29 +61,11 @@ export default function ResearchReport({
   });
 
   const handleExportClick = () => {
-    if (selectedOption === "pdf") {
-      handlePrint();
-    } else {
-      setIsExportModalOpen(true);
-    }
+    handlePrint();
   };
 
   return (
     <div className="flex flex-col h-full bg-white relative">
-      <Modal
-        size="sm"
-        isOpen={isExportModalOpen}
-        onClose={() => setIsExportModalOpen(false)}
-      >
-        <ModalContent className="p-3">
-          <ModalBody>
-            <p className="text-xl font-bold">
-              Sorry this is still in construction, coming soon though! ☺️
-            </p>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-
       <ShareModal
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
@@ -115,6 +75,7 @@ export default function ResearchReport({
       {isSharedView && <Banner />}
       <main className="flex overflow-y-auto overflow-x-hidden justify-center py-10">
         <div className="max-w-3xl w-full font-geist px-4">
+          {/* This div contains the content to be printed */}
           <div
             ref={reportContentRef}
             className="prose prose-slate max-w-none pb-14"
@@ -128,8 +89,8 @@ export default function ResearchReport({
       </main>
 
       {/* Floating Action Buttons */}
-      <div className="absolute bottom-20 lg:right-48 md:right-12 right-2 flex flex-col gap-2">
-        {/* Font Size Button */}
+      <div className="absolute bottom-24 lg:right-[14rem] md:right-12 right-2 flex flex-col gap-2">
+        {/* Font Size Button (Unchanged) */}
         <Popover placement="left" showArrow offset={10}>
           <PopoverTrigger>
             <Button
@@ -171,7 +132,7 @@ export default function ResearchReport({
           </PopoverContent>
         </Popover>
 
-        {/* Share Button - Only show if not in shared view */}
+        {/* Share Button - Only show if not in shared view (Unchanged) */}
         {!isSharedView && (
           <Button
             isIconOnly
@@ -184,48 +145,16 @@ export default function ResearchReport({
           </Button>
         )}
 
-        {/* Export Button */}
-        <Dropdown placement="left">
-          <DropdownTrigger>
-            <Button
-              isIconOnly
-              variant="flat"
-              radius="full"
-              className="bg-primary text-primary-foreground"
-              onPress={handleExportClick}
-            >
-              <Download size={20} />
-            </Button>
-          </DropdownTrigger>
-          <DropdownMenu
-            disallowEmptySelection
-            aria-label="Export options"
-            selectedKeys={selectedExportOption}
-            color="primary"
-            selectionMode="single"
-            //@ts-ignore - Keep if necessary for your library version
-            onSelectionChange={setSelectedExportOption}
-          >
-            <DropdownItem
-              key="word"
-              startContent={<MSWord className="h-5 w-5" />}
-            >
-              Export as Word
-            </DropdownItem>
-            <DropdownItem
-              key="powerpoint"
-              startContent={<MSPowerPoint className="h-5 w-5" />}
-            >
-              Export as PowerPoint
-            </DropdownItem>
-            <DropdownItem
-              key="pdf"
-              startContent={<PDFIcon className="h-5 w-5" />}
-            >
-              Export as PDF
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
+        <Button
+          isIconOnly
+          variant="flat"
+          radius="full"
+          className="bg-primary text-primary-foreground"
+          onPress={handleExportClick}
+          aria-label="Export as PDF"
+        >
+          <Download size={20} />
+        </Button>
       </div>
     </div>
   );

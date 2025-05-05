@@ -1,5 +1,5 @@
 import { Button, Link } from "@heroui/react";
-import { ArrowUpRight, CornerRightUp, X } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 export default function Banner() {
   return (
