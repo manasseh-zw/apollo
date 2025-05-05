@@ -13,8 +13,6 @@ import {
   ChevronLeft,
   ChevronRight,
   History,
-  LogOut,
-  Menu,
   Sidebar,
   Telescope,
 } from "lucide-react";

@@ -28,10 +28,10 @@ export default function ShareModal({
 
   return (
     <Modal size="md" isOpen={isOpen} onClose={onClose}>
-      <ModalContent className="p-6">
+      <ModalContent className="p-4">
         <ModalBody>
-          <h3 className="text-lg font-medium mb-4">Share Research Report</h3>
-          <p className="text-sm text-gray-600 mb-4">
+          <h3 className="text-lg font-medium mb-3">Share Research Report</h3>
+          <p className="text-sm text-gray-600 mb-3">
             Anyone with this link can view the research report:
           </p>
           <div className="flex gap-2">
