@@ -1,13 +1,8 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import AppSidebar from "../components/layout/AppSidebar";
-import { researchHistoryActions } from "../lib/state/store";
 
 export const Route = createFileRoute("/__app")({
 	component: RouteComponent,
-	loader: async () => {
-		await researchHistoryActions.fetchHistory(1);
-		return null;
-	},
 });
 
 function RouteComponent() {

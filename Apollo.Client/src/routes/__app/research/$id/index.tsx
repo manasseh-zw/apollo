@@ -19,9 +19,21 @@ import {
   getResearchUpdates,
 } from "../../../../lib/services/research.service";
 import { protectedLoader } from "../../../../lib/utils/loaders";
+import { LogoLight } from "../../../../components/Icons";
+
+function LoadingState() {
+  return (
+    <div className="flex flex-col items-center justify-center h-full w-full gap-4">
+      <div className="animate-pulse bg-primary p-[.55rem] rounded-full">
+        <LogoLight width={32} height={32} />
+      </div>
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/__app/research/$id/")({
   component: RouteComponent,
+  pendingComponent: LoadingState,
   loader: async ({ params }) => {
     // First run the protected route loader
     await protectedLoader();
@@ -64,6 +76,11 @@ function RouteComponent() {
     null
   );
   const { id: researchId } = Route.useParams();
+
+  useEffect(() => {
+    // Reset research state when ID changes
+    setResearch(initialResearch);
+  }, [initialResearch]);
 
   useEffect(() => {
     // Only set up SignalR if research is in progress
@@ -125,29 +142,32 @@ function RouteComponent() {
     };
   }, [researchId, research.status]);
 
-  if (research.status === ResearchStatus.Complete) {
-    console.log(research.report?.content);
+  // Use key prop to force remount when research ID changes
+  const content =
+    research.status === ResearchStatus.Complete ? (
+      <ResearchReport key={researchId} report={research.report} />
+    ) : (
+      <main
+        key={researchId}
+        className="w-full h-full grid grid-cols-12 gap-4 bg-white p-1"
+      >
+        <div className="h-full col-span-8 border-r border-gray-200">
+          <ResearchFeed
+            connection={connection}
+            researchId={researchId}
+            research={research}
+            initialFeedUpdates={updates?.feedUpdates}
+          />
+        </div>
+        <div className="h-full col-span-4 flex flex-col overflow-hidden py-2">
+          <AgentChat
+            connection={connection}
+            researchId={researchId}
+            initialChatMessages={updates?.chatMessages}
+          />
+        </div>
+      </main>
+    );
 
-    return <ResearchReport report={research.report} />;
-  }
-
-  return (
-    <main className="w-full h-full grid grid-cols-12 gap-4 bg-white p-1">
-      <div className="h-full col-span-8 border-r border-gray-200">
-        <ResearchFeed
-          connection={connection}
-          researchId={researchId}
-          research={research}
-          initialFeedUpdates={updates?.feedUpdates}
-        />
-      </div>
-      <div className="h-full col-span-4 flex flex-col overflow-hidden py-2">
-        <AgentChat
-          connection={connection}
-          researchId={researchId}
-          initialChatMessages={updates?.chatMessages}
-        />
-      </div>
-    </main>
-  );
+  return content;
 }

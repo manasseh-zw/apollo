@@ -6,7 +6,7 @@ export default function Banner() {
     <div className="flex w-full items-center justify-center gap-x-3 border-b-1 border-divider bg-primary px-6 py-1.5 sm:px-3.5">
       <p className="text-small text-primary-foreground text-center">
         <Link className="text-inherit" href="#">
-          Try it now for absolutely nothing! Ask, Understand, Explore.&nbsp;
+          Try it now. Ask. Explore. Understand. &nbsp;
         </Link>
       </p>
       <Button

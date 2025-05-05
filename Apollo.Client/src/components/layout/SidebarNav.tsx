@@ -25,6 +25,7 @@ export type SidebarProps = {
   handleLoadMore: () => void;
   activeResearchId: string | null;
   showRecentChats: boolean;
+  isLoadingMore?: boolean;
 };
 
 const SidebarNav = React.forwardRef<HTMLElement, SidebarProps>(
@@ -39,6 +40,7 @@ const SidebarNav = React.forwardRef<HTMLElement, SidebarProps>(
       handleLoadMore,
       activeResearchId,
       showRecentChats,
+      isLoadingMore = false,
     },
     ref
   ) => {
@@ -127,10 +129,10 @@ const SidebarNav = React.forwardRef<HTMLElement, SidebarProps>(
               size="sm"
               //@ts-ignore
               variant=""
-              className="w-full text-primary-foreground/60 hover:text-primary-foreground "
-              isLoading={false}
+              className="w-full text-primary-foreground/60 hover:text-primary-foreground"
+              isLoading={isLoadingMore}
               onPress={handleLoadMore}
-              isDisabled={false}
+              isDisabled={isLoadingMore}
               endContent={<ChevronDown className="mt-[3px]" size={15} />}
             >
               Show more

@@ -59,18 +59,17 @@ function HistoryModalContent({
         to="/research/$id"
         params={{ id: item.id }}
         onClick={onClose}
-        className="flex justify-between items-center w-full"
+        className="flex justify-between items-center w-full gap-4"
       >
-        <span className="text-small">{item.title}</span>
-        <span className="text-small text-foreground">
-          {new Date(item.startedAt).toLocaleDateString()}
+        <span className="text-small truncate max-w-[80%]" title={item.title}>
+          {item.title}
         </span>
       </Link>
     </ListboxItem>
   );
 
   return (
-    <div className="w-full  ">
+    <div className="w-full">
       <Listbox aria-label="Research history" variant="flat" color="primary">
         {items.map(renderChatItem)}
       </Listbox>

@@ -6,7 +6,7 @@ import {
   Tooltip,
   useDisclosure,
 } from "@heroui/react";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { LogoLight } from "../../components/Icons";
 import { useMediaQuery } from "usehooks-ts";
 import {
@@ -17,24 +17,25 @@ import {
   Telescope,
 } from "lucide-react";
 import Avatar from "boring-avatars";
-import { researchHistoryActions, store } from "../../lib/state/store";
+import { store } from "../../lib/state/store";
 import SidebarDrawer from "./SidebarDrawer";
 import SidebarNav from "./SidebarNav";
 import { Link, useRouterState } from "@tanstack/react-router";
 import HistoryModalTrigger from "./HistoryModal";
+import { getResearchHistory } from "../../lib/services/research.service";
+import type { ResearchHistoryItem } from "../../lib/types/research";
 
 const SIDEBAR_COLLAPSED_KEY = "apolllo-sidebar-collapsed";
 
 export default function AppSidebar() {
   const user = store.state.authState.user;
-  const {
-    items: historyItems,
-    isLoading: isLoadingInitial,
-    error,
-    hasMore,
-    currentPage,
-  } = store.state.researchHistory;
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [historyItems, setHistoryItems] = useState<ResearchHistoryItem[]>([]);
+  const [isLoadingInitial, setIsLoadingInitial] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isOpen, setIsOpen] = useState(false);
   const {
     isOpen: isHistoryOpen,
     onOpen: onHistoryOpen,
@@ -60,13 +61,50 @@ export default function AppSidebar() {
     : null;
 
   // Load initial history data
-  React.useEffect(() => {
-    researchHistoryActions.fetchHistory(1);
+  useEffect(() => {
+    const fetchInitialHistory = async () => {
+      try {
+        setIsLoadingInitial(true);
+        setError(null);
+        const response = await getResearchHistory(1);
+        if (response.success && response.data) {
+          setHistoryItems(response.data.items);
+          setHasMore(response.data.hasMore);
+          setCurrentPage(1);
+        } else {
+          setError("Failed to load research history");
+        }
+      } catch (err) {
+        setError("Failed to load research history");
+      } finally {
+        setIsLoadingInitial(false);
+      }
+    };
+
+    fetchInitialHistory();
   }, []);
 
-  const handleLoadMore = () => {
-    if (!isLoadingInitial && hasMore) {
-      researchHistoryActions.fetchHistory(currentPage + 1);
+  const handleLoadMore = async () => {
+    if (isLoadingMore || !hasMore) return;
+
+    try {
+      setIsLoadingMore(true);
+      setError(null);
+      const nextPage = currentPage + 1;
+      const response = await getResearchHistory(nextPage);
+
+      if (response.success && response.data) {
+        //@ts-ignore
+        setHistoryItems((prev) => [...prev, ...response.data.items]);
+        setHasMore(response.data.hasMore);
+        setCurrentPage(nextPage);
+      } else {
+        setError("Failed to load more items");
+      }
+    } catch (err) {
+      setError("Failed to load more items");
+    } finally {
+      setIsLoadingMore(false);
     }
   };
 
@@ -196,6 +234,7 @@ export default function AppSidebar() {
         handleLoadMore={handleLoadMore}
         activeResearchId={activeResearchId}
         showRecentChats={!isCollapsed}
+        isLoadingMore={isLoadingMore}
       />
 
       <Spacer y={8} />
@@ -216,27 +255,6 @@ export default function AppSidebar() {
             <ChevronRight size={24} />
           </Button>
         )}
-
-        {/* <Tooltip content="Log Out" isDisabled={!isCollapsed} placement="right">
-					<button
-						className={cn(
-							"flex items-center gap-2 px-3 min-h-11 rounded-large h-[44px] transition-colors hover:bg-default-100/50",
-							{
-								"justify-center w-10 h-10 p-0": isCollapsed,
-							},
-						)}
-					>
-						<LogOut
-							className="rotate-180 text-primary-foreground/80 hover:text-primary-foreground"
-							size={24}
-						/>
-						{!isCollapsed && (
-							<span className="text-small text-primary-foreground/80 hover:text-primary-foreground">
-								Log Out
-							</span>
-						)}
-					</button>
-				</Tooltip> */}
       </div>
 
       <HistoryModalTrigger
