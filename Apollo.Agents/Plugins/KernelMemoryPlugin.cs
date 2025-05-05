@@ -1,9 +1,5 @@
 using System.ComponentModel;
-using Apollo.Agents.Contracts;
-using Apollo.Agents.Helpers;
 using Apollo.Agents.Memory;
-using Apollo.Agents.Research;
-using Apollo.Agents.State;
 using Microsoft.SemanticKernel;
 
 namespace Apollo.Agents.Plugins;
@@ -14,18 +10,10 @@ namespace Apollo.Agents.Plugins;
 public class KernelMemoryPlugin
 {
     private readonly IMemoryContext _memory;
-    private readonly IStateManager _state;
-    private readonly IClientUpdateCallback _clientUpdate;
 
-    public KernelMemoryPlugin(
-        IMemoryContext memoryContext,
-        IStateManager state,
-        IClientUpdateCallback clientUpdate
-    )
+    public KernelMemoryPlugin(IMemoryContext memoryContext)
     {
         _memory = memoryContext;
-        _state = state;
-        _clientUpdate = clientUpdate;
     }
 
     [KernelFunction]
@@ -41,17 +29,6 @@ public class KernelMemoryPlugin
         CancellationToken cancellationToken = default
     )
     {
-        // Send initial message before starting analysis
-        var startMessage = new AgentChatMessageEvent
-        {
-            ResearchId = researchId,
-            Author = AgentFactory.ResearchAnalyzerAgentName,
-            Message =
-                "Okay Apollo, let me reflect on our findings so far and analyze the research data we've gathered...",
-        };
-        _state.AddChatMessage(researchId, startMessage);
-        _clientUpdate.SendAgentChatMessage(startMessage);
-
         var response = await _memory.AskAsync(researchId, question, cancellationToken);
 
         return response.Result.ToLower();
