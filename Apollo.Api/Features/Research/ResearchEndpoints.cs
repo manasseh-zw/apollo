@@ -8,6 +8,7 @@ public static class ResearchEndpoints
 {
     public static void MapResearchEndpoints(this WebApplication app)
     {
+        // Protected endpoints
         var group = app.MapGroup("/api/research").RequireAuthorization();
 
         group.MapGet("/{researchId}", GetResearch);
@@ -15,6 +16,25 @@ public static class ResearchEndpoints
         group.MapGet("/history", GetResearchHistory);
         group.MapPost("/", CreateResearch);
         group.MapGet("/{researchId}/updates", GetResearchUpdates);
+
+        // Public endpoints
+        app.MapGet("/api/research/share/{reportId}", GetSharedResearchReport)
+            .AllowAnonymous();
+    }
+
+    private static async Task<Results<Ok<SharedResearchReportResponse>, NotFound>> GetSharedResearchReport(
+        [FromRoute] Guid reportId,
+        [FromServices] IResearchService researchService
+    )
+    {
+        var result = await researchService.GetSharedResearchReport(reportId);
+
+        if (result.IsFailed)
+        {
+            return TypedResults.NotFound();
+        }
+
+        return TypedResults.Ok(result.Value);
     }
 
     private static async Task<

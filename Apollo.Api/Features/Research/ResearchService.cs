@@ -20,6 +20,7 @@ public interface IResearchService
         int pageSize = 5
     );
     Task<Result<ResearchUpdatesResponse>> GetResearchUpdates(Guid userId, Guid researchId);
+    Task<Result<SharedResearchReportResponse>> GetSharedResearchReport(Guid reportId);
 }
 
 public class ResearchService : IResearchService
@@ -37,6 +38,22 @@ public class ResearchService : IResearchService
         _repository = repository;
         _eventHandler = eventHandler;
         _stateManager = stateManager;
+    }
+
+    public async Task<Result<SharedResearchReportResponse>> GetSharedResearchReport(Guid reportId)
+    {
+        var report = await _repository
+            .ResearchReports.Include(r => r.Research) // Include Research to get the title
+            .Where(r => r.Id == reportId)
+            .Select(r => new SharedResearchReportResponse(r.Id, r.Research.Title, r.Content))
+            .FirstOrDefaultAsync();
+
+        if (report == null)
+        {
+            return Result.Fail("Research report not found");
+        }
+
+        return Result.Ok(report);
     }
 
     public async Task<Result<PaginatedResponse<ResearchHistoryItemResponse>>> GetResearchHistory(

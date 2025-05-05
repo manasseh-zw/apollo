@@ -10,27 +10,32 @@ import {
   ModalContent,
   ModalBody,
 } from "@heroui/react";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, Share2 } from "lucide-react";
 import { MSWord, MSPowerPoint, PDFIcon } from "../../Icons";
 import FontSizeController from "./FontSizeController";
 import type { ResearchReport as ResearchReportType } from "../../../lib/types/research";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useReactToPrint } from "react-to-print";
+import ShareModal from "./ShareModal";
 
 interface ResearchReportProps {
   report: ResearchReportType | null;
+  isSharedView?: boolean;
 }
 
-export default function ResearchReport({ report }: ResearchReportProps) {
+export default function ResearchReport({
+  report,
+  isSharedView = false,
+}: ResearchReportProps) {
   const [fontSize, setFontSize] = useState(16);
   const [selectedExportOption, setSelectedExportOption] = useState(
     new Set(["pdf"])
   );
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
-  const [isOpen, setIsOpen] = useState(false);
-
-  const reportContentRef = useRef<HTMLDivElement>(null); // Create a ref to the content
+  const reportContentRef = useRef<HTMLDivElement>(null);
 
   const exportOptions = {
     pdf: { text: "Export as PDF", icon: PDFIcon },
@@ -38,7 +43,6 @@ export default function ResearchReport({ report }: ResearchReportProps) {
     powerpoint: { text: "Export as PowerPoint", icon: MSPowerPoint },
   };
 
-  // Get the currently selected export option
   const selectedOption = Array.from(
     selectedExportOption
   )[0] as keyof typeof exportOptions;
@@ -51,31 +55,25 @@ export default function ResearchReport({ report }: ResearchReportProps) {
     );
   }
 
-  // Configure the react-to-print hook
   const handlePrint = useReactToPrint({
     contentRef: reportContentRef,
-    documentTitle: "Research Report",
+    documentTitle: report.title,
     pageStyle: `
         @page {
-          size: A4; /* Or 'letter', etc. */
-          margin: 20mm; /* Adjust margins as needed */
+          size: A4;
+          margin: 20mm;
         }
         @media print {
           body {
-            -webkit-print-color-adjust: exact; /* Ensures background colors/images print in Chrome/Safari */
-            print-color-adjust: exact; /* Standard */
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
           }
-          /* Ensure the prose styles apply correctly in print */
           .prose {
-            max-width: none !important; /* Allow prose to fill the page width */
+            max-width: none !important;
           }
-          /* Add any other print-specific overrides */
           main {
-             overflow: visible !important; /* Prevent content cutoff */
-             display: block !important; /* Ensure main is block for printing */
-          }
-          .report-content-wrapper {
-             /* Add specific print styles for the wrapper if needed */
+             overflow: visible !important;
+             display: block !important;
           }
         }
       `,
@@ -85,19 +83,16 @@ export default function ResearchReport({ report }: ResearchReportProps) {
     if (selectedOption === "pdf") {
       handlePrint();
     } else {
-      setIsOpen(true);
+      setIsExportModalOpen(true);
     }
   };
 
   return (
-    // flex flex-col h-full: Ensures the component takes full height and lays out children vertically
     <div className="flex flex-col h-full bg-white">
       <Modal
         size="sm"
-        isOpen={isOpen}
-        onClose={() => {
-          setIsOpen(false);
-        }}
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
       >
         <ModalContent className="p-3">
           <ModalBody>
@@ -107,9 +102,26 @@ export default function ResearchReport({ report }: ResearchReportProps) {
           </ModalBody>
         </ModalContent>
       </Modal>
-      ;{/* Top Header */}
+
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        reportId={report.id}
+      />
+
+      {/* Top Header */}
       <header className="py-4 px-4 sm:px-6 md:px-8">
-        <div className="max-w-3xl mx-auto flex justify-end">
+        <div className="max-w-3xl mx-auto flex justify-end gap-2">
+          {!isSharedView && (
+            <Button
+              variant="flat"
+              size="sm"
+              startContent={<Share2 size={18} />}
+              onPress={() => setIsShareModalOpen(true)}
+            >
+              Share
+            </Button>
+          )}
           <ButtonGroup variant="flat" size="sm">
             <Button
               className="bg-primary text-primary-foreground"
@@ -158,7 +170,7 @@ export default function ResearchReport({ report }: ResearchReportProps) {
           </ButtonGroup>
         </div>
       </header>
-      <main className="flex overflow-y-auto overflow-x-hidden justify-center ">
+      <main className="flex overflow-y-auto overflow-x-hidden justify-center">
         <div className="max-w-3xl w-full font-geist">
           <div
             ref={reportContentRef}

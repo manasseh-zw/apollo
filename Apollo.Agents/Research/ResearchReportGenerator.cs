@@ -215,7 +215,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
                 {
                     ResearchId = research.Id,
                     UserId = research.UserId.ToString(),
-                    Report = new(report.Id.ToString(), report.Content),
+                    Report = new(report.Id.ToString(), research.Title, report.Content),
                 }
             );
 

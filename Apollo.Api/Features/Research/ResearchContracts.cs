@@ -43,3 +43,6 @@ public record ResearchUpdatesResponse(
     List<ResearchFeedUpdateEvent> FeedUpdates,
     List<AgentChatMessageEvent> ChatMessages
 );
+
+// New response type for shared research reports
+public record SharedResearchReportResponse(Guid Id, string Title, string Content);

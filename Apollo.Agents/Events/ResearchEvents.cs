@@ -13,7 +13,7 @@ public class ResearchCompletedWithReportEvent
     public ResearchReportResponse Report { get; set; }
 }
 
-public record ResearchReportResponse(string Id, string content);
+public record ResearchReportResponse(string Id, string Title, string Content);
 
 public interface IResearchEventHandler
 {

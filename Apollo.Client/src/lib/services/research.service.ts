@@ -4,6 +4,7 @@ import type {
   ResearchHistoryItem,
   PaginatedResponse,
   ResearchUpdatesResponse,
+  SharedResearchReport,
 } from "../types/research";
 
 export async function getResearchById(
@@ -54,4 +55,11 @@ export async function getResearchUpdates(
   id: string
 ): Promise<ApiResponse<ResearchUpdatesResponse>> {
   return apiRequest<ResearchUpdatesResponse>(`/api/research/${id}/updates`);
+}
+
+// New method to fetch a shared research report
+export async function getSharedResearchReport(
+  reportId: string
+): Promise<ApiResponse<SharedResearchReport>> {
+  return apiRequest<SharedResearchReport>(`/api/research/share/${reportId}`);
 }
