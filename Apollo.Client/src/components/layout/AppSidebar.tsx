@@ -15,6 +15,7 @@ import {
 	History,
 	LogOut,
 	Menu,
+	Sidebar,
 	Telescope,
 } from "lucide-react";
 import Avatar from "boring-avatars";
@@ -253,12 +254,12 @@ export default function AppSidebar() {
 			{isMobile && !isOpen && (
 				<Button
 					isIconOnly
-					className="fixed top-4 left-4 z-50 text-primary bg-transparent md:hidden"
+					className="fixed top-4 left-4 z-50 text-primary bg-white md:hidden"
 					size="sm"
 					variant="flat"
 					onPress={() => setIsOpen(true)}
 				>
-					<Menu size={24} />
+					<Sidebar size={24} />
 				</Button>
 			)}
 

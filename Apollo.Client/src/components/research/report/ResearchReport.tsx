@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import {
   Button,
-  ButtonGroup,
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
@@ -9,15 +8,19 @@ import {
   Modal,
   ModalContent,
   ModalBody,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Slider,
 } from "@heroui/react";
-import { ChevronDownIcon, Share2 } from "lucide-react";
+import { Share2, Download, Type } from "lucide-react";
 import { MSWord, MSPowerPoint, PDFIcon } from "../../Icons";
-import FontSizeController from "./FontSizeController";
 import type { ResearchReport as ResearchReportType } from "../../../lib/types/research";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useReactToPrint } from "react-to-print";
 import ShareModal from "./ShareModal";
+import Banner from "./Banner";
 
 interface ResearchReportProps {
   report: ResearchReportType | null;
@@ -88,7 +91,7 @@ export default function ResearchReport({
   };
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-white relative">
       <Modal
         size="sm"
         isOpen={isExportModalOpen}
@@ -109,69 +112,9 @@ export default function ResearchReport({
         reportId={report.id}
       />
 
-      {/* Top Header */}
-      <header className="py-4 px-4 sm:px-6 md:px-8">
-        <div className="max-w-3xl mx-auto flex justify-end gap-2">
-          {!isSharedView && (
-            <Button
-              variant="flat"
-              size="sm"
-              startContent={<Share2 size={18} />}
-              onPress={() => setIsShareModalOpen(true)}
-            >
-              Share
-            </Button>
-          )}
-          <ButtonGroup variant="flat" size="sm">
-            <Button
-              className="bg-primary text-primary-foreground"
-              onPress={handleExportClick}
-            >
-              {exportOptions[selectedOption]?.text || "Export"}
-            </Button>
-            <Dropdown placement="bottom-end">
-              <DropdownTrigger>
-                <Button
-                  isIconOnly
-                  className="bg-primary text-primary-foreground hover:bg-primary/95"
-                >
-                  <ChevronDownIcon />
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Export options"
-                selectedKeys={selectedExportOption}
-                color="primary"
-                selectionMode="single"
-                //@ts-ignore - Keep if necessary for your library version
-                onSelectionChange={setSelectedExportOption}
-              >
-                <DropdownItem
-                  key="word"
-                  startContent={<MSWord className="h-5 w-5" />}
-                >
-                  Export as Word
-                </DropdownItem>
-                <DropdownItem
-                  key="powerpoint"
-                  startContent={<MSPowerPoint className="h-5 w-5" />}
-                >
-                  Export as PowerPoint
-                </DropdownItem>
-                <DropdownItem
-                  key="pdf"
-                  startContent={<PDFIcon className="h-5 w-5" />}
-                >
-                  Export as PDF
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </ButtonGroup>
-        </div>
-      </header>
-      <main className="flex overflow-y-auto overflow-x-hidden justify-center">
-        <div className="max-w-3xl w-full font-geist">
+      {isSharedView && <Banner />}
+      <main className="flex overflow-y-auto overflow-x-hidden justify-center py-10">
+        <div className="max-w-3xl w-full font-geist px-4">
           <div
             ref={reportContentRef}
             className="prose prose-slate max-w-none pb-14"
@@ -183,11 +126,106 @@ export default function ResearchReport({
           </div>
         </div>
       </main>
-      <div className="relative">
-        <FontSizeController
-          fontSize={fontSize}
-          onFontSizeChange={setFontSize}
-        />
+
+      {/* Floating Action Buttons */}
+      <div className="absolute bottom-20 lg:right-48 md:right-12 right-2 flex flex-col gap-2">
+        {/* Font Size Button */}
+        <Popover placement="left" showArrow offset={10}>
+          <PopoverTrigger>
+            <Button
+              isIconOnly
+              variant="flat"
+              radius="full"
+              className="bg-primary text-primary-foreground"
+            >
+              <Type size={20} />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[240px] p-4">
+            {(titleProps) => (
+              <div className="w-full">
+                <p
+                  className="text-sm font-medium text-foreground mb-2"
+                  {...titleProps}
+                >
+                  Font Size
+                </p>
+                <div className="flex items-center gap-4">
+                  <Slider
+                    size="sm"
+                    color="primary"
+                    value={fontSize}
+                    minValue={12}
+                    maxValue={24}
+                    step={1}
+                    onChange={(value) => setFontSize(value as number)}
+                    aria-label="Font size"
+                    className="flex-1"
+                  />
+                  <span className="text-sm font-medium min-w-[40px] text-right">
+                    {fontSize}px
+                  </span>
+                </div>
+              </div>
+            )}
+          </PopoverContent>
+        </Popover>
+
+        {/* Share Button - Only show if not in shared view */}
+        {!isSharedView && (
+          <Button
+            isIconOnly
+            variant="flat"
+            radius="full"
+            className="bg-primary text-primary-foreground"
+            onPress={() => setIsShareModalOpen(true)}
+          >
+            <Share2 size={20} />
+          </Button>
+        )}
+
+        {/* Export Button */}
+        <Dropdown placement="left">
+          <DropdownTrigger>
+            <Button
+              isIconOnly
+              variant="flat"
+              radius="full"
+              className="bg-primary text-primary-foreground"
+              onPress={handleExportClick}
+            >
+              <Download size={20} />
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu
+            disallowEmptySelection
+            aria-label="Export options"
+            selectedKeys={selectedExportOption}
+            color="primary"
+            selectionMode="single"
+            //@ts-ignore - Keep if necessary for your library version
+            onSelectionChange={setSelectedExportOption}
+          >
+            <DropdownItem
+              key="word"
+              startContent={<MSWord className="h-5 w-5" />}
+            >
+              Export as Word
+            </DropdownItem>
+            <DropdownItem
+              key="powerpoint"
+              startContent={<MSPowerPoint className="h-5 w-5" />}
+            >
+              Export as PowerPoint
+            </DropdownItem>
+            <DropdownItem
+              key="pdf"
+              startContent={<PDFIcon className="h-5 w-5" />}
+            >
+              Export as PDF
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
       </div>
     </div>
   );
