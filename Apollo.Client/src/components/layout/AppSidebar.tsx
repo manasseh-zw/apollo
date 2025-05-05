@@ -24,6 +24,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import HistoryModalTrigger from "./HistoryModal";
 import { getResearchHistory } from "../../lib/services/research.service";
 import type { ResearchHistoryItem } from "../../lib/types/research";
+import { useResearch } from "../../contexts/ResearchContext";
 
 const SIDEBAR_COLLAPSED_KEY = "apolllo-sidebar-collapsed";
 
@@ -41,6 +42,8 @@ export default function AppSidebar() {
     onOpen: onHistoryOpen,
     onOpenChange: onHistoryOpenChange,
   } = useDisclosure();
+
+  const { lastRefreshTimestamp } = useResearch();
 
   const [isCollapsed, setIsCollapsed] = React.useState<boolean>(() => {
     if (typeof window !== "undefined") {
@@ -60,29 +63,30 @@ export default function AppSidebar() {
     ? pathname.split("/")[2]
     : null;
 
-  // Load initial history data
-  useEffect(() => {
-    const fetchInitialHistory = async () => {
-      try {
-        setIsLoadingInitial(true);
-        setError(null);
-        const response = await getResearchHistory(1);
-        if (response.success && response.data) {
-          setHistoryItems(response.data.items);
-          setHasMore(response.data.hasMore);
-          setCurrentPage(1);
-        } else {
-          setError("Failed to load research history");
-        }
-      } catch (err) {
+  // Function to fetch initial history
+  const fetchInitialHistory = async () => {
+    try {
+      setIsLoadingInitial(true);
+      setError(null);
+      const response = await getResearchHistory(1);
+      if (response.success && response.data) {
+        setHistoryItems(response.data.items);
+        setHasMore(response.data.hasMore);
+        setCurrentPage(1);
+      } else {
         setError("Failed to load research history");
-      } finally {
-        setIsLoadingInitial(false);
       }
-    };
+    } catch (err) {
+      setError("Failed to load research history");
+    } finally {
+      setIsLoadingInitial(false);
+    }
+  };
 
+  // Load initial history data and refresh when lastRefreshTimestamp changes
+  useEffect(() => {
     fetchInitialHistory();
-  }, []);
+  }, [lastRefreshTimestamp]);
 
   const handleLoadMore = async () => {
     if (isLoadingMore || !hasMore) return;
