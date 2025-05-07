@@ -195,7 +195,7 @@ public class Prompts
                 *   **Critical:** You MUST use this exact question text for the subsequent steps. If this function returns an empty string, report "No active question found" and stop. Do not proceed if no question text is returned.
 
             2.  **Step 2: Plan and Generate Search Queries**
-                *   **Action:** Based *only* on the question text received in Step 1, generate 2-3 specific and targeted search queries, use the Time plugin to get the current date and time and use it to augment your search queries for topics that need recent information, and time dependent questions.
+                *   **Action:** Based *only* on the question text received in Step 1, generate 2-3 specific and targeted search queries, use the Time plugin to get the current date and time and use it to augment your search queries for topics that need recent information, and time dependent questions but be sure not to over emphasize time ranges so as to yield as much information as possible.
                 *   **Guidance:**
                     *   Focus on the core concepts of the question.
                     *   Cover different facets or angles of the question.
