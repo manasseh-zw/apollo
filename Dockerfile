@@ -11,6 +11,7 @@ COPY Apollo.Agents/*.csproj ./Apollo.Agents/
 COPY Apollo.Config/*.csproj ./Apollo.Config/
 COPY Apollo.Data/*.csproj ./Apollo.Data/
 COPY Apollo.Search/*.csproj ./Apollo.Search/
+COPY Apollo.Notifications/*.csproj ./Apollo.Notifications/
 
 # Restore dependencies for the entire solution
 RUN dotnet restore "./Apollo.sln"

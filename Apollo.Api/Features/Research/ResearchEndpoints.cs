@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Apollo.Notifications;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +11,6 @@ public static class ResearchEndpoints
     {
         // Protected endpoints
         var group = app.MapGroup("/api/research").RequireAuthorization();
-
         group.MapGet("/{researchId}", GetResearch);
         group.MapGet("/", GetAllResearch);
         group.MapGet("/history", GetResearchHistory);
@@ -18,11 +18,13 @@ public static class ResearchEndpoints
         group.MapGet("/{researchId}/updates", GetResearchUpdates);
 
         // Public endpoints
-        app.MapGet("/api/research/share/{reportId}", GetSharedResearchReport)
-            .AllowAnonymous();
+        app.MapGet("/api/research/share/{reportId}", GetSharedResearchReport).AllowAnonymous();
+        app.MapPost("/api/research/email", TestEmail).AllowAnonymous();
     }
 
-    private static async Task<Results<Ok<SharedResearchReportResponse>, NotFound>> GetSharedResearchReport(
+    private static async Task<
+        Results<Ok<SharedResearchReportResponse>, NotFound>
+    > GetSharedResearchReport(
         [FromRoute] Guid reportId,
         [FromServices] IResearchService researchService
     )
@@ -141,5 +143,33 @@ public static class ResearchEndpoints
         }
 
         return TypedResults.Ok(result.Value);
+    }
+
+    private static async Task<Results<Ok<string>, NotFound, UnauthorizedHttpResult>> TestEmail(
+        [FromServices] IEmailService emailService,
+        HttpContext httpContext
+    )
+    {
+        var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        var result = await emailService.SendResearchCompleteNotification(
+            new Notifications.Models.Recipient("Manasseh", "dev.manasseh@gmail.com"),
+            new Notifications.Models.ResearchCompleteContent(
+                "0196a2d6-c8eb-779a-9acb-40b18b474868",
+                "Amazing topic"
+            )
+        );
+
+        if (!result)
+        {
+            return TypedResults.NotFound();
+        }
+
+        return TypedResults.Ok("sent successfully");
     }
 }

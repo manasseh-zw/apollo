@@ -38,6 +38,7 @@ builder.Services.AddScoped<IJwtTokenManager, JwtTokenManager>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IResearchService, ResearchService>();
 builder.Services.ConfigureResearch();
+builder.Services.ConfigureNotifications();
 builder.Services.AddHttpClient(
     "Google",
     client =>

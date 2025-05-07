@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Avatar, AvatarGroup } from "@heroui/react";
+import { addToast, Avatar, AvatarGroup } from "@heroui/react";
 import {
   type TimelineItem,
   type ResearchFeedUpdate,
@@ -23,6 +23,26 @@ interface ResearchFeedProps {
   research: ResearchResponse;
   initialFeedUpdates?: ResearchFeedUpdate[];
 }
+
+const ApolloToast = () => {
+  return (
+    <div className="flex items-start gap-3">
+      <Avatar
+        src="/apollo-avatar.png"
+        fallback={<div className="w-8 h-8 rounded-full bg-primary" />}
+        className="flex-shrink-0"
+      />
+      <div className="flex-1">
+        <h4 className="font-medium text-foreground">Apollo</h4>
+        <p className="text-sm text-foreground-500">
+          Hey! This could take a while (~15-30 min). You may do whatever you
+          want - I'll send you an email when the research is complete, or you
+          can watch us work. It's up to you! ~ from Apollo
+        </p>
+      </div>
+    </div>
+  );
+};
 
 export default function ResearchFeed({
   connection,
@@ -71,6 +91,27 @@ export default function ResearchFeed({
   }, [feedUpdates]);
 
   const elapsedTime = useResearchTimer(research.startedAt);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      addToast({
+        title: "Research Update",
+        description:
+          "Hey! This could take a while (~15-30 min). You may do whatever you want - I'll send you an email when the research is complete, or you can watch us work.",
+        variant: "solid",
+        hideIcon: false,
+        icon: (
+          <Avatar
+            src="/agents/agent1.jpg"
+            fallback={<div className="w-8 h-8 rounded-full bg-primary" />}
+            className="w-8 h-8"
+          />
+        ),
+      });
+    }, 120000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const searchResultIcons = React.useMemo(() => {
     const icons = new Set<string>();

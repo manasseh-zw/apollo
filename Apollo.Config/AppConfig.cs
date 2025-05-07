@@ -94,6 +94,14 @@ public static class AppConfig
                 ?? throw new Exception("Client URL is not set"),
         };
 
+    public static Resend Resend { get; } =
+        new()
+        {
+            ApiKey =
+                Environment.GetEnvironmentVariable("RESEND_API_KEY")
+                ?? throw new Exception("Resend Apikey is not set"),
+        };
+
     // public static Qdrant Qdrant { get; } =
     //     new()
     //     {
@@ -153,6 +161,11 @@ public class ExaAI
 public class Client
 {
     public required string Url { get; set; }
+}
+
+public class Resend
+{
+    public required string ApiKey { get; set; }
 }
 
 // public class Qdrant()
