@@ -45,6 +45,39 @@ Apollo is an innovative multi-agent research assistant that revolutionizes deep 
 
 For example, when asked to research "The impact of quantum computing on cybersecurity," Apollo doesn't just search—it transforms into a coordinated research team: Apollo (coordinator) plans the investigation, Athena (engine) gathers current latest ai developments, and Hermes (analyzer) identifies knowledge gaps and synthesizes findings into a structured report—all while maintaining rigorous source attribution.
 
+## 📊 Research Examples
+
+> [!TIP]
+> Explore these real research examples to see Apollo's capabilities in action. Each example demonstrates Apollo's ability to produce comprehensive, well-structured reports with proper citations.
+
+### Example 1: AI's Impact on Future Job Markets
+**Research Question:** How is the increasing capability of Artificial Intelligence anticipated to reshape future job markets in the various sectors, and what essential skills, educational pathways, and career planning strategies should aspiring software engineers understand and prioritize to successfully navigate and thrive in the age of AI?
+
+This research explores how AI is transforming employment across industries, with special focus on the evolving landscape for software engineers. The report analyzes changing skill requirements, educational approaches, and strategic career planning techniques for thriving in an AI-augmented workforce.
+
+**[View Full Research Report](https://apollo.manasseh.dev/share/0196a284-b9c5-7650-8dda-868d1b808dd3)**
+
+### Example 2: The Global AI Race and Geopolitical Implications
+**Research Question:** What are the primary drivers, key players (including major corporations, research institutions, and national initiatives), and defining competitive strategies within the accelerating global Artificial Intelligence race? Furthermore, what are the emerging geopolitical implications of this competition for global power dynamics, technological sovereignty, and international cooperation or conflict?
+
+This comprehensive analysis examines the major forces driving the global AI competition, profiles the leading entities across nations and industries, and explores how this technological race is reshaping international relations, security concerns, and the potential for both collaboration and conflict.
+
+**[View Full Research Report](https://apollo.manasseh.dev/share/0196a2d6-c8eb-779a-9acb-40b18b474868)**
+
+### Example 3: The Science and Mythology of the Bermuda Triangle
+**Research Question:** The Science and Mythology of the Bermuda Triangle Anomalies: What are the documented disappearances and alleged anomalies within the geographic area known as the Bermuda Triangle, what scientific explanations have been proposed (e.g., weather phenomena, geological factors, navigational errors), and how have these events been portrayed and amplified in popular culture and mythology?
+
+This fascinating report investigates the historical incidents within the infamous Bermuda Triangle, examines credible scientific explanations for the reported phenomena, and analyzes how these events have been transformed through media, literature, and cultural mythology.
+
+**[View Full Research Report](https://apollo.manasseh.dev/share/0196a494-ecf7-7735-aaaf-7318e9eba7cd)**
+
+### Example 4: Artificial General Intelligence - Development and Ethics
+**Research Question:** Pathways, Technical Challenges, and Ethical Implications in the Development of Artificial General Intelligence (AGI): What are the fundamental scientific, engineering, and cognitive challenges that must be overcome to develop systems exhibiting human-level general intelligence across diverse tasks? Furthermore, what are the most significant academic debates and research priorities concerning the potential ethical, safety (including alignment), and societal implications should AGI be successfully developed?
+
+This in-depth exploration addresses the technical hurdles in developing AGI, analyzes current research approaches, and examines the crucial ethical considerations, safety concerns, and societal impact of potentially achieving human-level artificial general intelligence.
+
+**[View Full Research Report](https://apollo.manasseh.dev/share/0196ae81-a14d-72e4-8586-8fce5e3d4370)**
+
 ## ✨ Key Differentiators
 
 - **Fully Agentic Architecture:** Unlike semi-agentic or tool-based approaches, Apollo employs a dynamic group of specialized agents (Apollo as Research Coordinator, Athena as Research Engine, and Hermes as Research Analyzer) managed by a Research Orchestrator. These agents interact through Semantic Kernel's agent group chat feature with a shared chat history, while also communicating via a state machine mechanism that preserves context outside the chat window and enables complex workflows.
