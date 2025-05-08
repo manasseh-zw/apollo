@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   Button,
   Popover,
@@ -10,8 +10,8 @@ import { Share2, Download, Type } from "lucide-react";
 import type { ResearchReport as ResearchReportType } from "../../../lib/types/research";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { useReactToPrint } from "react-to-print";
 import ShareModal from "./ShareModal";
+import PrintReportModal from "./PrintReportModal";
 import Banner from "./Banner";
 
 interface ResearchReportProps {
@@ -25,8 +25,7 @@ export default function ResearchReport({
 }: ResearchReportProps) {
   const [fontSize, setFontSize] = useState(16);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-
-  const reportContentRef = useRef<HTMLDivElement>(null);
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
 
   if (!report) {
     return (
@@ -36,34 +35,6 @@ export default function ResearchReport({
     );
   }
 
-  const handlePrint = useReactToPrint({
-    contentRef: reportContentRef, // Ensure content returns the ref's current node
-    documentTitle: report.title,
-    pageStyle: `
-        @page {
-          size: A4;
-          margin: 20mm;
-        }
-        @media print {
-          body {
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-          }
-          .prose {
-            max-width: none !important;
-          }
-          main {
-             overflow: visible !important;
-             display: block !important;
-          }
-        }
-      `,
-  });
-
-  const handleExportClick = () => {
-    handlePrint();
-  };
-
   return (
     <div className="flex flex-col h-full bg-white relative">
       <ShareModal
@@ -72,12 +43,17 @@ export default function ResearchReport({
         reportId={report.id}
       />
 
+      <PrintReportModal
+        isOpen={isPrintModalOpen}
+        onClose={() => setIsPrintModalOpen(false)}
+        reportTitle={report.title}
+        reportContent={report.content}
+      />
+
       {isSharedView && <Banner />}
       <main className="flex overflow-y-auto overflow-x-hidden justify-center py-10">
         <div className="max-w-3xl w-full font-geist px-4">
-          {/* This div contains the content to be printed */}
           <div
-            ref={reportContentRef}
             className="prose prose-slate max-w-none pb-14"
             style={{ fontSize: `${fontSize}px` }}
           >
@@ -90,7 +66,7 @@ export default function ResearchReport({
 
       {/* Floating Action Buttons */}
       <div className="absolute bottom-24 lg:right-[14rem] md:right-12 right-2 flex flex-col gap-2">
-        {/* Font Size Button (Unchanged) */}
+        {/* Font Size Button */}
         <Popover placement="left" showArrow offset={10}>
           <PopoverTrigger>
             <Button
@@ -132,7 +108,7 @@ export default function ResearchReport({
           </PopoverContent>
         </Popover>
 
-        {/* Share Button - Only show if not in shared view (Unchanged) */}
+        {/* Share Button - Only show if not in shared view */}
         {!isSharedView && (
           <Button
             isIconOnly
@@ -150,7 +126,7 @@ export default function ResearchReport({
           variant="flat"
           radius="full"
           className="bg-primary text-primary-foreground"
-          onPress={handleExportClick}
+          onPress={() => setIsPrintModalOpen(true)}
           aria-label="Export as PDF"
         >
           <Download size={20} />

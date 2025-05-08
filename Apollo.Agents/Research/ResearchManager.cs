@@ -82,6 +82,21 @@ public class ResearchManager : IResearchManager
             return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchCoordinatorAgentName);
         }
 
+        // After ResearchSynthesizer, always go back to Coordinator
+        if (
+            lastAgentName?.Equals(
+                AgentFactory.ResearchSynthesizerAgentName,
+                StringComparison.OrdinalIgnoreCase
+            ) ?? false
+        )
+        {
+            _logger.LogInformation(
+                "[{ResearchId}] Selection: After Synthesizer, returning to Coordinator for completion.",
+                _researchId
+            );
+            return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchCoordinatorAgentName);
+        }
+
         // Handle initial state (no previous agent)
         if (string.IsNullOrEmpty(lastAgentName))
         {
@@ -123,22 +138,22 @@ public class ResearchManager : IResearchManager
                 return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchEngineAgentName);
             }
 
-            // If ready for synthesis, stay with Coordinator (it will handle synthesis)
-            if (!state.SynthesisComplete && state.TableOfContents?.Any() == true)
+            // If ready for synthesis (no questions, no analysis needed), select Synthesizer
+            if (!state.SynthesisComplete)
             {
                 _logger.LogInformation(
-                    "[{ResearchId}] Selection: Ready for synthesis. Staying with Coordinator.",
+                    "[{ResearchId}] Selection: Ready for synthesis. Selecting ResearchSynthesizer.",
                     _researchId
                 );
                 return agents.FirstOrDefault(a =>
-                    a.Id == AgentFactory.ResearchCoordinatorAgentName
+                    a.Id == AgentFactory.ResearchSynthesizerAgentName
                 );
             }
 
-            // If no questions, no analysis needed, and not ready for synthesis (or synthesis done),
-            // something might be wrong, or the process is ending. Let Coordinator handle it or termination strategy will catch it.
+            // If no questions, no analysis needed, and synthesis is complete,
+            // something might be wrong, or the process is ending. Let Coordinator handle it.
             _logger.LogInformation(
-                "[{ResearchId}] Selection: After Coordinator, no specific action identified (no pending Qs, no analysis needed, not ready/done synthesis). Returning to Coordinator.",
+                "[{ResearchId}] Selection: After Coordinator, no specific action identified. Returning to Coordinator.",
                 _researchId
             );
             return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchCoordinatorAgentName);

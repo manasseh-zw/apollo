@@ -84,6 +84,7 @@ public static class AppConfig
             Gpt41 = "gpt-4.1",
             TextEmbeddingSmall = "text-embedding-3-small",
             GeminiProFlash25 = "gemini-2.5-flash-preview-04-17",
+            GeminiPro25 = "gemini-2.5-pro-preview-05-06",
         };
 
     public static Client Client { get; } =
@@ -150,6 +151,7 @@ public class Models
     public required string GptO4mini { get; set; }
     public required string Gpt41 { get; set; }
     public required string GeminiProFlash25 { get; set; }
+    public required string GeminiPro25 { get; set; }
     public required string TextEmbeddingSmall { get; set; }
 }
 

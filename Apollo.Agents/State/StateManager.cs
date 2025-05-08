@@ -16,7 +16,6 @@ public interface IStateManager
     void UpdateTableOfContents(string researchId, List<string> sections);
     void MarkAnalysisStarted(string researchId);
     void MarkAnalysisComplete(string researchId);
-    bool HasInitialAnalysisBeenPerformed(string researchId);
     void AddFeedUpdate(string researchId, ResearchFeedUpdateEvent update);
     void AddChatMessage(string researchId, AgentChatMessageEvent message);
 }
@@ -153,7 +152,7 @@ public class StateManager : IStateManager
         );
 
         // Add Analysis phase if it's in progress or has been completed
-        if (state.IsAnalyzing && state.HasPerformedInitialAnalysis)
+        if (state.IsAnalyzing || state.NeedsAnalysis)
         {
             timelineItems.Add(
                 new TimelineItem
@@ -163,7 +162,7 @@ public class StateManager : IStateManager
                     Type = TimelineItemType.Analysis,
                     Active = state.IsAnalyzing,
                     Status =
-                        state.HasPerformedInitialAnalysis ? TimelineItemStatus.Completed
+                        !state.IsAnalyzing && !state.NeedsAnalysis ? TimelineItemStatus.Completed
                         : state.IsAnalyzing ? TimelineItemStatus.InProgress
                         : TimelineItemStatus.Pending,
                 }
@@ -172,10 +171,11 @@ public class StateManager : IStateManager
 
         // Add Synthesis phase if it's ready to start or has been completed
         bool readyForSynthesis =
-            state.TableOfContents?.Any() == true
-            && !state.NeedsAnalysis
+            !state.NeedsAnalysis
             && !state.IsAnalyzing
-            && state.HasPerformedInitialAnalysis;
+            && state.PendingResearchQuestions.Count == 0
+            && state.ActiveQuestionId == null;
+
         if (readyForSynthesis || state.SynthesisComplete)
         {
             timelineItems.Add(
@@ -344,24 +344,10 @@ public class StateManager : IStateManager
             state =>
             {
                 state.IsAnalyzing = false;
-                if (!state.HasPerformedInitialAnalysis)
-                {
-                    state.HasPerformedInitialAnalysis = true;
-                    _logger.LogInformation(
-                        "[{ResearchId}] First analysis phase completed, marking initial analysis as performed.",
-                        researchId
-                    );
-                }
                 _logger.LogInformation("[{ResearchId}] Analysis phase completed.", researchId);
                 SendTimelineUpdate(researchId, state);
             }
         );
-    }
-
-    public bool HasInitialAnalysisBeenPerformed(string researchId)
-    {
-        var state = GetState(researchId);
-        return state.HasPerformedInitialAnalysis;
     }
 
     public void AddFeedUpdate(string researchId, ResearchFeedUpdateEvent update)
@@ -412,7 +398,6 @@ public class ResearchState
     public bool NeedsAnalysis { get; set; } = false;
     public bool IsAnalyzing { get; set; } = false;
     public bool SynthesisComplete { get; set; } = false;
-    public bool HasPerformedInitialAnalysis { get; set; } = false;
     public List<ResearchFeedUpdateEvent> FeedUpdates { get; set; } = [];
     public List<AgentChatMessageEvent> ChatMessages { get; set; } = [];
 

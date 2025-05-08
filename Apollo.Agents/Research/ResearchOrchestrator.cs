@@ -62,7 +62,7 @@ public class ResearchOrchestrator
 
         var initialState = _state.GetState(researchId);
 
-        if (initialState == null || !initialState.PendingResearchQuestions.Any())
+        if (initialState == null || !(initialState.PendingResearchQuestions.Count > 0))
         {
             _logger.LogError(
                 "Cannot start research, there is no initial state or pending questions for id {researchId}",
@@ -114,6 +114,17 @@ public class ResearchOrchestrator
                     _clientUpdate,
                     researchId,
                     _memoryInstance
+                )
+            },
+            {
+                AgentFactory.ResearchSynthesizerAgentName,
+                AgentFactory.CreateResearchSynthesizer(
+                    kernelBuilder,
+                    _state,
+                    _clientUpdate,
+                    researchId,
+                    _memoryInstance,
+                    _synthesizeResearchInstance
                 )
             },
         };
@@ -266,7 +277,7 @@ public class ResearchOrchestrator
                 };
 
                 // Set the first question as active immediately
-                if (state.PendingResearchQuestions.Any())
+                if (state.PendingResearchQuestions.Count > 0)
                 {
                     state.ActiveQuestionId = state.PendingResearchQuestions.First().Id;
                 }

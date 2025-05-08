@@ -12,8 +12,9 @@ interface AgentChatProps {
 
 const agentPersonas: Record<string, { name: string; avatar: string }> = {
   ResearchCoordinator: { name: "Apollo", avatar: "/agents/agent1.jpg" },
-  ResearchEngine: { name: "Athena", avatar: "/agents/agent2.jpg" },
-  ResearchAnalyzer: { name: "Hermes", avatar: "/agents/agent3.jpg" },
+  ResearchEngine: { name: "Atlas", avatar: "/agents/agent3.jpg" },
+  ResearchAnalyzer: { name: "Jude", avatar: "/agents/agent2.jpg" },
+  ResearchSynthesizer: { name: "Malcolm", avatar: "/agents/agent4.jpg" },
 };
 
 const activeAgents = Object.values(agentPersonas);

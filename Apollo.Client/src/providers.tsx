@@ -13,7 +13,7 @@ export default function Providers({ children }: { children: ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <GoogleOAuthProvider clientId={config.googleClientId}>
           <ResearchProvider>
-            <ToastProvider />
+            <ToastProvider placement="top-right" toastOffset={10} />
             {children}
           </ResearchProvider>
         </GoogleOAuthProvider>

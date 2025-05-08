@@ -15,6 +15,7 @@ public static class AgentFactory
     public const string ResearchCoordinatorAgentName = "ResearchCoordinator";
     public const string ResearchEngineAgentName = "ResearchEngine";
     public const string ResearchAnalyzerAgentName = "ResearchAnalyzer";
+    public const string ResearchSynthesizerAgentName = "ResearchSynthesizer";
 
     private const string StatePluginName = nameof(StatePlugin);
     private const string TimePluginName = nameof(TimePlugin);
@@ -151,6 +152,55 @@ public static class AgentFactory
             Id = ResearchAnalyzerAgentName,
             Name = ResearchAnalyzerAgentName,
             Instructions = Prompts.ResearchAnalyzer,
+            Arguments = new KernelArguments(executionSettings),
+        };
+    }
+
+    public static ChatCompletionAgent CreateResearchSynthesizer(
+        IKernelBuilder kernelBuilder,
+        IStateManager state,
+        IClientUpdateCallback streamingCallback,
+        string researchId,
+        KernelMemoryPlugin kernelMemoryPluginInstance,
+        SynthesizeResearchPlugin synthesizeResearchPluginInstance
+    )
+    {
+        var kernel = kernelBuilder.Build();
+
+        var statePluginInstance = new StatePlugin(
+            state,
+            kernel.LoggerFactory.CreateLogger<StatePlugin>(),
+            researchId
+        );
+        var statePlugin = KernelPluginFactory.CreateFromObject(
+            statePluginInstance,
+            StatePluginName
+        );
+        kernel.Plugins.Add(statePlugin);
+
+        var kernelMemoryPlugin = KernelPluginFactory.CreateFromObject(
+            kernelMemoryPluginInstance,
+            KernelMemoryPluginName
+        );
+        kernel.Plugins.Add(kernelMemoryPlugin);
+
+        var synthesizeResearchPlugin = KernelPluginFactory.CreateFromObject(
+            synthesizeResearchPluginInstance,
+            SynthesizeResearchPluginName
+        );
+        kernel.Plugins.Add(synthesizeResearchPlugin);
+
+        var executionSettings = new PromptExecutionSettings
+        {
+            FunctionChoiceBehavior = FunctionChoiceBehavior.Required(),
+        };
+
+        return new ChatCompletionAgent()
+        {
+            Kernel = kernel,
+            Id = ResearchSynthesizerAgentName,
+            Name = ResearchSynthesizerAgentName,
+            Instructions = Prompts.ResearchSynthesizer,
             Arguments = new KernelArguments(executionSettings),
         };
     }
