@@ -9,6 +9,7 @@ public class Research
     public required string Description { get; set; }
     public required ResearchPlan Plan { get; set; }
     public ResearchReport? Report { get; set; }
+    public ResearchMindMap? MindMap { get; set; }
     public DateTime StartedAt { get; set; }
     public DateTime CompletedAt { get; set; }
     public ResearchStatus Status { get; set; }

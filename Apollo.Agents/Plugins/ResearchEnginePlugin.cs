@@ -4,6 +4,7 @@ using Apollo.Agents.Events;
 using Apollo.Agents.Helpers;
 using Apollo.Agents.Memory;
 using Apollo.Agents.State;
+using Apollo.Data.Models;
 using Apollo.Search;
 using Apollo.Search.Models;
 using Microsoft.SemanticKernel;
@@ -50,6 +51,23 @@ public class ResearchEnginePlugin
 
         foreach (var query in queries)
         {
+            // Create a search query node for the mind map
+            var queryNode = new SearchQueryMindMapNode
+            {
+                Id = $"sq-{Guid.NewGuid()}",
+                Label = query,
+                Type = MindMapNodeType.SearchQuery,
+                QueryText = query,
+                ExecutedAt = DateTime.UtcNow,
+                Children = []
+            };
+
+            // Add the query node to the current question's mind map node
+            if (state.ActiveQuestionMindMapNodeId != null)
+            {
+                _state.AddSearchQueryToMindMap(researchId, state.ActiveQuestionMindMapNodeId, queryNode);
+            }
+
             // Send searching update
             var searchingUpdate = new WebSearchFeedUpdate
             {
@@ -95,6 +113,23 @@ public class ResearchEnginePlugin
                         Snippet = result.Summary ?? null,
                         Highlights = result.Highlights ?? [],
                     };
+
+                    // Create a search result node for the mind map
+                    var resultNode = new SearchResultMindMapNode
+                    {
+                        Id = $"sr-{searchResultItem.Id}",
+                        Label = result.Title,
+                        Type = MindMapNodeType.SearchResult,
+                        Url = result.Url,
+                        Title = result.Title,
+                        Favicon = result.Favicon ?? "https://www.google.com/favicon.ico",
+                        ImageUrl = null, // Image URLs not available from Exa search results
+                        Summary = result.Summary ?? "",
+                        Children = []
+                    };
+
+                    // Add the result node to the query's mind map node
+                    _state.AddSearchResultToMindMap(researchId, queryNode.Id, resultNode);
 
                     var searchResultsUpdate = new SearchResultsFeedUpdate
                     {

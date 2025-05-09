@@ -115,7 +115,7 @@ public class ResearchManager : IResearchManager
             )
         )
         {
-            // If analysis is needed, prioritize it
+            // Priority 1: If analysis is needed, do it first
             if (state.NeedsAnalysis)
             {
                 _logger.LogInformation(
@@ -125,7 +125,17 @@ public class ResearchManager : IResearchManager
                 return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchAnalyzerAgentName);
             }
 
-            // If we have an active question or pending questions, use ResearchEngine
+            // Priority 2: If synthesis is needed (analysis is complete, no new questions)
+            if (state.NeedsSynthesis && !state.SynthesisComplete)
+            {
+                _logger.LogInformation(
+                    "[{ResearchId}] Selection: Analysis complete, ready for synthesis. Selecting ResearchSynthesizer.",
+                    _researchId
+                );
+                return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchSynthesizerAgentName);
+            }
+
+            // Priority 3: If we have questions to process
             if (
                 !string.IsNullOrEmpty(state.ActiveQuestionId)
                 || state.PendingResearchQuestions.Count > 0
@@ -138,20 +148,17 @@ public class ResearchManager : IResearchManager
                 return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchEngineAgentName);
             }
 
-            // If ready for synthesis (no questions, no analysis needed), select Synthesizer
+            // Fallback: If synthesis hasn't run yet (direct path, e.g., if analysis was skipped)
             if (!state.SynthesisComplete)
             {
                 _logger.LogInformation(
-                    "[{ResearchId}] Selection: Ready for synthesis. Selecting ResearchSynthesizer.",
+                    "[{ResearchId}] Selection: No other tasks pending, proceeding to synthesis. Selecting ResearchSynthesizer.",
                     _researchId
                 );
-                return agents.FirstOrDefault(a =>
-                    a.Id == AgentFactory.ResearchSynthesizerAgentName
-                );
+                return agents.FirstOrDefault(a => a.Id == AgentFactory.ResearchSynthesizerAgentName);
             }
 
-            // If no questions, no analysis needed, and synthesis is complete,
-            // something might be wrong, or the process is ending. Let Coordinator handle it.
+            // If we get here, something might be wrong, or we're done
             _logger.LogInformation(
                 "[{ResearchId}] Selection: After Coordinator, no specific action identified. Returning to Coordinator.",
                 _researchId

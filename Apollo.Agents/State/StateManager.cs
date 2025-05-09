@@ -1,5 +1,6 @@
 using Apollo.Agents.Contracts;
 using Apollo.Agents.Helpers;
+using Apollo.Data.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
@@ -18,6 +19,16 @@ public interface IStateManager
     void MarkAnalysisComplete(string researchId);
     void AddFeedUpdate(string researchId, ResearchFeedUpdateEvent update);
     void AddChatMessage(string researchId, AgentChatMessageEvent message);
+    void AddSearchQueryToMindMap(
+        string researchId,
+        string questionNodeId,
+        SearchQueryMindMapNode queryNode
+    );
+    void AddSearchResultToMindMap(
+        string researchId,
+        string queryNodeId,
+        SearchResultMindMapNode resultNode
+    );
 }
 
 public class StateManager : IStateManager
@@ -55,6 +66,18 @@ public class StateManager : IStateManager
                     var state = await factory();
                     state.FeedUpdates = new List<ResearchFeedUpdateEvent>();
                     state.ChatMessages = new List<AgentChatMessageEvent>();
+
+                    // Initialize the mind map root node
+                    state.MindMapRoot = new RootMindMapNode
+                    {
+                        Id = "root",
+                        Label = state.Title,
+                        Type = MindMapNodeType.Root,
+                        ResearchTitle = state.Title,
+                        ResearchDescription = state.Description,
+                        Children = [],
+                    };
+
                     return state;
                 }
             ) ?? throw new Exception("research state is null");
@@ -101,6 +124,22 @@ public class StateManager : IStateManager
             {
                 state.ActiveQuestionId = nextQuestion.Id;
                 nextQuestionId = nextQuestion.Id;
+
+                // Create a mind map node for this question
+                var questionNode = new QuestionMindMapNode
+                {
+                    Id = $"q-{nextQuestion.Id}",
+                    Label = nextQuestion.Text,
+                    Type = MindMapNodeType.Question,
+                    QuestionText = nextQuestion.Text,
+                    IsGapQuestion = false,
+                    Children = [],
+                };
+
+                // Add it to the mind map root
+                state.MindMapRoot?.Children.Add(questionNode);
+                state.ActiveQuestionMindMapNodeId = questionNode.Id;
+
                 _logger.LogInformation(
                     "Set active question for {ResearchId} to {QuestionId}: {QuestionText}",
                     researchId,
@@ -111,7 +150,9 @@ public class StateManager : IStateManager
             else
             {
                 state.ActiveQuestionId = null; // No more pending questions
+                state.ActiveQuestionMindMapNodeId = null; // Clear active mind map node ID
                 state.NeedsAnalysis = true; // Signal to move to analysis phase
+                state.NeedsSynthesis = false; // Ensure synthesis is not triggered prematurely
                 _logger.LogInformation(
                     "No more pending questions for {ResearchId}. Setting NeedsAnalysis flag.",
                     researchId
@@ -169,14 +210,18 @@ public class StateManager : IStateManager
             );
         }
 
-        // Add Synthesis phase if it's ready to start or has been completed
-        bool readyForSynthesis =
-            !state.NeedsAnalysis
-            && !state.IsAnalyzing
-            && state.PendingResearchQuestions.Count == 0
-            && state.ActiveQuestionId == null;
+        // Add Synthesis phase
+        // It's shown if synthesis is needed, in progress, or complete
+        bool canStartSynthesis =
+            state.NeedsSynthesis
+            || (
+                !state.IsAnalyzing
+                && !state.NeedsAnalysis
+                && state.PendingResearchQuestions.Count == 0
+                && string.IsNullOrEmpty(state.ActiveQuestionId)
+            );
 
-        if (readyForSynthesis || state.SynthesisComplete)
+        if (canStartSynthesis || state.SynthesisComplete)
         {
             timelineItems.Add(
                 new TimelineItem
@@ -184,10 +229,10 @@ public class StateManager : IStateManager
                     Id = $"{researchId}-synthesis",
                     Text = "Synthesizing Final Report",
                     Type = TimelineItemType.Synthesis,
-                    Active = readyForSynthesis && !state.SynthesisComplete,
+                    Active = state.NeedsSynthesis && !state.SynthesisComplete,
                     Status =
                         state.SynthesisComplete ? TimelineItemStatus.Completed
-                        : readyForSynthesis ? TimelineItemStatus.InProgress
+                        : state.NeedsSynthesis ? TimelineItemStatus.InProgress
                         : TimelineItemStatus.Pending,
                 }
             );
@@ -261,6 +306,23 @@ public class StateManager : IStateManager
             // Add the new questions to pending list and all questions list
             state.PendingResearchQuestions.AddRange(newQuestionObjects);
             state.AllQuestionsInOrder.AddRange(newQuestionObjects);
+
+            // Create mind map nodes for the gap questions
+            foreach (var question in newQuestionObjects)
+            {
+                var questionNode = new QuestionMindMapNode
+                {
+                    Id = $"q-{question.Id}",
+                    Label = question.Text,
+                    Type = MindMapNodeType.Question,
+                    QuestionText = question.Text,
+                    IsGapQuestion = true, // These are gap questions
+                    Children = [],
+                };
+
+                state.MindMapRoot?.Children.Add(questionNode);
+            }
+
             _logger.LogInformation(
                 "Added {Count} new pending questions to {ResearchId}",
                 newQuestionObjects.Count,
@@ -271,6 +333,7 @@ public class StateManager : IStateManager
             if (string.IsNullOrEmpty(state.ActiveQuestionId) && newQuestionObjects.Any())
             {
                 state.ActiveQuestionId = newQuestionObjects[0].Id;
+                state.ActiveQuestionMindMapNodeId = $"q-{newQuestionObjects[0].Id}";
                 _logger.LogInformation(
                     "Set first gap question as active for {ResearchId}: '{QuestionText}'",
                     researchId,
@@ -278,7 +341,9 @@ public class StateManager : IStateManager
                 );
             }
 
+            // Reset analysis and synthesis flags since we have new questions
             state.NeedsAnalysis = false;
+            state.NeedsSynthesis = false;
             _cache.Set(researchId, state, _cacheTimeout);
 
             // Send timeline update after adding new questions
@@ -344,6 +409,29 @@ public class StateManager : IStateManager
             state =>
             {
                 state.IsAnalyzing = false;
+                state.NeedsAnalysis = false; // Explicitly mark analysis as no longer needed
+
+                // If no pending questions and no active question, it's time for synthesis
+                if (
+                    state.PendingResearchQuestions.Count == 0
+                    && string.IsNullOrEmpty(state.ActiveQuestionId)
+                )
+                {
+                    state.NeedsSynthesis = true;
+                    _logger.LogInformation(
+                        "[{ResearchId}] Analysis complete, no new questions. Flagging for synthesis.",
+                        researchId
+                    );
+                }
+                else
+                {
+                    state.NeedsSynthesis = false;
+                    _logger.LogInformation(
+                        "[{ResearchId}] Analysis complete, but there are pending questions to process.",
+                        researchId
+                    );
+                }
+
                 _logger.LogInformation("[{ResearchId}] Analysis phase completed.", researchId);
                 SendTimelineUpdate(researchId, state);
             }
@@ -381,6 +469,79 @@ public class StateManager : IStateManager
             }
         );
     }
+
+    public void AddSearchQueryToMindMap(
+        string researchId,
+        string questionNodeId,
+        SearchQueryMindMapNode queryNode
+    )
+    {
+        UpdateState(
+            researchId,
+            state =>
+            {
+                var questionNode =
+                    state.MindMapRoot?.Children.FirstOrDefault(n => n.Id == questionNodeId)
+                    as QuestionMindMapNode;
+
+                if (questionNode != null)
+                {
+                    questionNode.Children.Add(queryNode);
+                    _logger.LogInformation(
+                        "[{ResearchId}] Added search query node {QueryId} to question {QuestionId}",
+                        researchId,
+                        queryNode.Id,
+                        questionNodeId
+                    );
+                }
+                else
+                {
+                    _logger.LogWarning(
+                        "[{ResearchId}] Question node {QuestionId} not found for adding search query",
+                        researchId,
+                        questionNodeId
+                    );
+                }
+            }
+        );
+    }
+
+    public void AddSearchResultToMindMap(
+        string researchId,
+        string queryNodeId,
+        SearchResultMindMapNode resultNode
+    )
+    {
+        UpdateState(
+            researchId,
+            state =>
+            {
+                var queryNode =
+                    state
+                        .MindMapRoot?.Children.SelectMany(q => q.Children)
+                        .FirstOrDefault(n => n.Id == queryNodeId) as SearchQueryMindMapNode;
+
+                if (queryNode != null)
+                {
+                    queryNode.Children.Add(resultNode);
+                    _logger.LogInformation(
+                        "[{ResearchId}] Added search result node {ResultId} to query {QueryId}",
+                        researchId,
+                        resultNode.Id,
+                        queryNodeId
+                    );
+                }
+                else
+                {
+                    _logger.LogWarning(
+                        "[{ResearchId}] Query node {QueryId} not found for adding search result",
+                        researchId,
+                        queryNodeId
+                    );
+                }
+            }
+        );
+    }
 }
 
 public class ResearchState
@@ -392,11 +553,14 @@ public class ResearchState
     public List<ResearchQuestion> CompletedResearchQuestions { get; set; } = [];
     public List<ResearchQuestion> AllQuestionsInOrder { get; set; } = [];
     public string? ActiveQuestionId { get; set; }
+    public string? ActiveQuestionMindMapNodeId { get; set; }
+    public RootMindMapNode? MindMapRoot { get; set; }
     public List<string> CrawledUrls { get; set; } = [];
     public List<string> TableOfContents { get; set; } = [];
     public bool IsComplete { get; set; } = false;
     public bool NeedsAnalysis { get; set; } = false;
     public bool IsAnalyzing { get; set; } = false;
+    public bool NeedsSynthesis { get; set; } = false; // New flag to control synthesis transition
     public bool SynthesisComplete { get; set; } = false;
     public List<ResearchFeedUpdateEvent> FeedUpdates { get; set; } = [];
     public List<AgentChatMessageEvent> ChatMessages { get; set; } = [];
@@ -412,4 +576,4 @@ public class ResearchQuestion
     public required string Id { get; set; }
     public required string Text { get; set; }
     public bool IsProcessed { get; set; }
-};
+}

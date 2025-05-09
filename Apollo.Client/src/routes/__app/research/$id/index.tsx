@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import AgentChat from "../../../../components/research/AgentChat";
 import ResearchFeed from "../../../../components/research/feed/ResearchFeed";
-import ResearchReport from "../../../../components/research/report/ResearchReport";
+import ResearchDisplayTabs from "../../../../components/research/ResearchDisplayTabs";
 import { useState, useEffect } from "react";
 import * as signalR from "@microsoft/signalr";
 import { config } from "../../../../../config";
@@ -13,6 +13,7 @@ import {
   ResearchStatus,
   type TimelineUpdate,
   type ResearchReport as ResearchReportType,
+  type RootMindMapNode,
 } from "../../../../lib/types/research";
 import {
   getResearchById,
@@ -111,12 +112,13 @@ function RouteComponent() {
 
     newConnection.on(
       "ResearchCompletedWithReport",
-      (researchId: string, report: ResearchReportType) => {
-        console.log("Research completed with report:", researchId, report);
+      (researchId: string, report: ResearchReportType, mindMap: { id: string; graphData: RootMindMapNode } | null) => {
+        console.log("Research completed with report and mind map:", researchId, report, mindMap);
         setResearch((prev) => ({
           ...prev,
           status: ResearchStatus.Complete,
           report,
+          mindMap: mindMap ?? undefined
         }));
       }
     );
@@ -145,7 +147,7 @@ function RouteComponent() {
   // Use key prop to force remount when research ID changes
   const content =
     research.status === ResearchStatus.Complete ? (
-      <ResearchReport key={researchId} report={research.report} />
+      <ResearchDisplayTabs key={researchId} research={research} />
     ) : (
       <main
         key={researchId}

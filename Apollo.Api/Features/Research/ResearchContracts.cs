@@ -3,34 +3,32 @@ using Apollo.Data.Models;
 
 namespace Apollo.Api.Features.Research;
 
-public record ResearchResponse(
-    Guid Id,
+// API-specific DTOs for research responses
+public record ApiResearchResponse(
+    string Id,
     string Title,
     string Description,
-    ResearchPlan Plan,
-    ResearchReport? Report,
-    DateTime StartedAt,
-    ResearchStatus Status
+    ResearchStatus Status,
+    string StartedAt,
+    string CompletedAt,
+    ApiResearchPlanResponse Plan,
+    ApiResearchReportResponse? Report,
+    ApiResearchMindMapResponse? MindMap
 );
 
-public record CreateResearchResponse(
-    Guid Id,
-    string Title,
-    string Description,
-    DateTime StartedAt,
-    ResearchStatus Status
-);
+public record ApiResearchReportResponse(string Id, string Title, string Content);
 
-public record CreateResearchRequest(
-    string Title,
-    string Description,
-    List<string> Questions,
-    string Type,
-    string Depth
-);
+public record ApiResearchPlanResponse(string Id, List<string> Questions);
 
-public record ResearchHistoryItemResponse(Guid Id, string Title, DateTime StartedAt);
+public record ApiResearchMindMapResponse(string Id, MindMapNode? GraphData);
 
+// Shared research report response (for public sharing)
+public record SharedResearchReportResponse(string Id, string Title, string Content);
+
+// Research history item for listing
+public record ResearchHistoryItemResponse(string Id, string Title, string StartedAt);
+
+// Paginated response wrapper
 public record PaginatedResponse<T>(
     List<T> Items,
     int TotalCount,
@@ -39,10 +37,13 @@ public record PaginatedResponse<T>(
     bool HasMore
 );
 
+// Create research request/response
+public record CreateResearchRequest(string Title, string Description, List<string> Questions);
+
+public record CreateResearchResponse(string Id, string Title);
+
+// Research updates response (for real-time updates)
 public record ResearchUpdatesResponse(
     List<ResearchFeedUpdateEvent> FeedUpdates,
     List<AgentChatMessageEvent> ChatMessages
 );
-
-// New response type for shared research reports
-public record SharedResearchReportResponse(Guid Id, string Title, string Content);

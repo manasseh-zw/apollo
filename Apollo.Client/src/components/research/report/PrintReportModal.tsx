@@ -9,6 +9,7 @@ import {
   PDFViewer,
   PDFDownloadLink,
 } from "@react-pdf/renderer";
+import Html from "react-pdf-html";
 
 // Define styles for PDF document
 const styles = StyleSheet.create({
@@ -22,26 +23,103 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontWeight: "bold",
   },
-  content: {
+});
+
+// HTML styles for react-pdf-html
+const htmlStyles = {
+  body: {
+    paddingBottom: 20,
     fontSize: 12,
     lineHeight: 1.5,
+    fontFamily: "Times-Roman",
+  },
+  p: {
+    marginBottom: 10,
     textAlign: "justify",
   },
-});
+  h1: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  h2: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  h3: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 6,
+  },
+  ul: {
+    marginBottom: 10,
+  },
+  ol: {
+    marginBottom: 10,
+  },
+  li: {
+    marginBottom: 4,
+    marginLeft: 15,
+  },
+  a: {
+    color: "blue",
+    textDecoration: "underline",
+  },
+  strong: {
+    fontWeight: "bold",
+  },
+  em: {
+    fontStyle: "italic",
+  },
+  blockquote: {
+    marginLeft: 20,
+    paddingLeft: 10,
+    borderLeft: "2px solid gray",
+    fontStyle: "italic",
+  },
+  code: {
+    fontFamily: "Courier",
+    backgroundColor: "#f0f0f0",
+    padding: "2px 4px",
+  },
+  pre: {
+    fontFamily: "Courier",
+    backgroundColor: "#f0f0f0",
+    padding: 10,
+    marginBottom: 10,
+  },
+  table: {
+    width: "100%",
+    marginBottom: 10,
+    borderCollapse: "collapse",
+  },
+  th: {
+    borderBottom: "1px solid black",
+    padding: 5,
+    fontWeight: "bold",
+  },
+  td: {
+    borderBottom: "1px solid #ddd",
+    padding: 5,
+  },
+};
 
 // PDF Document Component
 const ReportPDFDocument = ({
   title,
   content,
+  htmlContent,
 }: {
   title: string;
   content: string;
+  htmlContent: string;
 }) => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View>
         <Text style={styles.title}>{title}</Text>
-        <Text style={styles.content}>{content}</Text>
+        <Html stylesheet={htmlStyles}>{htmlContent}</Html>
       </View>
     </Page>
   </Document>
@@ -52,6 +130,7 @@ interface PrintReportModalProps {
   onClose: () => void;
   reportTitle: string;
   reportContent: string;
+  reportHtmlContent: string;
 }
 
 export default function PrintReportModal({
@@ -59,6 +138,7 @@ export default function PrintReportModal({
   onClose,
   reportTitle,
   reportContent,
+  reportHtmlContent,
 }: PrintReportModalProps) {
   return (
     <Modal
@@ -79,6 +159,7 @@ export default function PrintReportModal({
                 <ReportPDFDocument
                   title={reportTitle}
                   content={reportContent}
+                  htmlContent={reportHtmlContent}
                 />
               }
               fileName={`${reportTitle.toLowerCase().replace(/\s+/g, "-")}.pdf`}
@@ -103,7 +184,11 @@ export default function PrintReportModal({
                 border: "none",
               }}
             >
-              <ReportPDFDocument title={reportTitle} content={reportContent} />
+              <ReportPDFDocument
+                title={reportTitle}
+                content={reportContent}
+                htmlContent={reportHtmlContent}
+              />
             </PDFViewer>
           </div>
         </ModalBody>

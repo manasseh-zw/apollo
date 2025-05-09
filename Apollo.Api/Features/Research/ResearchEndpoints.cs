@@ -60,7 +60,7 @@ public static class ResearchEndpoints
     }
 
     private static async Task<
-        Results<Ok<ResearchResponse>, NotFound, UnauthorizedHttpResult>
+        Results<Ok<ApiResearchResponse>, NotFound, UnauthorizedHttpResult>
     > GetResearch(
         [FromRoute] Guid researchId,
         [FromServices] IResearchService researchService,
@@ -74,18 +74,18 @@ public static class ResearchEndpoints
             return TypedResults.Unauthorized();
         }
 
-        var result = await researchService.GetResearch(userId, researchId);
+        var result = await researchService.GetResearch(researchId);
 
-        if (result.IsFailed)
+        if (result == null)
         {
             return TypedResults.NotFound();
         }
 
-        return TypedResults.Ok(result.Value);
+        return TypedResults.Ok(result);
     }
 
     private static async Task<
-        Results<Ok<List<ResearchResponse>>, UnauthorizedHttpResult>
+        Results<Ok<List<ApiResearchResponse>>, UnauthorizedHttpResult>
     > GetAllResearch([FromServices] IResearchService researchService, HttpContext httpContext)
     {
         var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier);
@@ -97,7 +97,7 @@ public static class ResearchEndpoints
 
         var result = await researchService.GetAllResearch(userId);
 
-        return TypedResults.Ok(result.Value);
+        return TypedResults.Ok(result);
     }
 
     private static async Task<

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Button,
   Popover,
@@ -26,6 +26,8 @@ export default function ResearchReport({
   const [fontSize, setFontSize] = useState(16);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+  const [reportHtmlForPdf, setReportHtmlForPdf] = useState("");
+  const markdownRef = useRef<HTMLDivElement>(null);
 
   if (!report) {
     return (
@@ -34,6 +36,13 @@ export default function ResearchReport({
       </div>
     );
   }
+
+  const handlePrintClick = () => {
+    if (markdownRef.current) {
+      setReportHtmlForPdf(markdownRef.current.innerHTML);
+      setIsPrintModalOpen(true);
+    }
+  };
 
   return (
     <div className="flex flex-col h-full bg-white relative">
@@ -48,12 +57,14 @@ export default function ResearchReport({
         onClose={() => setIsPrintModalOpen(false)}
         reportTitle={report.title}
         reportContent={report.content}
+        reportHtmlContent={reportHtmlForPdf}
       />
 
       {isSharedView && <Banner />}
       <main className="flex overflow-y-auto overflow-x-hidden justify-center py-10">
         <div className="max-w-3xl w-full font-geist px-4">
           <div
+            ref={markdownRef}
             className="prose prose-slate max-w-none pb-14"
             style={{ fontSize: `${fontSize}px` }}
           >
@@ -65,7 +76,7 @@ export default function ResearchReport({
       </main>
 
       {/* Floating Action Buttons */}
-      <div className="absolute bottom-24 lg:right-[14rem] md:right-12 right-2 flex flex-col gap-2">
+      <div className="fixed bottom-20 lg:right-[14rem] md:right-12 right-2 flex flex-col gap-2">
         {/* Font Size Button */}
         <Popover placement="left" showArrow offset={10}>
           <PopoverTrigger>
@@ -126,7 +137,7 @@ export default function ResearchReport({
           variant="flat"
           radius="full"
           className="bg-primary text-primary-foreground"
-          onPress={() => setIsPrintModalOpen(true)}
+          onPress={handlePrintClick}
           aria-label="Export as PDF"
         >
           <Download size={20} />

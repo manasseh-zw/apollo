@@ -210,6 +210,16 @@ public class ResearchReportGenerator : IResearchReportGenerator
             // Save the report
             var report = new ResearchReport { Content = finalReport, ResearchId = research.Id };
 
+            // Save the mind map
+            ResearchMindMap? mindMap = null;
+            if (state.MindMapRoot != null)
+            {
+                mindMap = new ResearchMindMap { ResearchId = research.Id };
+                mindMap.SetGraphData(state.MindMapRoot);
+                research.MindMap = mindMap;
+                await _repository.ResearchMindMaps.AddAsync(mindMap, cancellationToken);
+            }
+
             research.Report = report;
             research.Status = ResearchStatus.Complete;
 
@@ -230,6 +240,8 @@ public class ResearchReportGenerator : IResearchReportGenerator
                     ResearchId = research.Id,
                     UserId = research.UserId.ToString(),
                     Report = new(report.Id.ToString(), research.Title, report.Content),
+                    MindMap =
+                        mindMap != null ? new(mindMap.Id.ToString(), mindMap.GetGraphData()) : null,
                 }
             );
 

@@ -11,9 +11,12 @@ public class ResearchCompletedWithReportEvent
     public Guid ResearchId { get; set; }
     public string UserId { get; set; }
     public ResearchReportResponse Report { get; set; }
+    public ResearchMindMapResponse? MindMap { get; set; }
 }
 
 public record ResearchReportResponse(string Id, string Title, string Content);
+
+public record ResearchMindMapResponse(string Id, Data.Models.MindMapNode? GraphData);
 
 public interface IResearchEventHandler
 {
@@ -43,7 +46,8 @@ public class ResearchEventHandler : IResearchEventHandler
         await _notifier.NotifyResearchCompletedWithReport(
             @event.UserId,
             @event.ResearchId,
-            @event.Report
+            @event.Report,
+            @event.MindMap
         );
     }
 }
@@ -54,6 +58,7 @@ public interface IResearchNotifier
     Task NotifyResearchCompletedWithReport(
         string userId,
         Guid researchId,
-        ResearchReportResponse report
+        ResearchReportResponse report,
+        ResearchMindMapResponse? mindMap
     );
 }

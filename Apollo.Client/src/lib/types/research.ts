@@ -61,6 +61,11 @@ export type ResearchResponse = {
   report: ResearchReport | null;
   startedAt: string;
   status: ResearchStatus;
+  completedAt: string;
+  mindMap?: {
+    id: string;
+    graphData: RootMindMapNode;
+  };
 };
 
 // Timeline Types
@@ -134,6 +139,54 @@ export type AgentChatMessage = {
   author: string;
   message: string;
 };
+
+// Mind Map Types
+export enum MindMapNodeType {
+  Root = 0,
+  Question = 1,
+  SearchQuery = 2,
+  SearchResult = 3,
+}
+
+export interface BaseMindMapNode {
+  id: string;
+  label: string;
+  type: MindMapNodeType;
+  children: MindMapNode[];
+}
+
+export interface RootMindMapNode extends BaseMindMapNode {
+  type: MindMapNodeType.Root;
+  researchTitle: string;
+  researchDescription: string;
+}
+
+export interface QuestionMindMapNode extends BaseMindMapNode {
+  type: MindMapNodeType.Question;
+  questionText: string;
+  isGapQuestion: boolean;
+}
+
+export interface SearchQueryMindMapNode extends BaseMindMapNode {
+  type: MindMapNodeType.SearchQuery;
+  queryText: string;
+  executedAt: string; // ISO date string
+}
+
+export interface SearchResultMindMapNode extends BaseMindMapNode {
+  type: MindMapNodeType.SearchResult;
+  url: string;
+  title: string;
+  favicon: string;
+  imageUrl?: string | null;
+  summary: string;
+}
+
+export type MindMapNode =
+  | RootMindMapNode
+  | QuestionMindMapNode
+  | SearchQueryMindMapNode
+  | SearchResultMindMapNode;
 
 // API Response Types
 export type ResearchHistoryItem = {

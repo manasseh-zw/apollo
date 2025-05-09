@@ -1,155 +1,209 @@
+using System.Text.Json;
 using Apollo.Agents.Contracts;
-using Apollo.Agents.Events;
 using Apollo.Agents.State;
 using Apollo.Data.Models;
 using Apollo.Data.Repository;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Expressions;
 
 namespace Apollo.Api.Features.Research;
 
 public interface IResearchService
 {
-    Task<Result<CreateResearchResponse>> CreateResearch(Guid userId, CreateResearchRequest request);
-    Task<Result<ResearchResponse>> GetResearch(Guid userId, Guid researchId);
-    Task<Result<List<ResearchResponse>>> GetAllResearch(Guid userId);
+    Task<ApiResearchResponse?> GetResearch(Guid id);
+    Task<List<ApiResearchResponse>> GetAllResearch(Guid userId);
+    Task<Result<SharedResearchReportResponse>> GetSharedResearchReport(Guid reportId);
     Task<Result<PaginatedResponse<ResearchHistoryItemResponse>>> GetResearchHistory(
         Guid userId,
-        int page = 1,
-        int pageSize = 5
+        int page,
+        int pageSize
     );
+    Task<Result<CreateResearchResponse>> CreateResearch(Guid userId, CreateResearchRequest request);
     Task<Result<ResearchUpdatesResponse>> GetResearchUpdates(Guid userId, Guid researchId);
-    Task<Result<SharedResearchReportResponse>> GetSharedResearchReport(Guid reportId);
 }
 
 public class ResearchService : IResearchService
 {
     private readonly ApolloDbContext _repository;
-    private readonly IResearchEventHandler _eventHandler;
-    private readonly IStateManager _stateManager;
+    private readonly IStateManager _state;
 
-    public ResearchService(
-        ApolloDbContext repository,
-        IResearchEventHandler eventHandler,
-        IStateManager stateManager
-    )
+    public ResearchService(ApolloDbContext repository, IStateManager state)
     {
         _repository = repository;
-        _eventHandler = eventHandler;
-        _stateManager = stateManager;
+        _state = state;
+    }
+
+    public async Task<ApiResearchResponse?> GetResearch(Guid id)
+    {
+        var researchData = await _repository
+            .Research.Where(r => r.Id == id)
+            .Select(r => new
+            {
+                r.Id,
+                r.Title,
+                r.Description,
+                r.Status,
+                r.StartedAt,
+                r.CompletedAt,
+                PlanId = r.Plan.Id,
+                PlanQuestions = r.Plan.Questions,
+                ReportId = r.Report != null ? r.Report.Id : (Guid?)null,
+                ReportContent = r.Report != null ? r.Report.Content : null,
+                MindMapId = r.MindMap != null ? r.MindMap.Id : (Guid?)null,
+                MindMapGraphData = r.MindMap != null ? r.MindMap.GraphData : null,
+            })
+            .FirstOrDefaultAsync();
+
+        if (researchData == null)
+            return null;
+
+        MindMapNode? mindMapNode = null;
+        if (!string.IsNullOrEmpty(researchData.MindMapGraphData))
+        {
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            mindMapNode = JsonSerializer.Deserialize<MindMapNode>(
+                researchData.MindMapGraphData,
+                options
+            );
+        }
+
+        return new ApiResearchResponse(
+            researchData.Id.ToString(),
+            researchData.Title,
+            researchData.Description,
+            researchData.Status,
+            researchData.StartedAt.ToString("O"),
+            researchData.CompletedAt.ToString("O"),
+            new ApiResearchPlanResponse(researchData.PlanId.ToString(), researchData.PlanQuestions),
+            researchData.ReportId.HasValue
+                ? new ApiResearchReportResponse(
+                    researchData.ReportId.Value.ToString(),
+                    researchData.Title,
+                    researchData.ReportContent!
+                )
+                : null,
+            researchData.MindMapId.HasValue
+                ? new ApiResearchMindMapResponse(
+                    researchData.MindMapId.Value.ToString(),
+                    mindMapNode
+                )
+                : null
+        );
+    }
+
+    public async Task<List<ApiResearchResponse>> GetAllResearch(Guid userId)
+    {
+        var researchList = await _repository
+            .Research.Where(r => r.UserId == userId)
+            .OrderByDescending(r => r.StartedAt)
+            .Select(r => new
+            {
+                r.Id,
+                r.Title,
+                r.Description,
+                r.Status,
+                r.StartedAt,
+                r.CompletedAt,
+                PlanId = r.Plan.Id,
+                PlanQuestions = r.Plan.Questions,
+                ReportId = r.Report != null ? r.Report.Id : (Guid?)null,
+                ReportContent = r.Report != null ? r.Report.Content : null,
+                MindMapId = r.MindMap != null ? r.MindMap.Id : (Guid?)null,
+                MindMapGraphData = r.MindMap != null ? r.MindMap.GraphData : null,
+            })
+            .ToListAsync();
+
+        return researchList
+            .Select(r =>
+            {
+                // Deserialize mind map data if present
+                MindMapNode? mindMapNode = null;
+                if (!string.IsNullOrEmpty(r.MindMapGraphData))
+                {
+                    var options = new JsonSerializerOptions { WriteIndented = true };
+                    mindMapNode = JsonSerializer.Deserialize<MindMapNode>(
+                        r.MindMapGraphData,
+                        options
+                    );
+                }
+
+                return new ApiResearchResponse(
+                    r.Id.ToString(),
+                    r.Title,
+                    r.Description,
+                    r.Status,
+                    r.StartedAt.ToString("O"),
+                    r.CompletedAt.ToString("O"),
+                    new ApiResearchPlanResponse(r.PlanId.ToString(), r.PlanQuestions),
+                    r.ReportId.HasValue
+                        ? new ApiResearchReportResponse(
+                            r.ReportId.Value.ToString(),
+                            r.Title,
+                            r.ReportContent!
+                        )
+                        : null,
+                    r.MindMapId.HasValue
+                        ? new ApiResearchMindMapResponse(r.MindMapId.Value.ToString(), mindMapNode)
+                        : null
+                );
+            })
+            .ToList();
     }
 
     public async Task<Result<SharedResearchReportResponse>> GetSharedResearchReport(Guid reportId)
     {
-        var report = await _repository
-            .ResearchReports.Include(r => r.Research) // Include Research to get the title
-            .Where(r => r.Id == reportId)
-            .Select(r => new SharedResearchReportResponse(r.Id, r.Research.Title, r.Content))
+        var reportData = await _repository
+            .ResearchReports.Where(r => r.Id == reportId)
+            .Select(r => new
+            {
+                r.Id,
+                ResearchTitle = r.Research.Title,
+                r.Content,
+            })
             .FirstOrDefaultAsync();
 
-        if (report == null)
-        {
-            return Result.Fail("Research report not found");
-        }
+        if (reportData == null)
+            return Result.Fail("Report not found");
 
-        return Result.Ok(report);
+        return Result.Ok(
+            new SharedResearchReportResponse(
+                reportData.Id.ToString(),
+                reportData.ResearchTitle,
+                reportData.Content
+            )
+        );
     }
 
     public async Task<Result<PaginatedResponse<ResearchHistoryItemResponse>>> GetResearchHistory(
         Guid userId,
-        int page = 1,
-        int pageSize = 5
+        int page,
+        int pageSize
     )
     {
-        var query = _repository.Research.Where(r => r.UserId == userId);
+        var query = _repository
+            .Research.Where(r => r.UserId == userId)
+            .OrderByDescending(r => r.StartedAt);
 
         var totalCount = await query.CountAsync();
-
         var items = await query
-            .OrderByDescending(r => r.StartedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(r => new ResearchHistoryItemResponse(r.Id, r.Title, r.StartedAt))
+            .Select(r => new ResearchHistoryItemResponse(
+                r.Id.ToString(),
+                r.Title,
+                r.StartedAt.ToString("O")
+            ))
             .ToListAsync();
 
-        var hasMore = (page * pageSize) < totalCount;
-
-        var response = new PaginatedResponse<ResearchHistoryItemResponse>(
-            items,
-            totalCount,
-            page,
-            pageSize,
-            hasMore
+        return Result.Ok(
+            new PaginatedResponse<ResearchHistoryItemResponse>(
+                items,
+                totalCount,
+                page,
+                pageSize,
+                (page * pageSize) < totalCount
+            )
         );
-
-        return Result.Ok(response);
-    }
-
-    public async Task<Result<ResearchResponse>> GetResearch(Guid userId, Guid researchId)
-    {
-        var research = await _repository
-            .Research.Where(r => r.Id == researchId && r.UserId == userId)
-            .Select(r => new ResearchResponse(
-                r.Id,
-                r.Title,
-                r.Description,
-                new ResearchPlan
-                {
-                    Id = r.Plan.Id,
-                    Questions = r.Plan.Questions,
-                    ResearchId = r.Plan.ResearchId,
-                },
-                r.Report == null
-                    ? null
-                    : new ResearchReport
-                    {
-                        Id = r.Report.Id,
-                        Content = r.Report.Content,
-                        ResearchId = r.Report.ResearchId,
-                    },
-                r.StartedAt,
-                r.Status
-            ))
-            .FirstOrDefaultAsync();
-
-        if (research == null)
-        {
-            return Result.Fail("Research not found");
-        }
-
-        return Result.Ok(research);
-    }
-
-    public async Task<Result<List<ResearchResponse>>> GetAllResearch(Guid userId)
-    {
-        var research = await _repository
-            .Research.Where(r => r.UserId == userId)
-            .OrderByDescending(r => r.StartedAt)
-            .Select(r => new ResearchResponse(
-                r.Id,
-                r.Title,
-                r.Description,
-                new ResearchPlan
-                {
-                    Id = r.Plan.Id,
-                    Questions = r.Plan.Questions,
-                    ResearchId = r.Plan.ResearchId,
-                },
-                r.Report == null
-                    ? null
-                    : new ResearchReport
-                    {
-                        Id = r.Report.Id,
-                        Content = r.Report.Content,
-                        ResearchId = r.Report.ResearchId,
-                    },
-                r.StartedAt,
-                r.Status
-            ))
-            .ToListAsync();
-
-        return Result.Ok(research);
     }
 
     public async Task<Result<CreateResearchResponse>> CreateResearch(
@@ -157,32 +211,21 @@ public class ResearchService : IResearchService
         CreateResearchRequest request
     )
     {
-        var researchPlan = new ResearchPlan() { Questions = request.Questions };
-
-        var research = new Data.Models.Research()
+        var research = new Data.Models.Research
         {
-            UserId = userId,
             Title = request.Title,
             Description = request.Description,
-            Plan = researchPlan,
-            StartedAt = DateTime.UtcNow,
+            UserId = userId,
             Status = ResearchStatus.InProgress,
+            StartedAt = DateTime.UtcNow,
+            CompletedAt = DateTime.UtcNow, // Will be updated when complete
+            Plan = new ResearchPlan() { Questions = [] },
         };
 
         await _repository.Research.AddAsync(research);
         await _repository.SaveChangesAsync();
 
-        await _eventHandler.HandleResearchStart(
-            new ResearchStartEvent { ResearchId = research.Id, UserId = userId.ToString() }
-        );
-        var response = new CreateResearchResponse(
-            research.Id,
-            research.Title,
-            research.Description,
-            research.StartedAt,
-            research.Status
-        );
-        return Result.Ok(response);
+        return Result.Ok(new CreateResearchResponse(research.Id.ToString(), research.Title));
     }
 
     public async Task<Result<ResearchUpdatesResponse>> GetResearchUpdates(
@@ -190,15 +233,9 @@ public class ResearchService : IResearchService
         Guid researchId
     )
     {
-        // First verify the user has access to this research
         var research = await _repository.Research.FirstOrDefaultAsync(r =>
             r.Id == researchId && r.UserId == userId
         );
-
-        if (research == null)
-        {
-            return Result.Fail("Research not found");
-        }
 
         // Only return updates if research is in progress
         if (research.Status != ResearchStatus.InProgress)
@@ -208,12 +245,9 @@ public class ResearchService : IResearchService
 
         try
         {
-            var state = _stateManager.GetState(researchId.ToString());
+            var state = _state.GetState(researchId.ToString());
             return Result.Ok(
-                new ResearchUpdatesResponse(
-                    state.FeedUpdates ?? new List<ResearchFeedUpdateEvent>(),
-                    state.ChatMessages ?? new List<AgentChatMessageEvent>()
-                )
+                new ResearchUpdatesResponse(state.FeedUpdates ?? [], state.ChatMessages ?? [])
             );
         }
         catch (Exception ex)

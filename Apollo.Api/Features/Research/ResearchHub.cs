@@ -8,7 +8,7 @@ public interface IResearchHubClient
     Task ReceiveResponse(string response);
     Task ResearchSaved(Guid researchId);
     Task ResearchCompleted(Guid researchId);
-    Task ResearchCompletedWithReport(Guid researchId, ResearchReportResponse report);
+    Task ResearchCompletedWithReport(Guid researchId, ResearchReportResponse report, ResearchMindMapResponse? mindMap);
 
     Task ReceiveTimelineUpdate(TimelineUpdateEvent update);
     Task ReceiveResearchFeedUpdate(ResearchFeedUpdateEvent update);

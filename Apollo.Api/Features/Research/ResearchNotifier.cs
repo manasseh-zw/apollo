@@ -21,9 +21,10 @@ public class ResearchNotifier : IResearchNotifier
     public async Task NotifyResearchCompletedWithReport(
         string userId,
         Guid researchId,
-        ResearchReportResponse report
+        ResearchReportResponse report,
+        ResearchMindMapResponse? mindMap
     )
     {
-        await _hubContext.Clients.User(userId).ResearchCompletedWithReport(researchId, report);
+        await _hubContext.Clients.User(userId).ResearchCompletedWithReport(researchId, report, mindMap);
     }
 }
