@@ -11,7 +11,7 @@ export default function CustomQuestionNode({ data }: CustomQuestionNodeProps) {
       data.isGapQuestion ? 'bg-secondary text-secondary-foreground' : 'bg-content2'
     }`}>
       <Handle type="target" position={Position.Left} />
-      <Handle type="source" position={Position.Right} />
+      <Handle type="source" position={Position.Left} />
       <div className="font-medium">{data.questionText}</div>
       {data.isGapQuestion && (
         <div className="text-xs mt-1 text-secondary-foreground/80">Gap Question</div>

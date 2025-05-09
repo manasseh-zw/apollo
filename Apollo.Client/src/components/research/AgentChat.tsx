@@ -53,7 +53,7 @@ export default function AgentChat({
       <div className="sticky top-0 bg-white border-b border-gray-200 py-3 px-2">
         <div className="flex items-center justify-between">
           <h2 className="text-md  text-primary">Agent Group Chat</h2>
-          <AvatarGroup max={3} size="sm">
+          <AvatarGroup max={4} size="sm">
             {activeAgents.map((agent) => (
               <Avatar
                 key={agent.name}

@@ -14,7 +14,7 @@ export default function CustomSearchResultNode({
 
   return (
     <div className="relative">
-      <Handle type="target" position={Position.Left} />
+      <Handle type="target" position={Position.Right} />
       <Popover placement="right">
         <PopoverTrigger>
           <div className="px-4 py-2 shadow-lg rounded-lg bg-white hover:bg-content1 transition-colors cursor-pointer min-w-[140px]">

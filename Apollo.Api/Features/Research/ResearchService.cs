@@ -58,13 +58,39 @@ public class ResearchService : IResearchService
             return null;
 
         MindMapNode? mindMapNode = null;
-        if (!string.IsNullOrEmpty(researchData.MindMapGraphData))
+        if (
+            !string.IsNullOrEmpty(researchData.MindMapGraphData)
+            && researchData.MindMapGraphData != "{}"
+        )
         {
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            mindMapNode = JsonSerializer.Deserialize<MindMapNode>(
-                researchData.MindMapGraphData,
-                options
-            );
+            try
+            {
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    AllowOutOfOrderMetadataProperties = true,
+                };
+                mindMapNode = JsonSerializer.Deserialize<MindMapNode>(
+                    researchData.MindMapGraphData,
+                    options
+                );
+            }
+            catch (NotSupportedException ex)
+            {
+                // TODO: Use proper logging (ILogger) in production
+                Console.WriteLine(
+                    $"Failed to deserialize MindMapGraphData for research ID {researchData.Id}: {ex.Message}"
+                );
+                mindMapNode = null;
+            }
+            catch (JsonException ex)
+            {
+                // TODO: Use proper logging (ILogger) in production
+                Console.WriteLine(
+                    $"JSON parsing error for research ID {researchData.Id}: {ex.Message}"
+                );
+                mindMapNode = null;
+            }
         }
 
         return new ApiResearchResponse(
@@ -118,13 +144,36 @@ public class ResearchService : IResearchService
             {
                 // Deserialize mind map data if present
                 MindMapNode? mindMapNode = null;
-                if (!string.IsNullOrEmpty(r.MindMapGraphData))
+                if (!string.IsNullOrEmpty(r.MindMapGraphData) && r.MindMapGraphData != "{}")
                 {
-                    var options = new JsonSerializerOptions { WriteIndented = true };
-                    mindMapNode = JsonSerializer.Deserialize<MindMapNode>(
-                        r.MindMapGraphData,
-                        options
-                    );
+                    try
+                    {
+                        var options = new JsonSerializerOptions
+                        {
+                            WriteIndented = true,
+                            AllowOutOfOrderMetadataProperties = true,
+                        };
+                        mindMapNode = JsonSerializer.Deserialize<MindMapNode>(
+                            r.MindMapGraphData,
+                            options
+                        );
+                    }
+                    catch (NotSupportedException ex)
+                    {
+                        // TODO: Use proper logging (ILogger) in production
+                        Console.WriteLine(
+                            $"Failed to deserialize MindMapGraphData for research ID {r.Id}: {ex.Message}"
+                        );
+                        mindMapNode = null;
+                    }
+                    catch (JsonException ex)
+                    {
+                        // TODO: Use proper logging (ILogger) in production
+                        Console.WriteLine(
+                            $"JSON parsing error for research ID {r.Id}: {ex.Message}"
+                        );
+                        mindMapNode = null;
+                    }
                 }
 
                 return new ApiResearchResponse(
