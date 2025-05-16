@@ -15,6 +15,7 @@ using Microsoft.KernelMemory;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.Google;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 namespace Apollo.Agents.Research;
 
@@ -62,17 +63,17 @@ public class ResearchReportGenerator : IResearchReportGenerator
 
         var kernel = Kernel
             .CreateBuilder()
-            // .AddAzureOpenAIChatCompletion(
-            //     deploymentName: AppConfig.Models.Gpt41,
-            //     endpoint: AppConfig.AzureAI.Endpoint,
-            //     apiKey: AppConfig.AzureAI.ApiKey,
-            //     httpClient: httpClient
-            // )
-            .AddGoogleAIGeminiChatCompletion(
-                modelId: AppConfig.Models.GeminiProFlash25,
-                apiKey: AppConfig.Google.ApiKey,
+            .AddAzureOpenAIChatCompletion(
+                deploymentName: AppConfig.Models.Gpt41,
+                endpoint: AppConfig.AzureAI.Endpoint,
+                apiKey: AppConfig.AzureAI.ApiKey,
                 httpClient: httpClient
             )
+            // .AddGoogleAIGeminiChatCompletion(
+            //     modelId: AppConfig.Models.GeminiProFlash25,
+            //     apiKey: AppConfig.Google.ApiKey,
+            //     httpClient: httpClient
+            // )
             .Build();
         _chat = kernel.GetRequiredService<IChatCompletionService>();
     }
@@ -353,7 +354,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
 
         var finalResponse = await _chat.GetChatMessageContentAsync(
             chatHistory,
-            executionSettings: new GeminiPromptExecutionSettings() { MaxTokens = 32768 },
+            executionSettings: new OpenAIPromptExecutionSettings() { MaxTokens = 32768 },
             cancellationToken: cancellationToken
         );
 
