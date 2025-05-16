@@ -31,8 +31,8 @@ public class MemoryContext : IMemoryContext
     public MemoryContext()
     {
         _memory = new KernelMemoryBuilder()
-            // .WithPostgresMemoryDb(AppConfig.DatabaseOptions.VectorConnectionString)
-            .WithSimpleVectorDb()
+            .WithPostgresMemoryDb(AppConfig.DatabaseOptions.VectorConnectionString)
+            // .WithSimpleVectorDb()
             .WithSimpleQueuesPipeline()
             .With(new KernelMemoryConfig { DefaultIndexName = "apollo" })
             .WithAzureOpenAITextEmbeddingGeneration(
@@ -54,10 +54,10 @@ public class MemoryContext : IMemoryContext
                     APIType = AzureOpenAIConfig.APITypes.TextCompletion,
                     Deployment = AppConfig.Models.Gpt41,
                     Endpoint = AppConfig.AzureAI.Endpoint,
-                    MaxTokenTotal = 65456,
+                    MaxTokenTotal = 1047576,
                 }
             )
-            .WithSearchClientConfig(new() { AnswerTokens = 16555, MaxAskPromptSize = 32768 })
+            .WithSearchClientConfig(new() { AnswerTokens = 16768, MaxAskPromptSize = 32768 })
             .WithStructRagSearchClient()
             .Build<MemoryServerless>(
                 //this is fine because i am not storing any documents at the moment

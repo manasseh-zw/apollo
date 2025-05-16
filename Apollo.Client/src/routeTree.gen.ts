@@ -17,7 +17,6 @@ import { Route as ShareReportIdImport } from './routes/share/$reportId'
 import { Route as AuthSignUpImport } from './routes/auth/sign-up'
 import { Route as AuthSignInImport } from './routes/auth/sign-in'
 import { Route as appResearchIndexImport } from './routes/__app/research/index'
-import { Route as appHistoryIndexImport } from './routes/__app/history/index'
 import { Route as appResearchIdIndexImport } from './routes/__app/research/$id/index'
 
 // Create/Update Routes
@@ -54,12 +53,6 @@ const AuthSignInRoute = AuthSignInImport.update({
 const appResearchIndexRoute = appResearchIndexImport.update({
   id: '/research/',
   path: '/research/',
-  getParentRoute: () => appRoute,
-} as any)
-
-const appHistoryIndexRoute = appHistoryIndexImport.update({
-  id: '/history/',
-  path: '/history/',
   getParentRoute: () => appRoute,
 } as any)
 
@@ -108,13 +101,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShareReportIdImport
       parentRoute: typeof rootRoute
     }
-    '/__app/history/': {
-      id: '/__app/history/'
-      path: '/history'
-      fullPath: '/history'
-      preLoaderRoute: typeof appHistoryIndexImport
-      parentRoute: typeof appImport
-    }
     '/__app/research/': {
       id: '/__app/research/'
       path: '/research'
@@ -135,13 +121,11 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface appRouteChildren {
-  appHistoryIndexRoute: typeof appHistoryIndexRoute
   appResearchIndexRoute: typeof appResearchIndexRoute
   appResearchIdIndexRoute: typeof appResearchIdIndexRoute
 }
 
 const appRouteChildren: appRouteChildren = {
-  appHistoryIndexRoute: appHistoryIndexRoute,
   appResearchIndexRoute: appResearchIndexRoute,
   appResearchIdIndexRoute: appResearchIdIndexRoute,
 }
@@ -154,7 +138,6 @@ export interface FileRoutesByFullPath {
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/share/$reportId': typeof ShareReportIdRoute
-  '/history': typeof appHistoryIndexRoute
   '/research': typeof appResearchIndexRoute
   '/research/$id': typeof appResearchIdIndexRoute
 }
@@ -165,7 +148,6 @@ export interface FileRoutesByTo {
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/share/$reportId': typeof ShareReportIdRoute
-  '/history': typeof appHistoryIndexRoute
   '/research': typeof appResearchIndexRoute
   '/research/$id': typeof appResearchIdIndexRoute
 }
@@ -177,7 +159,6 @@ export interface FileRoutesById {
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/share/$reportId': typeof ShareReportIdRoute
-  '/__app/history/': typeof appHistoryIndexRoute
   '/__app/research/': typeof appResearchIndexRoute
   '/__app/research/$id/': typeof appResearchIdIndexRoute
 }
@@ -190,7 +171,6 @@ export interface FileRouteTypes {
     | '/auth/sign-in'
     | '/auth/sign-up'
     | '/share/$reportId'
-    | '/history'
     | '/research'
     | '/research/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -200,7 +180,6 @@ export interface FileRouteTypes {
     | '/auth/sign-in'
     | '/auth/sign-up'
     | '/share/$reportId'
-    | '/history'
     | '/research'
     | '/research/$id'
   id:
@@ -210,7 +189,6 @@ export interface FileRouteTypes {
     | '/auth/sign-in'
     | '/auth/sign-up'
     | '/share/$reportId'
-    | '/__app/history/'
     | '/__app/research/'
     | '/__app/research/$id/'
   fileRoutesById: FileRoutesById
@@ -255,7 +233,6 @@ export const routeTree = rootRoute
     "/__app": {
       "filePath": "__app.tsx",
       "children": [
-        "/__app/history/",
         "/__app/research/",
         "/__app/research/$id/"
       ]
@@ -268,10 +245,6 @@ export const routeTree = rootRoute
     },
     "/share/$reportId": {
       "filePath": "share/$reportId.tsx"
-    },
-    "/__app/history/": {
-      "filePath": "__app/history/index.tsx",
-      "parent": "/__app"
     },
     "/__app/research/": {
       "filePath": "__app/research/index.tsx",

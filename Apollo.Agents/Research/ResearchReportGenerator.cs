@@ -8,11 +8,14 @@ using Apollo.Agents.State;
 using Apollo.Config;
 using Apollo.Data.Models;
 using Apollo.Data.Repository;
+using Apollo.Notifications;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.KernelMemory;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.Google;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 namespace Apollo.Agents.Research;
 
@@ -34,6 +37,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
     private readonly ILogger<ResearchReportGenerator> _logger;
     private readonly IChatCompletionService _chat;
     private readonly IResearchEventHandler _eventHandler;
+    private readonly IEmailService _email;
     private const int BatchSize = 3; // Process sections in batches for better efficiency
 
     public ResearchReportGenerator(
@@ -42,7 +46,8 @@ public class ResearchReportGenerator : IResearchReportGenerator
         IClientUpdateCallback clientUpdate,
         IStateManager state,
         ILogger<ResearchReportGenerator> logger,
-        IResearchEventHandler eventHandler
+        IResearchEventHandler eventHandler,
+        IEmailService email
     )
     {
         _memory = memory;
@@ -51,23 +56,24 @@ public class ResearchReportGenerator : IResearchReportGenerator
         _state = state;
         _logger = logger;
         _eventHandler = eventHandler;
+        _email = email;
 
         var httpClient = new HttpClient();
         httpClient.Timeout = TimeSpan.FromMinutes(5);
 
         var kernel = Kernel
             .CreateBuilder()
-            // .AddAzureOpenAIChatCompletion(
-            //     deploymentName: AppConfig.Models.Gpt41,
-            //     endpoint: AppConfig.AzureAI.Endpoint,
-            //     apiKey: AppConfig.AzureAI.ApiKey,
-            //     httpClient: httpClient
-            // )
-            .AddGoogleAIGeminiChatCompletion(
-                modelId: AppConfig.Models.GeminiProFlash25,
-                apiKey: AppConfig.Google.ApiKey,
+            .AddAzureOpenAIChatCompletion(
+                deploymentName: AppConfig.Models.Gpt41,
+                endpoint: AppConfig.AzureAI.Endpoint,
+                apiKey: AppConfig.AzureAI.ApiKey,
                 httpClient: httpClient
             )
+            // .AddGoogleAIGeminiChatCompletion(
+            //     modelId: AppConfig.Models.GeminiProFlash25,
+            //     apiKey: AppConfig.Google.ApiKey,
+            //     httpClient: httpClient
+            // )
             .Build();
         _chat = kernel.GetRequiredService<IChatCompletionService>();
     }
@@ -87,7 +93,9 @@ public class ResearchReportGenerator : IResearchReportGenerator
         {
             var state = _state.GetState(researchId);
             var research =
-                await _repository.Research.FindAsync(Guid.Parse(researchId))
+                await _repository
+                    .Research.Include(r => r.User)
+                    .FirstOrDefaultAsync(r => r.Id == Guid.Parse(researchId))
                 ?? throw new Exception($"Research not found for ID: {researchId}");
 
             var toc = state.TableOfContents;
@@ -160,7 +168,6 @@ public class ResearchReportGenerator : IResearchReportGenerator
                 formattedSections.AppendLine(content);
                 formattedSections.AppendLine("\n");
 
-                // Add sources to overall collection
                 allSources.AddRange(sources);
             }
 
@@ -209,6 +216,14 @@ public class ResearchReportGenerator : IResearchReportGenerator
 
             await _repository.ResearchReports.AddAsync(report, cancellationToken);
             await _repository.SaveChangesAsync(cancellationToken);
+
+            var sendEmail = await _email.SendResearchCompleteNotification(
+                new Notifications.Models.Recipient(research.User.Username, research.User.Email),
+                new Notifications.Models.ResearchCompleteContent(researchId, research.Title)
+            );
+
+            if (sendEmail)
+                _logger.LogInformation($"email sent to {research.User.Email}");
 
             await _eventHandler.HandleResearchCompletedWithReport(
                 new ResearchCompletedWithReportEvent
@@ -339,7 +354,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
 
         var finalResponse = await _chat.GetChatMessageContentAsync(
             chatHistory,
-            executionSettings: new GeminiPromptExecutionSettings() { MaxTokens = 32768 },
+            executionSettings: new OpenAIPromptExecutionSettings() { MaxTokens = 32768 },
             cancellationToken: cancellationToken
         );
 

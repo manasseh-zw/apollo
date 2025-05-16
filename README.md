@@ -101,10 +101,6 @@ Apollo delivers significant value across multiple domains by transforming comple
 
 - **Educational Support:** Assists educators in developing curriculum materials and staying current with developments in their field. A high school science teacher preparing a unit on CRISPR gene editing can obtain up-to-date explanations, ethical considerations, and recent breakthroughs summarized at an appropriate level.
 
-- **Legal & Compliance:** Helps legal professionals understand complex regulatory environments across jurisdictions. A corporate counsel researching "AI governance regulations across the EU, US, and China" receives a structured analysis of frameworks, comparing approaches, highlighting compliance requirements, and tracking pending legislation.
-
-- **Healthcare Innovation:** Supports medical professionals in staying current with research developments. A clinician investigating "emerging treatments for treatment-resistant depression" receives an analysis of recent clinical trials, comparative efficacy data, and practice guidelines.
-
 - **Just For Fun! 😂:** Sometimes i just want to keep up with the latest trends, you can research: "Can 100 men beat one gorilla?", "Kendrik and Drake beef timeline" and you'll get an up to date final report with tweets and all the amazing stuff!
 
 The value proposition extends beyond individual use cases—Apollo can be deployed across organizations, educational institutions, and research groups to democratize access to comprehensive research capabilities while maintaining citation rigor and analytical depth.

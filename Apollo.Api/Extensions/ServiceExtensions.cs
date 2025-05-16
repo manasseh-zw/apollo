@@ -9,6 +9,7 @@ using Apollo.Api.Features.Research;
 using Apollo.Api.Utils;
 using Apollo.Config;
 using Apollo.Data.Repository;
+using Apollo.Notifications;
 using Apollo.Search;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -104,6 +105,12 @@ public static class ServiceExtensions
             builder.AddConsole();
             builder.AddDebug();
         });
+        return services;
+    }
+
+    public static IServiceCollection ConfigureNotifications(this IServiceCollection services)
+    {
+        services.AddSingleton<IEmailService, ResendEmailService>();
         return services;
     }
 }

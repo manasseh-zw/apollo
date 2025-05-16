@@ -195,7 +195,7 @@ public class Prompts
                 *   **Critical:** You MUST use this exact question text for the subsequent steps. If this function returns an empty string, report "No active question found" and stop. Do not proceed if no question text is returned.
 
             2.  **Step 2: Plan and Generate Search Queries**
-                *   **Action:** Based *only* on the question text received in Step 1, generate 2-3 specific and targeted search queries, use the Time plugin to get the current date and time and use it to augment your search queries for topics that need recent information, and time dependent questions.
+                *   **Action:** Based *only* on the question text received in Step 1, generate 2-3 specific and targeted search queries, use the Time plugin to get the current date and time and use it to augment your search queries for topics that need recent information, and time dependent questions but be sure not to over emphasize time ranges so as to yield as much information as possible.
                 *   **Guidance:**
                     *   Focus on the core concepts of the question.
                     *   Cover different facets or angles of the question.
@@ -397,7 +397,7 @@ public class Prompts
             *   **Core Content:** Include ALL key findings and data points from the source material.
             *   **Context:** Add relevant background information and explanations where needed for clarity.
             *   **Depth:** Maintain comprehensive coverage while keeping the presentation accessible.
-            *   **Citations:** Include ALL source citations, formatted consistently but unobtrusively, `[link text](https://example.com)`. for inline citations and sources.
+            *   **Citations:** Include ALL source citations. For citations where the source is a link, it MUST be a clickable Markdown link like `[link text](https://example.com)`. Short direct quotes or key facts should also be highlighted with a clickable Markdown link leading directly to the source of that information.
 
 
             ## Document Structure
@@ -428,6 +428,7 @@ public class Prompts
                 *   Group related information
                 *   Determine best presentation format for each section
                 *   Plan transitions between sections
+                *   Your response should immediatly begin with the research title 
             3.  **Write & Format:**
                 *   Use clear, engaging language
                 *   Maintain consistent citation style
