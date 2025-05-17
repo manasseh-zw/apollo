@@ -30,19 +30,23 @@ public class IngestEventHandler : IIngestEventHandler
 
         try
         {
-            foreach (var result in @event.SearchResults)
+            // Create a list of ingestion tasks to run in parallel
+            var ingestionTasks = @event.SearchResults.Select(result =>
             {
                 var tags = new TagCollection
                 {
-                    { "researchId", @event.ResearchId.ToString() },
+                    { "researchId", researchId },
                     { "url", result.Url },
                     { "title", result.Title },
                     { "author", result.Author },
                     { "published", result.PublishedDate },
                 };
 
-                await _memory.Ingest(researchId, result.Text, tags);
-            }
+                return _memory.Ingest(researchId, result.Text, tags);
+            });
+
+            // Run all tasks in parallel
+            await Task.WhenAll(ingestionTasks);
         }
         catch (Exception ex)
         {

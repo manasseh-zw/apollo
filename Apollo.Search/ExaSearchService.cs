@@ -31,7 +31,7 @@ public class ExaSearchService : ISearchService
         );
 
         //exclude wikipedia
-        request.ExcludeDomains = ["https://wikipedia.org/"];
+        request.ExcludeDomains = ["https://wikipedia.org", "https://en.wikipedia.org"];
         request.Contents = new() { Text = new() { IncludeHtmlTags = false } };
 
         var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/search", request);
