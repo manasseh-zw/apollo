@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using Apollo.Config;
 using Microsoft.KernelMemory;
+using OpenAI.Chat;
 
 namespace Apollo.Agents.Memory;
 
@@ -31,8 +32,8 @@ public class MemoryContext : IMemoryContext
     public MemoryContext()
     {
         _memory = new KernelMemoryBuilder()
-            .WithPostgresMemoryDb(AppConfig.DatabaseOptions.VectorConnectionString)
-            // .WithSimpleVectorDb()
+            // .WithPostgresMemoryDb(AppConfig.DatabaseOptions.VectorConnectionString)
+            .WithSimpleVectorDb()
             .WithSimpleQueuesPipeline()
             .With(new KernelMemoryConfig { DefaultIndexName = "apollo" })
             .WithAzureOpenAITextEmbeddingGeneration(
