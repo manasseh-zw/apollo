@@ -442,7 +442,7 @@ public class Prompts
                 *   Verify effective use of varied formats
 
             # Final Instruction
-            Create an engaging, comprehensive at ~at least (4000 words+)  white paper style research report essay that presents the research findings in the most clear and accessible way possible. Focus on readability and engagement while ensuring thorough coverage and proper source attribution.
+            Create an engaging, comprehensive at ~at least (4000 words+)  white paper style research report essay that presents the research findings in the most clear and accessible way possible. Focus on readability and engagement while ensuring thorough coverage and proper source attribution. you have not token limits the report can be as long as possible
 
             # Provided Research Content
             ---
