@@ -59,21 +59,21 @@ public class ResearchReportGenerator : IResearchReportGenerator
         _email = email;
 
         var httpClient = new HttpClient();
-        httpClient.Timeout = TimeSpan.FromMinutes(6);
+        httpClient.Timeout = TimeSpan.FromMinutes(5);
 
         var kernel = Kernel
             .CreateBuilder()
-            // .AddAzureOpenAIChatCompletion(
-            //     deploymentName: AppConfig.Models.Gpt41,
-            //     endpoint: AppConfig.AzureAI.Endpoint,
-            //     apiKey: AppConfig.AzureAI.ApiKey,
-            //     httpClient: httpClient
-            // )
-            .AddGoogleAIGeminiChatCompletion(
-                modelId: AppConfig.Models.GeminiProFlash25,
-                apiKey: AppConfig.Google.ApiKey,
+            .AddAzureOpenAIChatCompletion(
+                deploymentName: AppConfig.Models.Gpt41,
+                endpoint: AppConfig.AzureAI.Endpoint,
+                apiKey: AppConfig.AzureAI.ApiKey,
                 httpClient: httpClient
             )
+            // .AddGoogleAIGeminiChatCompletion(
+            //     modelId: AppConfig.Models.GeminiProFlash25,
+            //     apiKey: AppConfig.Google.ApiKey,
+            //     httpClient: httpClient
+            // )
             .Build();
         _chat = kernel.GetRequiredService<IChatCompletionService>();
     }
@@ -86,7 +86,7 @@ public class ResearchReportGenerator : IResearchReportGenerator
         _logger.LogInformation("[{ResearchId}] Starting report generation", researchId);
         UpdateProgress(
             researchId,
-            "Starting report synthesis is underway now... and please be patient this could take a while, we'll send you an email when its done."
+            "Starting report creation process now... and please be patient this could take a while..."
         );
 
         try

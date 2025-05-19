@@ -74,6 +74,9 @@ export default function ResearchFeed({
   useEffect(() => {
     const timer = setTimeout(() => {
       addToast({
+        classNames: {
+          content: "text-primary",
+        },
         title: "Research Update",
         description:
           "Hey! This could take a while (~15-30 min). You may do whatever you want - I'll send you an email when the research is complete, or you can watch us work.",
@@ -85,7 +88,6 @@ export default function ResearchFeed({
             className="w-8 h-8"
           />
         ),
-        
       });
     }, 120000);
 
