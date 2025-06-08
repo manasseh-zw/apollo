@@ -43,41 +43,6 @@
 
 Apollo is an innovative multi-agent research assistant that revolutionizes deep research through a dynamic team of specialized AI agents working collaboratively. Unlike traditional research tools that rely on single-agent approaches, Apollo's breakthrough architecture takes a user's research query, intelligently breaks it down into fundamental questions, and orchestrates a team of specialized agents—each with distinct roles and expertise—to gather, process, analyze, and synthesize information into a comprehensive, cited research report.
 
-For example, when asked to research "The impact of quantum computing on cybersecurity," Apollo doesn't just search—it transforms into a coordinated research team: Apollo (coordinator) plans the investigation, Athena (engine) gathers current latest ai developments, and Hermes (analyzer) identifies knowledge gaps and synthesizes findings into a structured report—all while maintaining rigorous source attribution.
-
-## 📊 Research Examples
-
-> [!TIP]
-> Explore these real research examples to see Apollo's capabilities in action. Each example demonstrates Apollo's ability to produce comprehensive, well-structured reports with proper citations.
-
-### Example 1: AI's Impact on Future Job Markets
-**Research Question:** How is the increasing capability of Artificial Intelligence anticipated to reshape future job markets in the various sectors, and what essential skills, educational pathways, and career planning strategies should aspiring software engineers understand and prioritize to successfully navigate and thrive in the age of AI?
-
-This research explores how AI is transforming employment across industries, with special focus on the evolving landscape for software engineers. The report analyzes changing skill requirements, educational approaches, and strategic career planning techniques for thriving in an AI-augmented workforce.
-
-**[View Full Research Report](https://apollo.manasseh.dev/share/0196a284-b9c5-7650-8dda-868d1b808dd3)**
-
-### Example 2: The Global AI Race and Geopolitical Implications
-**Research Question:** What are the primary drivers, key players (including major corporations, research institutions, and national initiatives), and defining competitive strategies within the accelerating global Artificial Intelligence race? Furthermore, what are the emerging geopolitical implications of this competition for global power dynamics, technological sovereignty, and international cooperation or conflict?
-
-This comprehensive analysis examines the major forces driving the global AI competition, profiles the leading entities across nations and industries, and explores how this technological race is reshaping international relations, security concerns, and the potential for both collaboration and conflict.
-
-**[View Full Research Report](https://apollo.manasseh.dev/share/0196a2d6-c8eb-779a-9acb-40b18b474868)**
-
-### Example 3: The Science and Mythology of the Bermuda Triangle
-**Research Question:** The Science and Mythology of the Bermuda Triangle Anomalies: What are the documented disappearances and alleged anomalies within the geographic area known as the Bermuda Triangle, what scientific explanations have been proposed (e.g., weather phenomena, geological factors, navigational errors), and how have these events been portrayed and amplified in popular culture and mythology?
-
-This fascinating report investigates the historical incidents within the infamous Bermuda Triangle, examines credible scientific explanations for the reported phenomena, and analyzes how these events have been transformed through media, literature, and cultural mythology.
-
-**[View Full Research Report](https://apollo.manasseh.dev/share/0196a494-ecf7-7735-aaaf-7318e9eba7cd)**
-
-### Example 4: Artificial General Intelligence - Development and Ethics
-**Research Question:** Pathways, Technical Challenges, and Ethical Implications in the Development of Artificial General Intelligence (AGI): What are the fundamental scientific, engineering, and cognitive challenges that must be overcome to develop systems exhibiting human-level general intelligence across diverse tasks? Furthermore, what are the most significant academic debates and research priorities concerning the potential ethical, safety (including alignment), and societal implications should AGI be successfully developed?
-
-This in-depth exploration addresses the technical hurdles in developing AGI, analyzes current research approaches, and examines the crucial ethical considerations, safety concerns, and societal impact of potentially achieving human-level artificial general intelligence.
-
-**[View Full Research Report](https://apollo.manasseh.dev/share/0196ae81-a14d-72e4-8586-8fce5e3d4370)**
-
 ## ✨ Key Differentiators
 
 - **Fully Agentic Architecture:** Unlike semi-agentic or tool-based approaches, Apollo employs a dynamic group of specialized agents (Apollo as Research Coordinator, Athena as Research Engine, and Hermes as Research Analyzer) managed by a Research Orchestrator. These agents interact through Semantic Kernel's agent group chat feature with a shared chat history, while also communicating via a state machine mechanism that preserves context outside the chat window and enables complex workflows.
@@ -88,22 +53,6 @@ This in-depth exploration addresses the technical hurdles in developing AGI, ana
 
 - **Real-time Updates:** Utilizes background services with .NET channels to process research events asynchronously and efficiently. For instance, while researching emerging technologies, Apollo can process new information about quantum computing advances while simultaneously analyzing implications for cryptographic standards.
 
-## 🎯 Use Cases & Impact
-
-> [!TIP]
-> Apollo delivers exceptional value across multiple domains, from academic research to business intelligence. Each use case demonstrates how the system transforms complex research tasks into actionable insights.
-
-Apollo delivers significant value across multiple domains by transforming complex research tasks into comprehensive, actionable insights:
-
-- **Academic Research:** Helps researchers rapidly explore new domains by generating literature reviews with proper citations. For example, a PhD candidate starting research on "neuroplasticity in addiction recovery" can receive a comprehensive foundation including recent studies, methodologies, and knowledge gaps—all in minutes rather than weeks.
-
-- **Business Intelligence:** Empowers organizations to make data-driven decisions by analyzing market trends, competitive landscapes, and emerging opportunities. A startup considering entering the renewable energy market can quickly understand regulatory frameworks, technological advancements, and competitive positioning across different regions.
-
-- **Educational Support:** Assists educators in developing curriculum materials and staying current with developments in their field. A high school science teacher preparing a unit on CRISPR gene editing can obtain up-to-date explanations, ethical considerations, and recent breakthroughs summarized at an appropriate level.
-
-- **Just For Fun! 😂:** Sometimes i just want to keep up with the latest trends, you can research: "Can 100 men beat one gorilla?", "Kendrik and Drake beef timeline" and you'll get an up to date final report with tweets and all the amazing stuff!
-
-The value proposition extends beyond individual use cases—Apollo can be deployed across organizations, educational institutions, and research groups to democratize access to comprehensive research capabilities while maintaining citation rigor and analytical depth.
 
 ## 🏗️ Architecture
 
@@ -175,25 +124,6 @@ The value proposition extends beyond individual use cases—Apollo can be deploy
 - **Processing Strategy:** Implemented asynchronous queues for ingestion to prevent blocking while processing multiple search queries.
 
 - **Synthesis Strategy:** Developed a two-stage synthesis for better control over structure and source attribution, where Kernel Memory handles section-specific content and a large context LLM produces the final report.
-
-## 🤝 Responsible AI & Human-in-the-Loop
-
-> [!IMPORTANT]
-> Apollo's commitment to responsible AI is embedded throughout its architecture. These features ensure ethical research while maintaining human oversight in the research process.
-
-Apollo integrates responsible AI principles and human oversight mechanisms throughout its architecture:
-
-- **Source Attribution:** All insights in the final report include explicit citations to original sources, enabling verification and promoting transparency. For example, when reporting on climate change research, statements about temperature increases are linked to specific studies with methodology context.
-
-- **Bias Mitigation:** Apollo's multi-agent approach helps mitigate individual model biases by having different specialized agents evaluate the same information. When researching controversial topics like "economic impacts of immigration," Apollo presents multiple perspectives with evidence and counterpoints.
-
-- **Explainable Process:** The system provides a complete audit trail of the research process, showing which sources were consulted, which were included/excluded, and why specific conclusions were drawn.
-
-- **Knowledge Gap Transparency:** Apollo explicitly identifies areas where information is limited or contradictory, rather than presenting incomplete information as definitive. When researching emerging technologies, it clearly differentiates between proven capabilities and theoretical potentials.
-
-- **Human In The Loop:** The user is the core driver of the user guided research process, they interact with the planner agent and determine what research questions are to be looked into.
-
-These features ensure Apollo serves as an augmentation tool that enhances human research capabilities while maintaining ethical standards and human judgment in the research process.
 
 ## 🚀 Getting Started
 
